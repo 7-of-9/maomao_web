@@ -40,5 +40,16 @@ Properties
 # Visual Studio Code settings
 .vscode
 
-# Next framework
-.next
+# NextJS framework
+mm_web_app/.next
+
+# Web 1 - ASP.net
+web1/Properties/PublishProfiles/maomaoweb.pubxml.user
+web1/Properties/PublishProfiles/maomaoweb1.pubxml.user
+web1/Properties/PublishProfiles/web120160524115104 - Web Deploy.pubxml.user
+web1/img/Thumbs.db
+web1/web1.csproj.user
+
+# MM extension
+mm02ce/bin/maomao.zip
+mm02ce/mm02ce.csproj.user
