@@ -1,0 +1,15 @@
+{
+  "name": "main",
+  "description": "Crawler services",
+  "args": [
+    "url",
+    "type"
+  ],
+  "kwargs": {
+    "url": "Request URL",
+    "type": "Google or Google News, Video, etc"
+  },
+  "http": {
+    "headers": {}
+  }
+}
