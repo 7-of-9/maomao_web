@@ -3,9 +3,14 @@ This source code base on Next.JS which is a minimalistic framework for server-re
 
 **Visit https://learnnextjs.com to get started with Next.js.**
 
+## Development
+ * Create new `.env` file with example from `.env.example`
+ * Install packages: `npm install`
+ * Run on localhost: `npm run dev` and open http://localhost:3000 on your browser
+
 ## Deployment
 
-* Add produciton repo
+* Add production repo
 
  `git remote add azure https://dunghd@maomaoweb.scm.azurewebsites.net:443/maomaoweb.git`
 

@@ -13,6 +13,7 @@ import Loading from '../Loading'
 import logger from '../../utils/logger'
 
 const parentTopicInfo = (tree, termId, treeLevel) => {
+  logger.warn('parentTopicInfo', tree, termId, treeLevel)
   if (treeLevel <= 2) {
     return { term_id: '', term_name: '', img: '' }
   } else {
@@ -68,7 +69,7 @@ class TopicTree extends PureComponent {
   }
 
   onBack = () => {
-    const { tree } = toJS(this.props.store)
+    const { tree } = toJS(this.props.term)
     const { currentTermId, treeLevel } = toJS(this.props.ui)
     const parentTopic = parentTopicInfo(tree, currentTermId, treeLevel)
     this.props.ui.selectTopicTree(parentTopic.term_id, parentTopic.term_name, parentTopic.img, -1)
@@ -94,7 +95,7 @@ class TopicTree extends PureComponent {
               {currentTermTitle}
             </span>
           </div>
-          }
+        }
       </div>
     )
   }
@@ -122,7 +123,7 @@ class TopicTree extends PureComponent {
     logger.info('TopicTree render', currentTermId, treeLevel)
 
     _.forEach(currentTopicTree(tree, currentTermId), (item) => {
-       /* eslint-disable camelcase */
+      /* eslint-disable camelcase */
       const { term_id, term_name: title, img, child_topics } = item
       const isSelect = _.find(this.props.ui.selectedTopics, item => item.termId === term_id)
       items.push(
@@ -139,8 +140,8 @@ class TopicTree extends PureComponent {
           totals={child_topics.length}
           childTopics={child_topics}
           img={img}
-          />
-        )
+        />
+      )
     })
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated level-${treeLevel}` : `grid-row bounceInRight animated level-${treeLevel}`
     return (
