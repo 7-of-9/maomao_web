@@ -3,6 +3,7 @@ import Router from 'next/router'
 import NProgress from 'nprogress'
 import NoSSR from 'react-no-ssr'
 import { Footer, Page } from 'neal-react'
+import DevTools from 'mobx-react-devtools'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import Notification from '../../components/Notification'
@@ -65,7 +66,7 @@ export default ({ children, title = 'homepage', description = 'discover & share 
     <NoSSR>
       <AppHeader />
     </NoSSR>
-    { children }
+    {children}
     <Notification />
     <div className='footer-area'>
       <Footer brandName={brandName}
@@ -73,5 +74,6 @@ export default ({ children, title = 'homepage', description = 'discover & share 
         address={businessAddress}
       />
     </div>
+    <DevTools />
   </Page>
 )

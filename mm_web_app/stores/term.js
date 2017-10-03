@@ -11,7 +11,7 @@ class TermStore {
   @observable termsCache = {}
   @observable findTerms = []
   @observable pendings = []
-  @observable page = 1
+  @observable page = 0
   @observable hasMore = true
   @observable isProcessingTopicTree = false
   @observable preloadProcesses = 0
@@ -25,56 +25,56 @@ class TermStore {
     this.findTerms = findTerms
     this.termsInfo = termsInfo
     reaction(() => this.page,
-    (page) => {
-      if (this.userId > 0) {
-        logger.info('reaction to page', page, this.userId, this.userHash)
-        if (page === 1) {
-          this.discoveries = []
+      (page) => {
+        if (this.userId > 0) {
+          logger.info('reaction to page', page, this.userId, this.userHash)
+          if (page === 1) {
+            this.discoveries = []
+          }
+          this.getRootDiscover(this.userId, this.userHash, page)
         }
-        this.getRootDiscover(this.userId, this.userHash, page)
-      }
-    })
+      })
   }
 
- @computed get isLoading () {
-   logger.info('isLoading', this.pendings.length, this.pendings, this.preloadProcesses)
-   return this.pendings.length > 0 || this.preloadProcesses > 0
- }
+  @computed get isLoading () {
+    logger.info('isLoading', this.pendings.length, this.pendings, this.preloadProcesses)
+    return this.pendings.length > 0 || this.preloadProcesses > 0
+  }
 
- @action setTerms (findTerms) {
-   logger.info('setTerms', findTerms)
-   for (let term of findTerms) {
-     if (term.child_suggestions || term.child_topics) { this.termsCache[term.term_id] = term }
-   }
- }
+  @action setTerms (findTerms) {
+    logger.info('setTerms', findTerms)
+    for (let term of findTerms) {
+      if (term.child_suggestions || term.child_topics) { this.termsCache[term.term_id] = term }
+    }
+  }
 
- @action getSelectDiscoverItem (urlId) {
-   return _.find(this.discoveries, item => Number(item.disc_url_id) === Number(urlId))
- }
+  @action getSelectDiscoverItem (urlId) {
+    return _.find(this.discoveries, item => Number(item.disc_url_id) === Number(urlId))
+  }
 
- @action getTopicTree () {
-   logger.info('getTopicTree')
-   if (!this.isProcessingTopicTree && this.tree.length === 0) {
-     const allTopics = getAllTopicTree()
-     this.isProcessingTopicTree = true
-     when(
-    () => allTopics.state !== 'pending',
-    () => {
-      this.isProcessingTopicTree = false
-      const { tree } = allTopics.value.data
-      this.tree = tree
-      _.forEach(tree, term => {
-        this.termsCache[term.term_id] = term
-        this.preloadTerm(term.term_id)
-        _.forEach(term.child_topics, item => {
-          this.termsCache[item.term_id] = item
-          this.preloadTerm(item.term_id)
+  @action getTopicTree () {
+    logger.info('getTopicTree')
+    if (!this.isProcessingTopicTree && this.tree.length === 0) {
+      const allTopics = getAllTopicTree()
+      this.isProcessingTopicTree = true
+      when(
+        () => allTopics.state !== 'pending',
+        () => {
+          this.isProcessingTopicTree = false
+          const { tree } = allTopics.value.data
+          this.tree = tree
+          _.forEach(tree, term => {
+            this.termsCache[term.term_id] = term
+            this.preloadTerm(term.term_id)
+            _.forEach(term.child_topics, item => {
+              this.termsCache[item.term_id] = item
+              this.preloadTerm(item.term_id)
+            })
+          })
+          logger.info('tree', tree)
         })
-      })
-      logger.info('tree', tree)
-    })
-   }
- }
+    }
+  }
 
   @action setCurrentTerms (findTerms) {
     this.findTerms = findTerms
@@ -129,10 +129,10 @@ class TermStore {
 
     // preload for children and suggestion
     if (existTerm) {
-      _.forEach(existTerm.child_suggestions, ({term_id: termId}) => {
+      _.forEach(existTerm.child_suggestions, ({ term_id: termId }) => {
         this.preloadTerm(termId)
       })
-      _.forEach(existTerm.child_topics, ({term_id: termId}) => {
+      _.forEach(existTerm.child_topics, ({ term_id: termId }) => {
         this.preloadTerm(termId)
       })
     }
