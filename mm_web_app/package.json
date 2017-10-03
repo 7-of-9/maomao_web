@@ -1,6 +1,6 @@
 {
   "name": "mm-web-app",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Maomao web app",
   "repository": {
     "type": "git",
@@ -103,7 +103,14 @@
     "deploy:prod": "npm run build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master",
     "deploy:dev": "npm run build && git add --all && git commit --no-verify -m 'update azure dev site' && git push -f azure-dev master",
     "storybook": "start-storybook -s . -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "docker": "npm run docker:build && npm run docker:clean && npm run docker:run",
+    "docker:build": "docker build -t maomao-web .",
+    "docker:clean": "docker rm -f maomao-web || true",
+    "docker:run": "docker run -p 3000:3000 -d --name maomao-web maomao-web && npm run docker:logs",
+    "docker:stop": "docker stop maomao-web",
+    "docker:start": "docker start maomao-web && npm run docker:logs",
+    "docker:logs": "docker logs -f maomao-web"
   },
   "devDependencies": {
     "@storybook/react": "^3.2.12",
