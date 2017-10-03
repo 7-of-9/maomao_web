@@ -57,7 +57,6 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
       <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
       <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
-      <link rel='stylesheet' href='/static/vendors/css/slabtext.css' />
       <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
       <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
       <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />

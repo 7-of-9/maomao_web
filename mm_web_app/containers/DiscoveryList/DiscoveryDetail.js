@@ -18,7 +18,7 @@ const DiscoveryNavigation = dynamic(
     loading: () => (<Loading isLoading />),
     ssr: false
   }
- )
+)
 
 @observer
 class DiscoveryDetail extends PureComponent {
@@ -40,8 +40,8 @@ class DiscoveryDetail extends PureComponent {
     url: '',
     utc: '',
     width: '100%',
-    closePreview: () => {},
-    onSelectTerm: (term) => {}
+    closePreview: () => { },
+    onSelectTerm: (term) => { }
   }
 
   handleClick = (event) => {
@@ -60,28 +60,28 @@ class DiscoveryDetail extends PureComponent {
     const isReady = termIds.length === items.length
     return (
       <div>
-        {
-          items.length > 0 &&
-            <div className='selected-panel'>
-              <DiscoveryNavigation
-                items={items}
-                termIds={termIds}
-                isReady={isReady}
-                onSelectTerm={this.props.onSelectTerm}
-                />
-            </div>
-          }
         <div className='discovery-detail'>
           <h3><a onClick={this.handleClick}>{title}</a></h3>
           <span>{utc}</span>
         </div>
+        {
+          items.length > 0 &&
+          <div className='selected-panel'>
+            <DiscoveryNavigation
+              items={items}
+              termIds={termIds}
+              isReady={isReady}
+              onSelectTerm={this.props.onSelectTerm}
+            />
+          </div>
+        }
         <InlinePreview
           width={width}
           height={'100vh'}
           url={url}
           allowScript
           closePreview={this.props.closePreview}
-          />
+        />
       </div>
     )
   }
