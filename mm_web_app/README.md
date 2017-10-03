@@ -10,6 +10,11 @@ This source code base on Next.JS which is a minimalistic framework for server-re
 
 ## Deployment
 
+* Clone the Azure source code
+ `git clone https://dunghd@maomaoweb-dev.scm.azurewebsites.net:443/maomaoweb.git`
+
+* Copy the `.git` folder from the Azure source to mm_web_app folder
+
 * Add production repo
 
  `git remote add azure https://dunghd@maomaoweb.scm.azurewebsites.net:443/maomaoweb.git`
