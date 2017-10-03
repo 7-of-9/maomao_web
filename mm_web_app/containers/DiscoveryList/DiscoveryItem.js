@@ -20,6 +20,7 @@ export default class DiscoveryItem extends PureComponent {
     main_term_id: PropTypes.number.isRequired,
     sub_term_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
     desc: PropTypes.string.isRequired,
     main_term_name: PropTypes.string.isRequired,
     sub_term_name: PropTypes.string.isRequired,
@@ -38,6 +39,7 @@ export default class DiscoveryItem extends PureComponent {
     sub_term_id: 0,
     title: '',
     desc: '',
+    url: '',
     main_term_name: '',
     sub_term_name: '',
     img: '',
@@ -45,8 +47,8 @@ export default class DiscoveryItem extends PureComponent {
     sub_term_img: '',
     search_num: 0,
     ingoreTerms: [],
-    onSelect: (item) => {},
-    onSelectTerm: (term) => {}
+    onSelect: (item) => { },
+    onSelectTerm: (term) => { }
   }
 
   handleClick = (evt) => {
@@ -99,19 +101,19 @@ export default class DiscoveryItem extends PureComponent {
           </span>
         </div>
         {
-        sub_term_name && sub_term_name !== main_term_name &&
-        <div className='mix-tag-topic' onClick={this.selectSubTerm}>
-          <span
-            style={{
-              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
-              backgroundSize: 'cover',
-              fontSize: dynamicFontSize(sub_term_name),
-              cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
-            }}
-            className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
-            {sub_term_name}
-          </span>
-        </div>
+          sub_term_name && sub_term_name !== main_term_name &&
+          <div className='mix-tag-topic' onClick={this.selectSubTerm}>
+            <span
+              style={{
+                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
+                backgroundSize: 'cover',
+                fontSize: dynamicFontSize(sub_term_name),
+                cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
+              }}
+              className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
+              {sub_term_name}
+            </span>
+          </div>
         }
       </div>
     )
@@ -139,14 +141,14 @@ export default class DiscoveryItem extends PureComponent {
               data-position='bottom'
               className='bottom'>
               <img
-                style={{width: '40px', height: '40px'}}
+                style={{ width: '40px', height: '40px' }}
                 className='thumbnail'
                 width='40'
                 height='40'
                 onError={this.noImage}
                 src={item.img}
                 alt={item.name}
-                />
+              />
             </a>)
           }
         </div>
@@ -158,6 +160,31 @@ export default class DiscoveryItem extends PureComponent {
     /* global $ */
     if (this.textContainer && typeof $ !== 'undefined') {
       $(this.textContainer).addClass('discovery-description')
+    }
+  }
+
+  preloadUrl = () => {
+    const { url, disc_url_id: urlId } = this.props
+    const PROXY_URL = '/api/preview'
+    const proxyUrl = `${PROXY_URL}?url=${url}`
+    const findPreloadLink = document.querySelector(`link[href="${proxyUrl}"]`)
+    const finddPreloadIframe = document.querySelector(`iframe[id="${urlId}"]`)
+    if (!findPreloadLink && !finddPreloadIframe) {
+      logger.warn('preloadUrl', url)
+      const preloadLink = document.createElement('link')
+      preloadLink.href = proxyUrl
+      preloadLink.rel = 'preload'
+      preloadLink.as = 'document'
+      document.head.appendChild(preloadLink)
+      // load via iframe, fallback for preload
+      const iframe = document.createElement('iframe')
+      iframe.setAttribute('width', '0')
+      iframe.setAttribute('height', '0')
+      iframe.setAttribute('frameborder', '0')
+      iframe.setAttribute('name', 'preload')
+      iframe.id = urlId
+      iframe.src = proxyUrl
+      document.body.appendChild(iframe)
     }
   }
 
@@ -173,7 +200,7 @@ export default class DiscoveryItem extends PureComponent {
         <div className='thumbnail-box'>
           <div
             className='thumbnail'
-            >
+          >
             <a
               style={{
                 backgroundImage: `url(${img || '/static/images/no-image.png'})`,
@@ -181,7 +208,8 @@ export default class DiscoveryItem extends PureComponent {
               }}
               className='thumbnail-image'
               onClick={this.handleClick}
-              >
+              onMouseEnter={this.preloadUrl}
+            >
               <p className='discovery-title'>{title}</p>
               <div ref={el => { this.textContainer = el }} >
                 <Textfit

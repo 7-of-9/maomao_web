@@ -30,7 +30,7 @@ export default class IndexPage extends React.Component {
     logger.warn('IndexPage query', query, user)
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
-    let termsInfo = {terms: []}
+    let termsInfo = { terms: [] }
     let findTerms = []
     let statusCode = !query.profileUrl
     let profileUrl = query.profileUrl ? query.profileUrl : ''
@@ -60,7 +60,7 @@ export default class IndexPage extends React.Component {
     if (_.isArray(findTerms)) {
       const lockupTerms = _.map(findTerms, item => `names[]=${item}`).join('&')
       logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
-        /* global fetch */
+      /* global fetch */
       const res = await fetch(`${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
       const json = await res.json()
       statusCode = res.statusCode > 200 ? res.statusCode : false
@@ -71,7 +71,7 @@ export default class IndexPage extends React.Component {
       }
     } else {
       logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
-        /* global fetch */
+      /* global fetch */
       const res = await fetch(`${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
       const json = await res.json()
       statusCode = res.statusCode > 200 ? res.statusCode : false
@@ -212,18 +212,19 @@ export default class IndexPage extends React.Component {
     if (_.isNumber(this.props.statusCode)) {
       return <Error statusCode={this.props.statusCode} />
     }
+    const { profileUrl, urlId } = this.state
     return (
       <Provider store={this.store} term={this.term} ui={this.uiStore}>
         {
           this.isDiscoverMode()
-          ? <div className='discover'>
-            <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-            <Discover {...this.state} />
-          </div>
-        : <div className='home'>
-          <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home />
-        </div>
+            ? <div className='discover'>
+              <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+              <Discover profileUrl={profileUrl} urlId={Number(urlId)} />
+            </div>
+            : <div className='home'>
+              <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+              <Home />
+            </div>
         }
       </Provider>
     )

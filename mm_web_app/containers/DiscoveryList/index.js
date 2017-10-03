@@ -28,7 +28,7 @@ const DiscoveryPath = dynamic(
     loading: () => (<Loading isLoading />),
     ssr: false
   }
- )
+)
 
 const MARGIN_FOR_SLITTER = 50
 
@@ -65,7 +65,7 @@ class DiscoveryList extends Component {
         query: { findTerms, urlId: item.disc_url_id }
       },
       href,
-     { shallow: true }
+      { shallow: true }
     )
   }
 
@@ -86,7 +86,7 @@ class DiscoveryList extends Component {
         query: { findTerms, urlId: this.props.urlId }
       },
       href,
-     { shallow: true }
+      { shallow: true }
     )
   }
 
@@ -103,7 +103,7 @@ class DiscoveryList extends Component {
           query: { findTerms: terms, urlId: this.props.urlId }
         },
         href,
-       { shallow: true }
+        { shallow: true }
       )
       const currentTerm = _.find(this.props.term.termsInfo.terms, item => isSameStringOnUrl(item.term_name, terms[terms.length - 1]))
       if (currentTerm && currentTerm.term_id) {
@@ -173,7 +173,7 @@ class DiscoveryList extends Component {
         query: { findTerms }
       },
       href,
-     { shallow: true }
+      { shallow: true }
     )
   }
 
@@ -208,8 +208,8 @@ class DiscoveryList extends Component {
                   onSelect={this.onSelect}
                   onSelectTerm={this.onSelectChildTerm}
                   {...item}
-                 />
-               )
+                />
+              )
             }
           }
         })
@@ -251,25 +251,25 @@ class DiscoveryList extends Component {
     if (isSplitView && discoveryUrlId !== -1) {
       return (
         <div className='discovery-list'>
-          { !isResize && this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId) }
+          {!isResize && this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId)}
           <Sticky>
-            { !isResize && <div style={{ left: currentWidth - 20 }} className='close_button' onClick={this.closePreview} /> }
+            {!isResize && <div style={{ left: currentWidth - 20 }} className='close_button' onClick={this.closePreview} />}
             {
-             isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
-               {(width, height) => (
-                 <DiscoveryDetail
-                   items={items}
-                   title={title}
-                   termIds={termIds}
-                   url={url}
-                   utc={utc}
-                   width={width - 5}
-                   closePreview={this.closePreview}
-                   onSelectTerm={this.onSelectChildTerm}
+              isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
+                {(width, height) => (
+                  <DiscoveryDetail
+                    items={items}
+                    title={title}
+                    termIds={termIds}
+                    url={url}
+                    utc={utc}
+                    width={width - 5}
+                    closePreview={this.closePreview}
+                    onSelectTerm={this.onSelectChildTerm}
                   />
-                  )
-              }
-             </SplitView>
+                )
+                }
+              </SplitView>
             }
           </Sticky>
         </div>
@@ -289,7 +289,7 @@ class DiscoveryList extends Component {
         width={'100%'}
         closePreview={this.closePreview}
         onSelectTerm={this.onSelectChildTerm}
-    />
+      />
     )
   }
 
@@ -314,8 +314,8 @@ class DiscoveryList extends Component {
             onSelect={this.onSelect}
             onSelectTerm={this.onSelectChildTerm}
             {...item}
-           />
-         )
+          />
+        )
       }
     })
     return (<div className='discovery-list'> {items} </div>)
@@ -375,7 +375,7 @@ class DiscoveryList extends Component {
                   loader={<Loading isLoading />}
                 >
                   <div className='discover-root'>
-                    { this.renderRootList() }
+                    {this.renderRootList()}
                   </div>
                 </InfiniteScroll>
               }
@@ -383,7 +383,7 @@ class DiscoveryList extends Component {
                 isRootView && profileUrl.length > 0 &&
                 <Loading isLoading={this.props.term.isLoading} />
               }
-              { !isRootView && this.renderDetail()}
+              {!isRootView && this.renderDetail()}
             </div>
           </div>
         </div>
