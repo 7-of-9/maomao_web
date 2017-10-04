@@ -4,14 +4,13 @@
 *
 */
 
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import urlParser from 'js-video-url-parser'
-import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
-export default class InlinePreview extends Component {
+export default class InlinePreview extends PureComponent {
   static propTypes = {
     url: PropTypes.string.isRequired,
     closePreview: PropTypes.func,
@@ -28,20 +27,11 @@ export default class InlinePreview extends Component {
     allowScript: false
   }
 
-  state = {
-    isLoading: false
-  }
-
   renderPlayer = () => {
     const { url, width, height } = this.props
     logger.info('renderPlayer', url, width, height)
     if (!url) {
-      return (
-        <div
-          style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
-        >
-          <Loading isLoading />
-        </div>)
+      return null
     }
     return (<ReactPlayer
       url={url}
@@ -53,22 +43,11 @@ export default class InlinePreview extends Component {
       />)
   }
 
-  onLoadIframe = () => {
-    logger.info('iframe', this.iframe)
-    this.setState({isLoading: false})
-  }
-
   renderIframe = () => {
     const { url, width, height, allowScript } = this.props
-    const { isLoading } = this.state
     logger.info('renderIframe', url, width, height)
     if (!url) {
-      return (
-        <div
-          style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
-        >
-          <Loading isLoading />
-        </div>)
+      return null
     }
     const PROXY_URL = '/api/preview'
     const proxyUrl = `${PROXY_URL}?url=${url}`
@@ -76,14 +55,12 @@ export default class InlinePreview extends Component {
       <div
         style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
         >
-        <Loading isLoading={isLoading} />
         <iframe
-          className={isLoading ? 'hidden-view' : 'iframe-view'}
+          className={'iframe-view'}
           sandbox={allowScript ? 'allow-same-origin allow-scripts allow-forms allow-presentation allow-popups' : 'allow-same-origin allow-forms allow-presentation allow-popups'}
           id={`frame-${url}`}
           name={`frame-${url}`}
           ref={(iframe) => { this.iframe = iframe }}
-          onLoad={this.onLoadIframe}
           width={width}
           height={height}
           frameBorder='0'
@@ -93,12 +70,6 @@ export default class InlinePreview extends Component {
         />
       </div>
     )
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.url !== this.props.url && !this.state.isLoading) {
-      this.setState({isLoading: true})
-    }
   }
 
   render () {
