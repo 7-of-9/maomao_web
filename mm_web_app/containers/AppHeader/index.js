@@ -124,7 +124,7 @@ class AppHeader extends React.Component {
       this.props.ui.clean()
       window.location.href = '/' // go to home page
     }).catch((error) => {
-      logger.info(error)
+      logger.warn(error)
     })
   }
 
@@ -312,7 +312,7 @@ class AppHeader extends React.Component {
                           this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                         })
                       } catch (error) {
-                        logger.info(error)
+                        logger.warn(error)
                       }
                     }
                   } else {

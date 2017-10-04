@@ -48,7 +48,27 @@ module.exports = {
           runtimeCaching: [
             {
               handler: 'networkFirst',
-              urlPattern: /^https?.*/
+              urlPattern: /mmapi00/
+            },
+            {
+              handler: 'fastest',
+              urlPattern: /api\/preview/,
+              options: {
+                cache: {
+                  maxEntries: 100,
+                  name: 'maomao-preview-cache'
+                }
+              }
+            },
+            {
+              urlPattern: /maomao/,
+              handler: 'fastest',
+              options: {
+                cache: {
+                  maxEntries: 10,
+                  name: 'maomao-image-cache'
+                }
+              }
             }
           ],
           mergeStaticsConfig: true,

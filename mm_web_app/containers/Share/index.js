@@ -131,7 +131,7 @@ export default class Share extends React.Component {
     }).catch((error) => {
         // Try to logout and remove cache token
       this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
-      logger.info(error)
+      logger.warn(error)
     })
   }
 

@@ -238,6 +238,10 @@ export class UIStore {
 
   @action toggleSplitView (isSelect) {
     this.isSplitView = isSelect
+    if (!isSelect) {
+      this.discoveryUrlId = -1
+      this.selectedDiscoveryItem = {}
+    }
   }
 
   @action backToRootDiscovery () {
