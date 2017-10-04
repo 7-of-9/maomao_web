@@ -4,13 +4,13 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import urlParser from 'js-video-url-parser'
 import logger from '../../utils/logger'
 
-export default class InlinePreview extends PureComponent {
+export default class InlinePreview extends Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     closePreview: PropTypes.func,
@@ -25,6 +25,10 @@ export default class InlinePreview extends PureComponent {
     width: '100%',
     height: '100%',
     allowScript: false
+  }
+
+  state = {
+    isReady: false
   }
 
   renderPlayer = () => {
@@ -50,9 +54,7 @@ export default class InlinePreview extends PureComponent {
       return null
     }
     const PROXY_URL = '/api/preview'
-    /* global URL */
-    const { origin, pathname } = new URL(url)
-    const proxyUrl = `${PROXY_URL}?url=${origin}${pathname}`
+    const proxyUrl = `${PROXY_URL}?url=${url}`
     return (
       <div
         style={{width: width || '100%', height: height || '100%'}}
@@ -74,12 +76,41 @@ export default class InlinePreview extends PureComponent {
     )
   }
 
+  showLoading = () => {
+    this.setState({
+      isReady: false
+    })
+    setTimeout(() => {
+      this.setState({
+        isReady: true
+      })
+    }, 200)
+  }
+
+  componentWillMount () {
+    this.showLoading()
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.url && this.props.url !== nextProps.url) {
+      this.showLoading()
+    }
+  }
+
   render () {
-    const { url } = this.props
+    const { url, width, height } = this.props
     const parsed = urlParser.parse(url)
     logger.info('video parse result', parsed)
     const isVideoPlayer = !!parsed
     logger.info('isVideoPlayer', isVideoPlayer)
+    const { isReady } = this.state
+    if (!isReady) {
+      return (<div className='grid-item--full'>
+        <div
+          style={{width: width || '100%', height: height || '100%'}}
+         />
+      </div>)
+    }
     return (
       <div className='grid-item--full'>
         <div className='close_button' onClick={this.props.closePreview} />

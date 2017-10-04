@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const request = require('request')
+const request = require('superagent')
 const cheerio = require('cheerio')
 const _ = require('lodash')
 const queryString = require('query-string')
@@ -23,45 +23,43 @@ router.get('/', (req, res) => {
   const { url: baseUrl } = req.query
   log.info('GET: Load url via proxy', baseUrl, query, body, params)
   if (!baseUrl) {
-    res.status(404).send('Sorry, we cannot find that!')
+    res.redirect(`${SITE_URL}404_not_found_url`)
   } else {
-    request({
-      method: 'GET',
-      url: parseUrl(baseUrl, query)
-    }, (error, response, body) => {
+    request.get(parseUrl(baseUrl, query)).retry(2).end((error, response) => {
       if (error) {
-        res.status(500).send({ error })
+        res.redirect(`${SITE_URL}500_internal_error?message=${error.message}`)
       } else {
-        log.info('href', response.request.uri.href)
+        const { text: body } = response
+        log.info('href', response.request.url)
         const replace = String.prototype.replace
-        const html = replace.call(body, '<head>', `<head><base href="${response.request.uri.href}">`)
+        const html = replace.call(body, '<head>', `<head><base href="${response.request.url}">`)
         const $ = cheerio.load(html)
         // covert to absoluate url
         $('html').find('meta').each((index, item) => {
           const metaProp = $(item).attr('itemprop')
           const metaContent = $(item).attr('content')
-          metaProp === 'image' && $(item).attr('content', url.resolve(response.request.uri.href, metaContent))
+          metaProp === 'image' && $(item).attr('content', url.resolve(response.request.url, metaContent))
         })
 
         $('html').find('form').each((index, item) => {
           const actionSrc = $(item).attr('action')
-          actionSrc && $(item).attr('action', SITE_URL + 'api/preview?url=' + url.resolve(response.request.uri.href, actionSrc))
-          actionSrc && $(item).append(`<input name="url" type="hidden" value="${url.resolve(response.request.uri.href, actionSrc)}" />`)
+          actionSrc && $(item).attr('action', SITE_URL + 'api/preview?url=' + url.resolve(response.request.url, actionSrc))
+          actionSrc && $(item).append(`<input name="url" type="hidden" value="${url.resolve(response.request.url, actionSrc)}" />`)
         })
 
         $('html').find('img').each((index, item) => {
           const imgSrc = $(item).attr('src')
-          imgSrc && $(item).attr('src', url.resolve(response.request.uri.href, imgSrc))
+          imgSrc && $(item).attr('src', url.resolve(response.request.url, imgSrc))
         })
 
         $('html').find('link').each((index, item) => {
           const href = $(item).attr('href')
-          href && href !== '#' && $(item).attr('href', url.resolve(response.request.uri.href, href))
+          href && href !== '#' && $(item).attr('href', url.resolve(response.request.url, href))
         })
 
         $('html').find('a').each((index, item) => {
           const href = $(item).attr('href')
-          href && href !== '#' && $(item).attr('href', url.resolve(response.request.uri.href, href))
+          href && href !== '#' && $(item).attr('href', url.resolve(response.request.url, href))
         })
 
         res.set('Content-Type', 'text/html; charset=utf-8')

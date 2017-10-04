@@ -80,6 +80,7 @@
     "request": "^2.83.0",
     "session-file-store": "^1.1.2",
     "styled-components": "^2.2.0",
+    "superagent": "^3.6.2",
     "sw-precache-webpack-plugin": "^0.11.4",
     "twitter-node-client": "^0.0.6",
     "validate.js": "^0.11.1"
