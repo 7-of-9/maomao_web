@@ -556,13 +556,16 @@ the home page
   }
   .current-topic-name {
     display: inline-block;
-    @include border-radius(20px);
+    @include border-radius(8px);
     margin: 0 2.5px;
     padding: 10px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     text-align: left;
     line-height: 30px;
     border:1px solid #ccc;
+    min-width: 100px;
+    text-transform: capitalize;
+    text-align: center;
   }
 }
 
@@ -735,13 +738,16 @@ the home page
               .mix-tag {
                 z-index: 1;
                 .tags {
-                  @include border-radius(20px);
+                  @include border-radius(8px);
                   margin: 0 2.5px;
                   padding: 10px;
-                  font-size: 1.5rem;
+                  font-size: 1.2rem;
                   text-align: left;
                   line-height: 30px;
                   border:1px solid #ccc;
+                  min-width: 100px;
+                  text-transform: capitalize;
+                  text-align: center;
                 }
               }
             }
@@ -961,12 +967,13 @@ the home page
     line-height: 30px;
   }
   p.blur-bg {
+    display: flex;
     .text-topic {
       color: #fff;
     }
   }
   .selected-topic {
-    @include border-radius(20px);
+    @include border-radius(8px);
     position: relative;
     border:1px solid #ccc;
     margin: 0 2.5px;

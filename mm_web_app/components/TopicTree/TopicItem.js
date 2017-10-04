@@ -126,7 +126,7 @@ class TopicItem extends PureComponent {
                   <div className='mix-tag-topic'>
                     <span
                       style={{
-                        background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+                        background: `linear-gradient(rgba(111, 111, 111, 0.2),rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5),rgba(111, 111, 111, 0.2)), url(${img || '/static/images/no-image.png'})`,
                         backgroundSize: 'cover'
                       }}
                       className={`tags ${tagColor(title)}`} rel='tag'>
