@@ -176,15 +176,6 @@ export default class DiscoveryItem extends PureComponent {
       preloadLink.rel = 'preload'
       preloadLink.as = 'document'
       document.head.appendChild(preloadLink)
-      // load via iframe, fallback for preload
-      const iframe = document.createElement('iframe')
-      iframe.setAttribute('width', '0')
-      iframe.setAttribute('height', '0')
-      iframe.setAttribute('frameborder', '0')
-      iframe.setAttribute('name', 'preload')
-      iframe.id = urlId
-      iframe.src = proxyUrl
-      document.body.appendChild(iframe)
     }
   }
 

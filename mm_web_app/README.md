@@ -5,6 +5,7 @@ This source code base on Next.JS which is a minimalistic framework for server-re
 
 ## Development
  * Create new `.env` file with example from `.env.example`
+ * Set permission for session folder `/tmp/sessions` (chmod 777)
  * Install packages: `npm install`
  * Run on localhost: `npm run dev` and open http://localhost:3000 on your browser
 
@@ -13,7 +14,7 @@ This source code base on Next.JS which is a minimalistic framework for server-re
 * Clone the Azure source code
  `git clone https://dunghd@maomaoweb-dev.scm.azurewebsites.net:443/maomaoweb.git`
 
-* Copy the `.git` folder from the Azure source to mm_web_app folder
+* Copy the `.git` folder from the Azure source to `mm_web_app` folder
 
 * Add production repo
 
