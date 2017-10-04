@@ -53,10 +53,10 @@ export default class InlinePreview extends PureComponent {
     const proxyUrl = `${PROXY_URL}?url=${url}`
     return (
       <div
-        style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
+        style={{width: width || '100%', height: height || '100%'}}
         >
         <iframe
-          className={'iframe-view'}
+          className='iframe-view'
           sandbox={allowScript ? 'allow-same-origin allow-scripts allow-forms allow-presentation allow-popups' : 'allow-same-origin allow-forms allow-presentation allow-popups'}
           id={`frame-${url}`}
           name={`frame-${url}`}

@@ -88,7 +88,7 @@ export default class DiscoveryItem extends PureComponent {
     }
     return (
       <div className='mix-tag' style={customStyle}>
-        <div className='mix-tag-topic' onClick={this.selectMainTerm}>
+        <div className='mix-tag-topic' onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? this.selectMainTerm : _.noop}>
           <span
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
