@@ -130,10 +130,10 @@ export default class IndexPage extends React.Component {
       const { urlId } = this.state
       if (urlId) {
         // preview current item
-        const selectedTile = this.term.getSelectDiscoverItem(urlId)
-        logger.warn('selectedTile', selectedTile)
-        if (selectedTile) {
-          this.uiStore.selectDiscoveryItem(selectedTile)
+        this.term.getSelectDiscoverItem(urlId)
+        logger.warn('selectedTile', this.term.discoveryItem)
+        if (this.term.discoveryItem) {
+          this.uiStore.selectDiscoveryItem(this.term.discoveryItem)
           if (this.uiStore.discoveryTermId > 0) {
             this.uiStore.toggleSplitView(true)
           }
@@ -190,10 +190,10 @@ export default class IndexPage extends React.Component {
     }
     if (Number(urlId) > 0) {
       // preview current item
-      const selectedTile = this.term.getSelectDiscoverItem(urlId)
-      logger.warn('selectedTile', selectedTile)
-      if (selectedTile) {
-        this.uiStore.selectDiscoveryItem(selectedTile)
+      this.term.getSelectDiscoverItem(urlId)
+      logger.warn('selectedTile', this.term.discoveryItem)
+      if (this.term.discoveryItem) {
+        this.uiStore.selectDiscoveryItem(this.term.discoveryItem)
         if (this.uiStore.discoveryTermId > 0) {
           this.uiStore.toggleSplitView(true)
         }

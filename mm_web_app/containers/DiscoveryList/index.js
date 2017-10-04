@@ -53,6 +53,7 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     logger.info('onSelect', item)
+    this.props.term.removeDiscoveryItem()
     this.props.ui.selectDiscoveryItem(item)
     if (this.props.ui.discoveryTermId > 0) {
       this.props.ui.toggleSplitView(true)
@@ -227,6 +228,14 @@ class DiscoveryList extends Component {
   renderDetail = () => {
     logger.info('renderDetail')
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const { terms, discoveryItem } = toJS(this.props.term)
+    if ( discoveryItem ) {
+      this.props.ui.selectDiscoveryItem(discoveryItem)
+      if (this.props.ui.discoveryTermId > 0) {
+        this.props.ui.toggleSplitView(true)
+      }
+    }
+
     const ingoreTerms = []
     if (discoveryTermId !== -1) {
       ingoreTerms.push(discoveryTermId)
@@ -246,7 +255,6 @@ class DiscoveryList extends Component {
       })
     }
     const { currentWidth, isResize } = this.state
-    const { terms } = toJS(this.props.term)
     logger.info('isSplitView', isSplitView)
     if (isSplitView && discoveryUrlId !== -1) {
       return (

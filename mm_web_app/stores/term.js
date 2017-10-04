@@ -1,5 +1,5 @@
 import { action, computed, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover, getTerm, getAllTopicTree } from '../services/topic'
+import { rootDiscover, termDiscover, getTerm, getAllTopicTree, getDiscoverItem } from '../services/topic'
 import logger from '../utils/logger'
 import { isSameStringOnUrl } from '../utils/helper'
 import _ from 'lodash'
@@ -16,6 +16,7 @@ class TermStore {
   @observable isProcessingTopicTree = false
   @observable preloadProcesses = 0
   terms = []
+  discoveryItem = undefined
   tree = []
   userId = -1
   userHash = ''
@@ -49,7 +50,19 @@ class TermStore {
   }
 
   @action getSelectDiscoverItem (urlId) {
-    return _.find(this.discoveries, item => Number(item.disc_url_id) === Number(urlId))
+    logger.info('getDiscoveryItem')
+    const discoveryItem = getDiscoverItem(urlId)
+    logger.info('discoveryItem', discoveryItem)
+    when(
+      () => discoveryItem.state !== 'pending',
+      () => {
+        logger.info('discoveryItem', discoveryItem)
+        this.discoveryItem = discoveryItem.value.data
+      })
+  }
+
+  @action removeDiscoveryItem () {
+    this.discoveryItem = undefined
   }
 
   @action getTopicTree () {
