@@ -210,7 +210,9 @@ export default class DiscoveryItem extends PureComponent {
               onClick={this.handleClick}
               onMouseEnter={this.preloadUrl}
             >
-              <p className='discovery-title'>{title}</p>
+              <div className='discovery-title-wrap'>
+                <p className='discovery-title'>{title}</p>
+              </div>
               <div ref={el => { this.textContainer = el }} >
                 <Textfit
                   mode='multi'

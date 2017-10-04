@@ -721,14 +721,16 @@ the home page
             .discovery-description {
               display: none;
             }
+            .discovery-title-wrap {
+              padding: 10px;
+              background: rgb(48, 48, 48); /* fallback color */
+              background: rgba(255, 255, 255, 0.7);
+            }
             .discovery-title {
               color:#000;
-              background: rgb(255, 255, 255); /* fallback color */
-              background: rgba(255, 255, 255, 0.7);
-              padding: 10px;
               font-size: 1.2rem;
-              overflow: hidden;
               display: -webkit-box;
+              overflow: hidden;
               -webkit-line-clamp: 3;
               -webkit-box-orient: vertical;
             }
@@ -753,6 +755,9 @@ the home page
             }
             &:hover {
               opacity: 1.0;
+              .discovery-title-wrap {
+                display: none;
+              }
               .discovery-title {
                 display: none;
               }
