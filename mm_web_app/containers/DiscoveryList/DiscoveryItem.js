@@ -164,17 +164,18 @@ export default class DiscoveryItem extends PureComponent {
   }
 
   preloadUrl = () => {
-    const { url, disc_url_id: urlId } = this.props
+    const { url } = this.props
     const PROXY_URL = '/api/preview'
-    const proxyUrl = `${PROXY_URL}?url=${url}`
+    /* global URL */
+    const { origin, pathname } = new URL(url)
+    const proxyUrl = `${PROXY_URL}?url=${origin}${pathname}`
     const findPreloadLink = document.querySelector(`link[href="${proxyUrl}"]`)
-    const finddPreloadIframe = document.querySelector(`iframe[id="${urlId}"]`)
-    if (!findPreloadLink && !finddPreloadIframe) {
+    if (!findPreloadLink) {
       logger.warn('preloadUrl', url)
       const preloadLink = document.createElement('link')
       preloadLink.href = proxyUrl
       preloadLink.rel = 'preload'
-      preloadLink.as = 'document'
+      preloadLink.as = 'fetch'
       document.head.appendChild(preloadLink)
     }
   }

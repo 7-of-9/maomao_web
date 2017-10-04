@@ -45,12 +45,14 @@ export default class InlinePreview extends PureComponent {
 
   renderIframe = () => {
     const { url, width, height, allowScript } = this.props
-    logger.info('renderIframe', url, width, height)
+    logger.warn('renderIframe', url, width, height)
     if (!url) {
       return null
     }
     const PROXY_URL = '/api/preview'
-    const proxyUrl = `${PROXY_URL}?url=${url}`
+    /* global URL */
+    const { origin, pathname } = new URL(url)
+    const proxyUrl = `${PROXY_URL}?url=${origin}${pathname}`
     return (
       <div
         style={{width: width || '100%', height: height || '100%'}}
