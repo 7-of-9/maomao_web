@@ -166,6 +166,8 @@ class DiscoveryList extends Component {
 
   closePreview = () => {
     this.props.ui.toggleSplitView(false)
+    this.props.term.removeDiscoveryItem()
+    this.props.ui.removeDiscoveryItem()
     const { findTerms } = toJS(this.props.term)
     const href = `/${findTerms.join('/')}`
     Router.push(

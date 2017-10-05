@@ -232,6 +232,11 @@ export class UIStore {
     this.animationType = 'RTL'
   }
 
+  @action removeDiscoveryItem() {
+    this.discoveryUrlId = ''
+    this.selectedDiscoveryItem = undefined
+  }
+
   @action selectDiscoveryTerm (termId) {
     this.discoveryTermId = termId
   }
