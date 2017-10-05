@@ -8,6 +8,7 @@ import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
+import moment from 'moment'
 import InlinePreview from '../../components/Streams/InlinePreview'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
@@ -58,11 +59,12 @@ class DiscoveryDetail extends PureComponent {
     /* eslint-disable camelcase */
     const { items, title, url, utc, termIds, width } = this.props
     const isReady = termIds.length === items.length
+    const date = moment.utc(utc).local().format('LLLL')
     return (
       <div>
         <div className='discovery-detail'>
           <h3><a onClick={this.handleClick}>{title}</a></h3>
-          <span>{utc}</span>
+          <span>{date}</span>
         </div>
         {
           items.length > 0 &&
