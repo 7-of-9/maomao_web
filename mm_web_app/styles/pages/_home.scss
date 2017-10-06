@@ -614,7 +614,7 @@ the home page
         }
         .resizable {
           .grid-item--full {
-            z-index: 1000;
+            z-index: 998;
             position: fixed;
             background: url("/static/images/balls.svg") no-repeat center gray;
             .close_button {

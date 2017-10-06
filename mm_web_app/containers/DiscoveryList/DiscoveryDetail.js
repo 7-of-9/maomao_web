@@ -29,6 +29,7 @@ class DiscoveryDetail extends PureComponent {
     title: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     utc: PropTypes.string.isRequired,
+    isResizing: PropTypes.bool.isRequired,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     closePreview: PropTypes.func.isRequired,
     onSelectTerm: PropTypes.func.isRequired
@@ -41,6 +42,7 @@ class DiscoveryDetail extends PureComponent {
     url: '',
     utc: '',
     width: '100%',
+    isResizing: false,
     closePreview: () => { },
     onSelectTerm: (term) => { }
   }
@@ -57,7 +59,7 @@ class DiscoveryDetail extends PureComponent {
   render () {
     logger.info('DiscoveryDetail render')
     /* eslint-disable camelcase */
-    const { items, title, url, utc, termIds, width } = this.props
+    const { items, title, url, utc, termIds, width, isResizing } = this.props
     const isReady = termIds.length === items.length
     const date = moment.utc(utc).local().format('LLLL')
     return (
@@ -78,7 +80,7 @@ class DiscoveryDetail extends PureComponent {
           </div>
         }
         <InlinePreview
-          width={width}
+          width={!isResizing ? 0 : width}
           height={'100vh'}
           url={url}
           allowScript

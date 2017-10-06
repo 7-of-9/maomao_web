@@ -232,7 +232,7 @@ export class UIStore {
     this.animationType = 'RTL'
   }
 
-  @action removeDiscoveryItem() {
+  @action removeDiscoveryItem () {
     this.discoveryUrlId = ''
     this.selectedDiscoveryItem = undefined
   }

@@ -168,6 +168,10 @@ class DiscoveryList extends Component {
     this.props.ui.toggleSplitView(false)
     this.props.term.removeDiscoveryItem()
     this.props.ui.removeDiscoveryItem()
+    this.setState({
+      innerWidth: window.innerWidth,
+      currentWidth: window.innerWidth / 2
+    })
     const { findTerms } = toJS(this.props.term)
     const href = `/${findTerms.join('/')}`
     Router.push(
@@ -231,7 +235,7 @@ class DiscoveryList extends Component {
     logger.info('renderDetail')
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const { terms, discoveryItem } = toJS(this.props.term)
-    if ( discoveryItem ) {
+    if (discoveryItem) {
       this.props.ui.selectDiscoveryItem(discoveryItem)
       if (this.props.ui.discoveryTermId > 0) {
         this.props.ui.toggleSplitView(true)
@@ -256,20 +260,21 @@ class DiscoveryList extends Component {
         }
       })
     }
-    const { currentWidth, isResize } = this.state
+    const { currentWidth } = this.state
     logger.info('isSplitView', isSplitView)
     if (isSplitView && discoveryUrlId !== -1) {
       return (
         <div className='discovery-list'>
-          {!isResize && this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId)}
+          {this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId)}
           <Sticky>
-            {!isResize && <div style={{ left: currentWidth - 20 }} className='close_button' onClick={this.closePreview} />}
+            {<div style={{ left: currentWidth - 20 }} className='close_button' onClick={this.closePreview} />}
             {
               isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
-                {(width, height) => (
+                {(width, height, isResizing) => (
                   <DiscoveryDetail
                     items={items}
                     title={title}
+                    isResizing={isResizing}
                     termIds={termIds}
                     url={url}
                     utc={utc}
