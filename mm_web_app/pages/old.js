@@ -2,6 +2,7 @@ import React from 'react'
 import { Provider } from 'mobx-react'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
+import { initTermStore } from '../stores/term'
 import { initDiscoveryStore } from '../stores/discovery'
 import OldHome from '../containers/OldHome'
 import stylesheet from '../styles/index.scss'
@@ -24,7 +25,10 @@ export default class OldHomePage extends React.Component {
       terms = search.split(',')
     }
     const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
-    return { isServer, ...store, ...uiStore, ...discovery }
+    let termsInfo = { terms: [] }
+    let findTerms = []
+    const term = initTermStore(isServer, findTerms, termsInfo)
+    return { isServer, ...store, ...uiStore, ...discovery, ...term, findTerms, termsInfo }
   }
 
   constructor (props) {
@@ -34,6 +38,7 @@ export default class OldHomePage extends React.Component {
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
+    this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
   }
 
   componentDidMount () {
@@ -52,7 +57,7 @@ export default class OldHomePage extends React.Component {
   render () {
     logger.info('OldHomePage render', this.store)
     return (
-      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
+      <Provider term={this.term} store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='home'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <OldHome />
