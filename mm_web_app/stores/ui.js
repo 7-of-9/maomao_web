@@ -35,6 +35,7 @@ export class UIStore {
   @observable discoveryUrlId = -1
   @observable discoveryTermId = -1
   @observable isSplitView = false
+  @observable spliterWidth = '100%'
   selectedDiscoveryItem = {}
   shareTopics = []
   shareUrlId = -1
@@ -43,6 +44,10 @@ export class UIStore {
 
   @action redirectToSpecialUrl (isEnable) {
     this.isRedirectToUrl = isEnable
+  }
+
+  @action resizeSplitter (width) {
+    this.spliterWidth = width
   }
 
   @action toggleOnlyMe (userId, users) {

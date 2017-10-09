@@ -46,9 +46,6 @@ class DiscoveryList extends Component {
     profileUrl: '',
     urlId: -1
   }
-  state = {
-    currentWidth: '100%'
-  }
 
   onSelect = (item) => {
     logger.info('onSelect', item)
@@ -125,8 +122,8 @@ class DiscoveryList extends Component {
 
   onZoomLayout = () => {
     logger.info('onZoomLayout')
+    this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
-      currentWidth: window.innerWidth / 2,
       innerWidth: window.innerWidth
     })
   }
@@ -152,13 +149,42 @@ class DiscoveryList extends Component {
     this.props.term.loadMore()
   }
 
+  onDragStarted = () => {
+    logger.warn('onDragStarted')
+    const iframe = document.querySelector('iframe')
+    if (iframe) {
+      iframe.width = '75%'
+      iframe.style.opacity = 0.1
+    }
+  }
+
+  onDragFinished = (width) => {
+    logger.warn('onDragFinished', width)
+    const iframe = document.querySelector('iframe')
+    if (iframe) {
+      iframe.width = '100%'
+      iframe.style.opacity = 1
+    }
+    this.props.ui.resizeSplitter(width)
+    this.forceRenderForSticky()
+  }
+
+  forceRenderForSticky = () => {
+    if (document.querySelector('div[class=" sticky"]')) {
+      logger.warn('forceUpdate')
+      // scroll down 1px for re-render for sticky
+      /* global $ */
+      $(window).scrollTop($(window).scrollTop() + 1)
+    }
+  }
+
   closePreview = () => {
     this.props.ui.toggleSplitView(false)
     this.props.term.removeDiscoveryItem()
     this.props.ui.removeDiscoveryItem()
+    this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
-      innerWidth: window.innerWidth,
-      currentWidth: window.innerWidth / 2
+      innerWidth: window.innerWidth
     })
     const { findTerms } = toJS(this.props.term)
     const href = `/${findTerms.join('/')}`
@@ -247,10 +273,12 @@ class DiscoveryList extends Component {
         <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
           <SplitPane
             split='vertical'
-            minSize='20%'
-            maxSize='80%'
-            defaultSize='50%'
+            minSize={330}
+            maxSize={window.innerWidth - 330}
+            defaultSize={window.innerWidth / 2}
             style={{ position: 'relative' }}
+            onDragStarted={this.onDragStarted}
+            onDragFinished={this.onDragFinished}
             >
             <Sticky>
               <DiscoveryDetail
@@ -335,15 +363,15 @@ class DiscoveryList extends Component {
       this.props.term.getRootDiscover(userId, userHash, page)
     }
     logger.info('DiscoveryList componentDidMount', userId, userHash, page)
+    this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
-      innerWidth: window.innerWidth,
-      currentWidth: window.innerWidth / 2
+      innerWidth: window.innerWidth
     })
   }
 
   render () {
     const { profileUrl } = this.props
-    const { currentWidth } = this.state
+    const { spliterWidth: currentWidth } = this.props.ui
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
     logger.info('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
