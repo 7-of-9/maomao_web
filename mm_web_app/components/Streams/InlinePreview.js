@@ -13,7 +13,6 @@ import logger from '../../utils/logger'
 export default class InlinePreview extends Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
-    closePreview: PropTypes.func,
     width: PropTypes.any.isRequired,
     height: PropTypes.any.isRequired,
     allowScript: PropTypes.bool.isRequired
@@ -21,7 +20,6 @@ export default class InlinePreview extends Component {
 
   static defaultProps = {
     url: '',
-    closePreview: () => {},
     width: '100%',
     height: '100%',
     allowScript: false
@@ -113,7 +111,6 @@ export default class InlinePreview extends Component {
     }
     return (
       <div className='grid-item--full'>
-        <div className='close_button' onClick={this.props.closePreview} />
         {
           isVideoPlayer &&
           this.renderPlayer()

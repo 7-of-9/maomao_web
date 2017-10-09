@@ -29,7 +29,6 @@ class DiscoveryDetail extends PureComponent {
     title: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     utc: PropTypes.string.isRequired,
-    isResizing: PropTypes.bool.isRequired,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     closePreview: PropTypes.func.isRequired,
     onSelectTerm: PropTypes.func.isRequired
@@ -42,7 +41,6 @@ class DiscoveryDetail extends PureComponent {
     url: '',
     utc: '',
     width: '100%',
-    isResizing: false,
     closePreview: () => { },
     onSelectTerm: (term) => { }
   }
@@ -57,13 +55,14 @@ class DiscoveryDetail extends PureComponent {
   }
 
   render () {
-    logger.info('DiscoveryDetail render')
     /* eslint-disable camelcase */
-    const { items, title, url, utc, termIds, width, isResizing } = this.props
+    const { items, title, url, utc, termIds, width } = this.props
+    logger.info('DiscoveryDetail render', items, title, url, utc, termIds, width)
     const isReady = termIds.length === items.length
     const date = moment.utc(utc).local().format('LLLL')
     return (
       <div>
+        <div className='close_button' onClick={this.props.closePreview} />
         <div className='discovery-detail'>
           <h3><a onClick={this.handleClick}>{title}</a></h3>
           <span>{date}</span>
@@ -80,11 +79,10 @@ class DiscoveryDetail extends PureComponent {
           </div>
         }
         <InlinePreview
-          width={!isResizing ? 0 : width}
+          width={width}
           height={'100vh'}
           url={url}
           allowScript
-          closePreview={this.props.closePreview}
         />
       </div>
     )

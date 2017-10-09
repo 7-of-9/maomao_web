@@ -185,7 +185,7 @@ export default class DiscoveryItem extends PureComponent {
     const { disc_url_id, site_tld, site_img, title, desc, search_num, img } = this.props
     const images = [{ name: site_tld, img: site_img }]
     const inlineStyle = {
-      height: 240
+      height: 160
     }
     return (
       <div key={disc_url_id} className='grid-item shuffle-item'>

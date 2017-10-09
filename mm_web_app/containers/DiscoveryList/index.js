@@ -14,9 +14,9 @@ import _ from 'lodash'
 import Sticky from 'react-sticky-el'
 import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
+import SplitPane from 'react-split-pane'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
-import SplitView from '../../components/SplitView'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
@@ -30,7 +30,7 @@ const DiscoveryPath = dynamic(
   }
 )
 
-const MARGIN_FOR_SLITTER = 50
+// const MARGIN_FOR_SLITTER = 50
 
 @inject('term')
 @inject('store')
@@ -47,7 +47,6 @@ class DiscoveryList extends Component {
     urlId: -1
   }
   state = {
-    isResize: false,
     currentWidth: '100%'
   }
 
@@ -124,23 +123,12 @@ class DiscoveryList extends Component {
     }
   }
 
-  onResizeStart = () => {
-    this.setState({ isResize: true })
-  }
-
-  onResizeStop = (width) => {
-    this.setState({ currentWidth: width, isResize: false })
-  }
-
   onZoomLayout = () => {
-    const { innerWidth } = this.state
-    if (innerWidth !== window.innerWidth) {
-      logger.info('onZoomLayout')
-      this.setState({
-        currentWidth: window.innerWidth / 2,
-        innerWidth: window.innerWidth
-      })
-    }
+    logger.info('onZoomLayout')
+    this.setState({
+      currentWidth: window.innerWidth / 2,
+      innerWidth: window.innerWidth
+    })
   }
 
   getCurrentTerm = (termId) => {
@@ -184,13 +172,9 @@ class DiscoveryList extends Component {
     )
   }
 
-  renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
-    logger.info('renderTermList', isSplitView, ingoreTerms, discoveryTermId, terms, urlId)
-    const { currentWidth } = this.state
+  renderTermList = (ingoreTerms, discoveryTermId, terms, urlId) => {
     if (this.props.term.isLoading) {
-      return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
-        <Loading isLoading />
-      </div>)
+      return <Loading isLoading />
     }
     if (terms.length) {
       const topics = _.find(terms, item => item.termId === discoveryTermId)
@@ -220,11 +204,9 @@ class DiscoveryList extends Component {
             }
           }
         })
-        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
-          {items}
-        </div>)
+        return items
       } else {
-        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
+        return (<div className='split-view'>
           <p className='text-engine animated fadeInUp'>Coming soon...</p>
         </div>)
       }
@@ -260,39 +242,38 @@ class DiscoveryList extends Component {
         }
       })
     }
-    const { currentWidth } = this.state
-    logger.info('isSplitView', isSplitView)
     if (isSplitView && discoveryUrlId !== -1) {
       return (
-        <div className='discovery-list'>
-          {this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId)}
-          <Sticky>
-            {<div style={{ left: currentWidth - 20 }} className='close_button' onClick={this.closePreview} />}
-            {
-              isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
-                {(width, height, isResizing) => (
-                  <DiscoveryDetail
-                    items={items}
-                    title={title}
-                    isResizing={isResizing}
-                    termIds={termIds}
-                    url={url}
-                    utc={utc}
-                    width={width - 5}
-                    closePreview={this.closePreview}
-                    onSelectTerm={this.onSelectChildTerm}
-                  />
-                )
-                }
-              </SplitView>
-            }
-          </Sticky>
+        <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
+          <SplitPane
+            split='vertical'
+            minSize='20%'
+            maxSize='80%'
+            defaultSize='50%'
+            style={{ position: 'relative' }}
+            >
+            <Sticky>
+              <DiscoveryDetail
+                items={items}
+                title={title}
+                termIds={termIds}
+                url={url}
+                utc={utc}
+                closePreview={this.closePreview}
+                onSelectTerm={this.onSelectChildTerm}
+                width={'100%'}
+              />
+            </Sticky>
+            <div className='split-view'>
+              {this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)}
+            </div>
+          </SplitPane>
         </div>
       )
     }
     logger.info('discoveryTermId', discoveryTermId)
     if (discoveryTermId > 0) {
-      return this.renderTermList(isSplitView && discoveryUrlId !== -1, ingoreTerms, discoveryTermId, terms, urlId)
+      return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)
     }
     return (
       <DiscoveryDetail
