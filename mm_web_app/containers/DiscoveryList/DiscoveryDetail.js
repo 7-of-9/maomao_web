@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
@@ -22,7 +22,7 @@ const DiscoveryNavigation = dynamic(
 )
 
 @observer
-class DiscoveryDetail extends PureComponent {
+class DiscoveryDetail extends Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
     termIds: PropTypes.array.isRequired,

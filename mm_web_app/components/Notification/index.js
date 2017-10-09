@@ -12,7 +12,7 @@ import logger from '../../utils/logger'
 @inject('store')
 @inject('ui')
 @observer
-class Notification extends React.PureComponent {
+class Notification extends React.Component {
   removeNotification = (uuid) => {
     this.props.ui.removeNotification(uuid)
   }

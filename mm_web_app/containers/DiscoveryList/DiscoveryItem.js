@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import { Textfit } from 'react-textfit'
@@ -14,7 +14,7 @@ import { tagColor, dynamicFontSize } from '../../utils/helper'
 
 @inject('term')
 @observer
-export default class DiscoveryItem extends PureComponent {
+export default class DiscoveryItem extends Component {
   static propTypes = {
     disc_url_id: PropTypes.number.isRequired,
     main_term_id: PropTypes.number.isRequired,
