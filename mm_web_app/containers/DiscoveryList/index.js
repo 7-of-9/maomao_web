@@ -151,19 +151,17 @@ class DiscoveryList extends Component {
 
   onDragStarted = () => {
     logger.warn('onDragStarted')
-    const iframe = document.querySelector('iframe')
-    if (iframe) {
-      iframe.width = '75%'
-      iframe.style.opacity = 0.1
+    const overlay = document.querySelector('#overlay')
+    if (overlay) {
+      overlay.style.display = 'block'
     }
   }
 
   onDragFinished = (width) => {
     logger.warn('onDragFinished', width)
-    const iframe = document.querySelector('iframe')
-    if (iframe) {
-      iframe.width = '100%'
-      iframe.style.opacity = 1
+    const overlay = document.querySelector('#overlay')
+    if (overlay) {
+      overlay.style.display = 'none'
     }
     this.props.ui.resizeSplitter(width)
     this.forceRenderForSticky()
@@ -281,6 +279,7 @@ class DiscoveryList extends Component {
             onDragFinished={this.onDragFinished}
             >
             <Sticky>
+              <div id='overlay' style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'none', opacity: 0 }} />
               <DiscoveryDetail
                 items={items}
                 title={title}
