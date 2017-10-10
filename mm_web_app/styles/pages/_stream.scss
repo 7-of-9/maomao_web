@@ -573,6 +573,11 @@ img {
 }
 
 .split-view {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
   .container-masonry {
     z-index: 1;
     .grid-row {

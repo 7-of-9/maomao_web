@@ -660,6 +660,11 @@ the home page
           }
         }
         .split-view {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
           .grid-item {
             width: 250px;
             z-index: 100;
