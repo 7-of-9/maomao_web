@@ -4,14 +4,14 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 import eventEmitter from '../../utils/eventEmitter'
 
-class TopicItem extends PureComponent {
+class TopicItem extends Component {
   static propTypes = {
     term_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,

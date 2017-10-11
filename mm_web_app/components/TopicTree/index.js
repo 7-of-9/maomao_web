@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -54,7 +54,7 @@ const currentTopicTree = (tree, termId) => {
 @inject('term')
 @inject('ui')
 @observer
-class TopicTree extends PureComponent {
+class TopicTree extends Component {
   onChange = (isSelect, termId, title, img) => {
     this.props.ui.toggleSelectTopic(isSelect, termId, title, img)
   }

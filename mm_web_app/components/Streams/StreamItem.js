@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import _ from 'lodash'
 import DiscoveryButton from '../../components/DiscoveryButton'
@@ -13,7 +13,7 @@ import InlinePlayer from './InlinePlayer'
 
 @inject('ui')
 @observer
-class StreamItem extends PureComponent {
+class StreamItem extends Component {
   handleClick = (event) => {
     event.preventDefault()
     if (event.shiftKey || event.ctrlKey || event.metaKey) {

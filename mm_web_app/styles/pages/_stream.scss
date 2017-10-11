@@ -534,43 +534,35 @@ img {
 }
 
 .sticky-view {
-  .resizable {
-    .grid-item--full {
-      z-index: 1000;
-      position: fixed;
-      background: url("/static/images/balls.svg") no-repeat center gray;
-      .close_button {
-        z-index: 9999;
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        top: -16px;
-        right: -16px;
-        border: 0;
-        background: $close-btn-img no-repeat center center;
-        &:hover {
-          text-decoration: none;
-          cursor: pointer;
-        }
-      }
-      iframe {
-        z-index: 1;
-        background: #fff;
-        height: 100vh;
-      }
+  width: 100%;
+  min-height: 100vh;
+  .close_button {
+    z-index: 9999;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: -15px;
+    right: -15px;
+    border: 0;
+    background: $close-btn-img no-repeat center center;
+    &:hover {
+      text-decoration: none;
+      cursor: pointer;
     }
-    .on-resize {
-      background: #2db7f5;
-      height: 100vh !important;
-      width: 100%;
-    }
-    div:not(:first-child) {
-      background: #2db7f5;
-      height: 100vh !important;
-      z-index: 999;
+  }
+  .grid-item--full {
+    z-index: 1000;
+    width: 100%;
+    position: fixed;
+    background: url("/static/images/balls.svg") no-repeat center gray;
+    iframe {
+      z-index: 1;
+      background: #fff;
+      height: 100vh;
     }
   }
 }
+
 
 .split-view {
   display: flex;

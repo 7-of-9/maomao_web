@@ -22,7 +22,7 @@ const masonryOptions = {
 @inject('store')
 @inject('ui')
 @observer
-class GridView extends React.PureComponent {
+class GridView extends React.Component {
   onLayout = () => {
     logger.info('onLayout', this.masonry)
     this.masonry && this.masonry.layout()

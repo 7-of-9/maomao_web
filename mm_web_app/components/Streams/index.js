@@ -8,6 +8,7 @@ import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import { Section } from 'neal-react'
+import SplitPane from 'react-split-pane'
 import ReactResizeDetector from 'react-resize-detector'
 import Sticky from 'react-sticky-el'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -15,7 +16,6 @@ import moment from 'moment'
 import _ from 'lodash'
 import StreamItem from './StreamItem'
 import InlinePreview from './InlinePreview'
-import SplitView from '../../components/SplitView'
 import GridView from '../../components/GridView'
 import Loading from '../../components/Loading'
 import FilterSearch from '../../components/FilterSearch'
@@ -129,9 +129,7 @@ function parseDomain (link) {
 class Streams extends React.Component {
   state = {
     currentUrl: '',
-    innerWidth: window.innerWidth,
-    currentWidth: window.innerWidth / 2,
-    isResize: false
+    innerWidth: window.innerWidth
   }
 
   hasMoreItem = () => {
@@ -156,25 +154,44 @@ class Streams extends React.Component {
   closePreview = () => {
     logger.info('closePreview')
     this.setState({ currentUrl: '' })
+    this.props.ui.resizeSplitter(window.innerWidth / 2)
+    this.setState({
+      innerWidth: window.innerWidth
+    })
   }
 
-  onResizeStart = () => {
-    this.setState({ isResize: true })
+  onDragStarted = () => {
+    logger.warn('onDragStarted')
+    const overlay = document.querySelector('#overlay')
+    if (overlay) {
+      overlay.style.display = 'block'
+    }
   }
 
-  onResizeStop = (width) => {
-    this.setState({ currentWidth: width, isResize: false })
+  onDragFinished = (width) => {
+    logger.warn('onDragFinished', width)
+    const overlay = document.querySelector('#overlay')
+    if (overlay) {
+      overlay.style.display = 'none'
+    }
+    this.props.ui.resizeSplitter(width)
+    this.forceRenderForSticky()
+  }
+
+  forceRenderForSticky = () => {
+    if (document.querySelector('div[class=" sticky"]')) {
+      logger.warn('forceUpdate')
+      // scroll down 1px for re-render for sticky
+      /* global $ */
+      $(window).scrollTop($(window).scrollTop() + 1)
+    }
   }
 
   onZoomLayout = () => {
-    const { innerWidth } = this.state
-    if (innerWidth !== window.innerWidth) {
-      logger.info('onZoomLayout')
-      this.setState({
-        currentWidth: window.innerWidth / 2,
-        innerWidth: window.innerWidth
-      })
-    }
+    logger.info('onZoomLayout')
+    this.setState({
+      innerWidth: window.innerWidth
+    })
   }
 
   render () {
@@ -197,7 +214,8 @@ class Streams extends React.Component {
     const currentUrls = _.slice(this.sortedUrls, 0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls ? myUrls && _.map(myUrls, item => item.url_id) : []
     logger.info('currentUrls', currentUrls)
-    const { currentUrl, currentWidth, isResize } = this.state
+    const { currentUrl } = this.state
+    const { spliterWidth: currentWidth } = this.props.ui
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { url_id, href, img, title } = item
@@ -241,32 +259,53 @@ class Streams extends React.Component {
         <div className='standand-sort'>
           <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
         </div>
-        <div className={currentUrl ? 'sticky-view' : 'hidden-view'}>
-          <Sticky>
-            <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
-              {(width, height) => (<InlinePreview
-                width={currentWidth}
-                height={height}
-                url={currentUrl}
-                closePreview={this.closePreview}
-                />)}
-            </SplitView>
-          </Sticky>
-        </div>
         {
-          !isResize &&
-          <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 30) : '100%' }}>
-            <InfiniteScroll
+            currentUrl && currentUrl.length > 0
+              ? <div style={{ width: '100%', minHeight: window.innerHeight }}>
+                <SplitPane
+                  split='vertical'
+                  minSize={330}
+                  maxSize={window.innerWidth - 330}
+                  defaultSize={window.innerWidth / 2}
+                  style={{ position: 'relative', overflow: 'visible' }}
+                  onDragStarted={this.onDragStarted}
+                  onDragFinished={this.onDragFinished}
+                    >
+                  <Sticky>
+                    <div id='overlay' style={{ minHeight: window.innerHeight, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'none', opacity: 0 }} />
+                    <div className='sticky-view'>
+                      <div className='close_button' onClick={this.closePreview} />
+                      <InlinePreview
+                        width={'100%'}
+                        height={'100%'}
+                        url={currentUrl}
+                        />
+                    </div>
+                  </Sticky>
+                  <div className='split-view'>
+                    <InfiniteScroll
+                      pageStart={this.props.ui.page}
+                      loadMore={this.loadMore}
+                      hasMore={this.hasMoreItem()}
+                      loader={<Loading isLoading />}
+                    >
+                      <GridView>
+                        {items}
+                      </GridView>
+                    </InfiniteScroll>
+                  </div>
+                </SplitPane>
+              </div>
+            : <InfiniteScroll
               pageStart={this.props.ui.page}
               loadMore={this.loadMore}
               hasMore={this.hasMoreItem()}
               loader={<Loading isLoading />}
-             >
+              >
               <GridView>
                 {items}
               </GridView>
             </InfiniteScroll>
-          </div>
         }
       </div>
     )

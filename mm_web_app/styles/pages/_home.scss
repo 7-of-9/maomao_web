@@ -602,10 +602,10 @@ the home page
         .close_button {
           z-index: 9999;
           position: absolute;
-          width: 40px;
-          height: 40px;
-          top: -20px;
-          right: -20px;
+          width: 30px;
+          height: 30px;
+          top: -15px;
+          right: -15px;
           border: 0;
           background: $close-btn-img no-repeat center center;
           &:hover {
