@@ -15,6 +15,18 @@ export function addBulkTopics (user_id, hash, topic_ids = []) {
 }
 
 /* eslint-disable camelcase */
+export function unfollowTopic (user_id, hash, topic_id) {
+  const apiUrl = `${MAOMAO_API_URL}user_topics/${topic_id}?${queryString.stringify({user_id, hash})}`
+  return fromPromise(axios.delete(apiUrl))
+}
+
+/* eslint-disable camelcase */
+export function followedTopics (user_id, hash) {
+  const apiUrl = `${MAOMAO_API_URL}user_topics?${queryString.stringify({user_id, hash})}`
+  return fromPromise(axios.get(apiUrl))
+}
+
+/* eslint-disable camelcase */
 export function rootDiscover (user_id, hash, page_num = 1) {
   const apiUrl = `${MAOMAO_API_URL}disc/root?${queryString.stringify({user_id, hash, page_num})}`
   return fromPromise(axios.get(apiUrl))
@@ -26,11 +38,13 @@ export function termDiscover (term_id) {
   return fromPromise(axios.get(apiUrl))
 }
 
+/* eslint-disable camelcase */
 export function getTerm (termId) {
   const apiUrl = `${MAOMAO_API_URL}term/${termId}`
   return fromPromise(axios.get(apiUrl))
 }
 
+/* eslint-disable camelcase */
 export function getDiscoverItem (urlid) {
   const apiUrl = `${MAOMAO_API_URL}disc/url/${urlid}`
   return fromPromise(axios.get(apiUrl))

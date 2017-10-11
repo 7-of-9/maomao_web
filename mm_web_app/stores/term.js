@@ -1,5 +1,5 @@
 import { action, computed, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover, getTerm, getAllTopicTree, getDiscoverItem } from '../services/topic'
+import { rootDiscover, termDiscover, getTerm, getAllTopicTree, getDiscoverItem, unfollowTopic, followedTopics } from '../services/topic'
 import logger from '../utils/logger'
 import { isSameStringOnUrl } from '../utils/helper'
 import _ from 'lodash'
@@ -11,6 +11,7 @@ class TermStore {
   @observable termsCache = {}
   @observable findTerms = []
   @observable pendings = []
+  @observable followedTopics = []
   @observable page = 0
   @observable hasMore = true
   @observable isProcessingTopicTree = false
@@ -170,6 +171,7 @@ class TermStore {
 
   @action getRootDiscover (userId, userHash, page) {
     logger.info('getRootDiscover', userId, userHash, page)
+    this.getFollowedTopics(userId, userHash)
     this.page = page
     this.userId = userId
     this.userHash = userHash
@@ -227,6 +229,30 @@ class TermStore {
         }
       )
     }
+  }
+
+  @action getFollowedTopics (userId, userHash) {
+    logger.info('getFollowTopics')
+    const res = followedTopics(userId, userHash)
+    logger.info('followedTopics', res)
+    when(
+      () => res.state !== 'pending',
+      () => {
+        logger.info('followedTopics', res)
+        this.followedTopics = res.value.data
+      })
+  }
+
+  @action unfollowTopicUser (userId, userHash, topicId) {
+    logger.info('unfollowTopic')
+    const res = unfollowTopic(userId, userHash, topicId)
+    logger.info('unfollowTopic', res)
+    when(
+      () => res.state !== 'pending',
+      () => {
+        logger.info('unfollowTopic', res)
+        this.getFollowedTopics(userId, userHash)
+      })
   }
 }
 

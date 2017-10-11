@@ -131,13 +131,6 @@ export default class IndexPage extends React.Component {
       if (urlId) {
         // preview current item
         this.term.getSelectDiscoverItem(urlId)
-        logger.warn('selectedTile', this.term.discoveryItem)
-        if (this.term.discoveryItem) {
-          this.uiStore.selectDiscoveryItem(this.term.discoveryItem)
-          if (this.uiStore.discoveryTermId > 0) {
-            this.uiStore.toggleSplitView(true)
-          }
-        }
       }
     } else {
       this.uiStore.toggleSplitView(false)
@@ -184,22 +177,14 @@ export default class IndexPage extends React.Component {
         }
       }
     }
-
     if (urlId !== this.state.urlId) {
       this.setState({ urlId })
-    }
-    if (Number(urlId) > 0) {
-      // preview current item
-      this.term.getSelectDiscoverItem(urlId)
-      logger.warn('selectedTile', this.term.discoveryItem)
-      if (this.term.discoveryItem) {
-        this.uiStore.selectDiscoveryItem(this.term.discoveryItem)
-        if (this.uiStore.discoveryTermId > 0) {
-          this.uiStore.toggleSplitView(true)
-        }
+      if (Number(urlId) > 0) {
+        // preview current item
+        this.term.getSelectDiscoverItem(urlId)
+      } else {
+        this.uiStore.toggleSplitView(false)
       }
-    } else {
-      this.uiStore.toggleSplitView(false)
     }
   }
 

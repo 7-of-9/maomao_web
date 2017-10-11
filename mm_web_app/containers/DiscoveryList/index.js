@@ -243,7 +243,7 @@ class DiscoveryList extends Component {
     const { terms, discoveryItem } = toJS(this.props.term)
     if (discoveryItem) {
       this.props.ui.selectDiscoveryItem(discoveryItem)
-      if (this.props.ui.discoveryTermId > 0) {
+      if (this.props.ui.discoveryUrlId > 0) {
         this.props.ui.toggleSplitView(true)
       }
     }
@@ -366,6 +366,16 @@ class DiscoveryList extends Component {
     this.setState({
       innerWidth: window.innerWidth
     })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { discoveryItem } = toJS(nextProps.term)
+    if (discoveryItem) {
+      nextProps.ui.selectDiscoveryItem(discoveryItem)
+      if (nextProps.ui.discoveryUrlId > 0) {
+        nextProps.ui.toggleSplitView(true)
+      }
+    }
   }
 
   render () {
