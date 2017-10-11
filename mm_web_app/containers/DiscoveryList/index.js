@@ -274,7 +274,7 @@ class DiscoveryList extends Component {
             minSize={330}
             maxSize={window.innerWidth - 330}
             defaultSize={window.innerWidth / 2}
-            style={{ position: 'relative' }}
+            style={{ position: 'relative', overflow: 'visible' }}
             onDragStarted={this.onDragStarted}
             onDragFinished={this.onDragFinished}
             >
