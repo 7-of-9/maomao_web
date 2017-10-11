@@ -8,7 +8,6 @@ import Masonry from 'react-masonry-component'
 import NProgress from 'nprogress'
 import _ from 'lodash'
 import BlockElement from '../../components/BlockElement'
-import Loading from '../../components/Loading'
 import SearchBar from '../../components/SearchBar'
 import logger from '../../utils/logger'
 
@@ -242,7 +241,6 @@ class Discovery extends Component {
               </div>
             </Masonry>
           </InfiniteScroll>
-          <Loading isLoading={this.props.discovery.pendings.length > 0} />
         </div>
       </div>
     )

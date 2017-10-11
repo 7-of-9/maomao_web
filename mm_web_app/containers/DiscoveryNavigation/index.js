@@ -61,7 +61,7 @@ class DiscoveryNavigation extends Component {
         </p>
       </div>))
     } else {
-      return null
+      return <div />
     }
   }
 

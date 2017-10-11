@@ -9,7 +9,6 @@ import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import TopicItem from './TopicItem'
-import Loading from '../Loading'
 import logger from '../../utils/logger'
 
 const parentTopicInfo = (tree, termId, treeLevel) => {
@@ -117,7 +116,7 @@ class TopicTree extends Component {
     const items = []
     const { tree, isProcessingTopicTree } = toJS(this.props.term)
     if (isProcessingTopicTree) {
-      return (<Loading isLoading />)
+      return null
     }
     const { currentTermId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
     logger.info('TopicTree render', currentTermId, treeLevel)
