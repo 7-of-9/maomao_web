@@ -9,6 +9,7 @@ import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
 import dynamic from 'next/dynamic'
 import _ from 'lodash'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 const Carousel = dynamic(
@@ -61,7 +62,7 @@ class DiscoveryNavigation extends Component {
         </p>
       </div>))
     } else {
-      return <div />
+      return (<div style={{ width: 40, height: 40 }}><Loading isLoading /></div>)
     }
   }
 

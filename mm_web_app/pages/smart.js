@@ -71,7 +71,7 @@ export default class Smart extends React.Component {
     const proxyUrl = `${PROXY_URL}?url=${url}`
     const { isLoading } = this.state
     if (!url) {
-      return null
+      return <div />
     }
     return (
       <iframe

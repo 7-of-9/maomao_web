@@ -33,7 +33,7 @@ export default class InlinePreview extends Component {
     const { url, width, height } = this.props
     logger.info('renderPlayer', url, width, height)
     if (!url) {
-      return null
+      return <div />
     }
     return (<ReactPlayer
       url={url}
@@ -49,7 +49,7 @@ export default class InlinePreview extends Component {
     const { url, width, height, allowScript } = this.props
     logger.warn('renderIframe', url, width, height)
     if (!url) {
-      return null
+      return <div />
     }
     const PROXY_URL = '/api/preview'
     const proxyUrl = `${PROXY_URL}?url=${url}`

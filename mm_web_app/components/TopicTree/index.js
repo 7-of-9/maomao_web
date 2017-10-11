@@ -116,7 +116,7 @@ class TopicTree extends Component {
     const items = []
     const { tree, isProcessingTopicTree } = toJS(this.props.term)
     if (isProcessingTopicTree) {
-      return null
+      return <div />
     }
     const { currentTermId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
     logger.info('TopicTree render', currentTermId, treeLevel)

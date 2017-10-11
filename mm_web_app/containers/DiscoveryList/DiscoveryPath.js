@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
+import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
 
@@ -68,7 +69,7 @@ class DiscoveryPath extends Component {
     })
 
     if (items.length === 0) {
-      return null
+      return <div />
     }
 
     if (this.props.term.isLoading || !currentTerm) {
@@ -76,6 +77,7 @@ class DiscoveryPath extends Component {
         <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth ? currentWidth + MARGIN_FOR_SLITTER / 2 : 0 }}>
           <div className='breadcrum'>
             {items}
+            <div style={{ width: 50, height: 50 }}><Loading isLoading /></div>
           </div>
         </div>
       )

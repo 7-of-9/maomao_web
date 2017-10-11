@@ -221,8 +221,8 @@ class DiscoveryList extends Component {
         })
         return items
       } else {
-        return (<div className='split-view'>
-          <p className='text-engine animated fadeInUp'>Coming soon...</p>
+        return (<div className='split-view' style={{ minHeight: 500, margin: '0 auto' }}>
+          <h3 className='text-engine animated fadeInUp'>Coming soon...</h3>
         </div>)
       }
     }
