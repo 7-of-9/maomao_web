@@ -32,6 +32,6 @@ export function getTerm (termId) {
 }
 
 export function getDiscoverItem (urlid) {
-  const apiUrl = `/api/dummy/disc/url/${urlid}`
+  const apiUrl = `${MAOMAO_API_URL}disc/url/${urlid}`
   return fromPromise(axios.get(apiUrl))
 }
