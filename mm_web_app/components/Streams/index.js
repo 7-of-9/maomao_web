@@ -215,7 +215,6 @@ class Streams extends React.Component {
     const myUrlIds = myUrls ? myUrls && _.map(myUrls, item => item.url_id) : []
     logger.info('currentUrls', currentUrls)
     const { currentUrl } = this.state
-    const { spliterWidth: currentWidth } = this.props.ui
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { url_id, href, img, title } = item

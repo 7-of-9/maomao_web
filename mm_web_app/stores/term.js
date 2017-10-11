@@ -1,5 +1,5 @@
 import { action, computed, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover, getTerm, getAllTopicTree, getDiscoverItem, unfollowTopic, followedTopics } from '../services/topic'
+import { rootDiscover, termDiscover, getTerm, preLoadTerm, getAllTopicTree, getDiscoverItem, unfollowTopic, followedTopics } from '../services/topic'
 import logger from '../utils/logger'
 import { isSameStringOnUrl } from '../utils/helper'
 import _ from 'lodash'
@@ -15,7 +15,6 @@ class TermStore {
   @observable page = 0
   @observable hasMore = true
   @observable isProcessingTopicTree = false
-  @observable preloadProcesses = 0
   terms = []
   discoveryItem = undefined
   tree = []
@@ -39,8 +38,7 @@ class TermStore {
   }
 
   @computed get isLoading () {
-    logger.info('isLoading', this.pendings.length, this.pendings, this.preloadProcesses)
-    return this.pendings.length > 0 || this.preloadProcesses > 0
+    return this.pendings.length > 0
   }
 
   @action setTerms (findTerms) {
@@ -94,25 +92,13 @@ class TermStore {
     this.findTerms = findTerms
   }
 
-  @action preloadTerm (termId, tracking = true) {
-    const termInfo = getTerm(termId)
-    if (tracking) {
-      this.preloadProcesses += 1
-    }
+  @action preloadTerm (termId) {
     logger.info('preloadTerm', termId)
-    when(
-      () => termInfo.state !== 'pending',
-      () => {
-        if (termInfo.value.data) {
-          const { term } = termInfo.value.data
-          this.termsCache[term.term_id] = term
-        }
-        logger.info('preloadTerm result', termInfo.value.data)
-        if (tracking) {
-          this.preloadProcesses -= 1
-        }
-      }
-    )
+    preLoadTerm(termId).then(response => {
+      const { term } = response.data
+      logger.warn('preloadTerm term', term)
+      this.termsCache[term.term_id] = term
+    }).catch(error => { logger.warn('error on preloadTerm', error) })
   }
 
   @action loadNewTerm (termId) {

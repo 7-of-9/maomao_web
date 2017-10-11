@@ -45,6 +45,12 @@ export function getTerm (termId) {
 }
 
 /* eslint-disable camelcase */
+export function preLoadTerm (termId) {
+  const apiUrl = `${MAOMAO_API_URL}term/${termId}`
+  return axios.get(apiUrl)
+}
+
+/* eslint-disable camelcase */
 export function getDiscoverItem (urlid) {
   const apiUrl = `${MAOMAO_API_URL}disc/url/${urlid}`
   return fromPromise(axios.get(apiUrl))
