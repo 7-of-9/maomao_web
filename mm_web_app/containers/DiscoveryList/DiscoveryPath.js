@@ -6,15 +6,23 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
-import OwlCarousel from 'react-owl-carousel'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
 
 const MARGIN_FOR_SLITTER = 50
+
+const Carousel = dynamic(
+  import('../../components/Carousel'),
+  {
+    ssr: false,
+    loading: () => null
+  }
+)
 
 @inject('term')
 @inject('store')
@@ -126,12 +134,9 @@ class DiscoveryPath extends Component {
           <div className='breadcrum'>
             {items}
             {carouselItems.length > 0 &&
-              <OwlCarousel
-                className='owl-theme'
-                {...settings}
-                  >
+              <Carousel settings={settings}>
                 {carouselItems}
-              </OwlCarousel>
+              </Carousel>
               }
           </div>
         </div>

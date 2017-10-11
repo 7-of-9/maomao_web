@@ -12,6 +12,7 @@ import Raven from 'raven-js'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
 import Layout from '../../components/Layout'
+import SelectedPanel from '../../components/SelectedPanel'
 import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
@@ -57,14 +58,6 @@ const TopicTree = dynamic(
 import('../../components/TopicTree'),
   {
     loading: () => (<Loading isLoading />)
-  }
-)
-
-const SelectedPanel = dynamic(
-import('../../components/SelectedPanel'),
-  {
-    loading: () => (<Loading isLoading />),
-    ssr: false
   }
 )
 

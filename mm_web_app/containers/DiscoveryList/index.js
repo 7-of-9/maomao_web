@@ -7,7 +7,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Router from 'next/router'
-import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -15,20 +14,12 @@ import Sticky from 'react-sticky-el'
 import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import SplitPane from 'react-split-pane'
+import DiscoveryPath from './DiscoveryPath'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
-
-// dynaymic load container component
-const DiscoveryPath = dynamic(
-  import('./DiscoveryPath'),
-  {
-    loading: () => (<Loading isLoading />),
-    ssr: false
-  }
-)
 
 // const MARGIN_FOR_SLITTER = 50
 

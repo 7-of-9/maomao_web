@@ -93,10 +93,8 @@ class TermStore {
   }
 
   @action preloadTerm (termId) {
-    logger.info('preloadTerm', termId)
     preLoadTerm(termId).then(response => {
       const { term } = response.data
-      logger.warn('preloadTerm term', term)
       this.termsCache[term.term_id] = term
     }).catch(error => { logger.warn('error on preloadTerm', error) })
   }

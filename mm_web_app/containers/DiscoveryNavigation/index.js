@@ -5,14 +5,20 @@
 */
 
 import React, { Component } from 'react'
-import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
+import { observer, inject } from 'mobx-react'
+import dynamic from 'next/dynamic'
 import _ from 'lodash'
-import OwlCarousel from 'react-owl-carousel'
-import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
-@inject('store')
+const Carousel = dynamic(
+  import('../../components/Carousel'),
+  {
+    ssr: false,
+    loading: () => null
+  }
+)
+
 @inject('term')
 @inject('ui')
 @observer
@@ -55,42 +61,27 @@ class DiscoveryNavigation extends Component {
         </p>
       </div>))
     } else {
-      return (<Loading isLoading />)
+      return null
     }
   }
 
-  componentDidMount () {
+  componentWillMount () {
     const { items } = this.props
-    logger.info('DiscoveryNavigation componentDidMount selectedItems', items)
-    _.forEach(items, ({ term_id }) => this.props.term.loadNewTerm(term_id))
+    logger.info('DiscoveryNavigation componentWillMount selectedItems', items)
+    _.forEach(items, ({ term_id }) => this.props.term.preloadTerm(term_id))
   }
 
   render () {
     const { items, isReady } = this.props
     logger.info('DiscoveryNavigation render', isReady, items, this.props)
-    const settings = {
-      navContainerClass: 'carousel-nav owl-nav',
-      stageOuterClass: 'carousel-outer owl-stage-outer',
-      stageClass: 'carousel-stage owl-stage',
-      nav: true,
-      autoWidth: true,
-      navText: [
-        '<',
-        '>'
-      ]
-    }
     return (
-      <div className='carousel-wrapper'>
-        <OwlCarousel
-          className='owl-theme'
-          ref={(el) => { this.slider = el }}
-          {...settings}
-            >
-          {
-              this.renderNavigationItems(items)
-          }
-        </OwlCarousel>
-      </div>
+      <Carousel
+        className='carousel-wrapper'
+        >
+        {
+          this.renderNavigationItems(items)
+        }
+      </Carousel>
     )
   }
 }

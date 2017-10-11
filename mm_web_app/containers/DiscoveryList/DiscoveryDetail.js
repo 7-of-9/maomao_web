@@ -7,19 +7,10 @@
 import React, { Component } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
-import dynamic from 'next/dynamic'
 import moment from 'moment'
 import InlinePreview from '../../components/Streams/InlinePreview'
-import Loading from '../../components/Loading'
+import DiscoveryNavigation from '../../containers/DiscoveryNavigation'
 import logger from '../../utils/logger'
-
-const DiscoveryNavigation = dynamic(
-  import('../../containers/DiscoveryNavigation'),
-  {
-    loading: () => (<Loading isLoading />),
-    ssr: false
-  }
-)
 
 @observer
 class DiscoveryDetail extends Component {
