@@ -131,7 +131,6 @@ class TermStore {
 
   @action getRootDiscover (userId, userHash, page) {
     logger.info('getRootDiscover', userId, userHash, page)
-    this.getFollowedTopics(userId, userHash)
     this.page = page
     this.userId = userId
     this.userHash = userHash

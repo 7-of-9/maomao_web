@@ -349,6 +349,7 @@ class DiscoveryList extends Component {
     const { page } = this.props.term
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
+      this.props.term.getFollowedTopics(userId, userHash)
     }
     this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
