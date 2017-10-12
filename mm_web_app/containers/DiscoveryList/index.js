@@ -66,7 +66,6 @@ class DiscoveryList extends Component {
     this.props.term.getTermDiscover(term.term_id)
     this.props.term.setCurrentTerms(findTerms)
     this.props.term.addNewTerm(term)
-    this.props.term.loadNewTerm(term.term_id)
     const href = this.props.urlId > 0 ? `/${findTerms.join('/')}?urlId=${this.props.urlId}` : `/${findTerms.join('/')}`
     Router.push(
       {
@@ -111,9 +110,8 @@ class DiscoveryList extends Component {
     }
   }
 
-  onZoomLayout = () => {
-    logger.info('onZoomLayout')
-    this.props.ui.resizeSplitter(window.innerWidth / 2)
+  onChangeLayoutSize = () => {
+    logger.info('onChangeLayoutSize')
     this.setState({
       innerWidth: window.innerWidth
     })
@@ -154,7 +152,9 @@ class DiscoveryList extends Component {
     if (overlay) {
       overlay.style.display = 'none'
     }
-    this.props.ui.resizeSplitter(width)
+    if (width) {
+      this.props.ui.resizeSplitter(width)
+    }
     this.forceRenderForSticky()
   }
 
@@ -386,7 +386,7 @@ class DiscoveryList extends Component {
             onSelectChildTerm={this.onSelectChildTerm}
           />
         }
-        <ReactResizeDetector handleWidth handleHeight onResize={this.onZoomLayout} />
+        <ReactResizeDetector handleWidth handleHeight onResize={this.onChangeLayoutSize} />
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>

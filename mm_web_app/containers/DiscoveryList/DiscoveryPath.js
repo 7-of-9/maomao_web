@@ -84,7 +84,7 @@ class DiscoveryPath extends Component {
     }
 
     const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
-    logger.info('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
+    logger.warn('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
     if (childSuggestions) {
       _.forEach(childSuggestions, term => {
         if (term.term_name !== '...') {
@@ -120,6 +120,8 @@ class DiscoveryPath extends Component {
         }
       })
     }
+
+    logger.warn('carouselItems', carouselItems)
     if (carouselItems.length > 0) {
       const settings = {
         navContainerClass: 'carousel-nav owl-nav',
@@ -137,7 +139,7 @@ class DiscoveryPath extends Component {
               <Carousel settings={settings}>
                 {carouselItems}
               </Carousel>
-              }
+            }
           </div>
         </div>
       )

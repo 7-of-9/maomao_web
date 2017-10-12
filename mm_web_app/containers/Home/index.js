@@ -51,15 +51,18 @@ class Home extends React.Component {
     }
   }
 
-  componentDidMount () {
-    logger.warn('Home componentDidMount', this)
-    Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+  componentWillMount () {
     if (this.props.store.userId > 0 && this.props.store.isHome) {
       this.props.store.getUserHistory()
     }
     if (!this.props.store.isLogin) {
       this.props.term.getTopicTree()
     }
+  }
+
+  componentDidMount () {
+    logger.warn('Home componentDidMount', this)
+    Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.isMobile) {
       // TODO: support chrome (android)
       if (window.navigator.standalone) {

@@ -80,13 +80,16 @@ class OldHome extends React.Component {
     }
   }
 
-  componentDidMount () {
-    logger.info('Home componentDidMount')
-    Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+  componentWillMount () {
     this.props.term.getTopicTree()
     if (this.props.store.userId > 0) {
       this.props.store.getUserHistory()
     }
+  }
+
+  componentDidMount () {
+    logger.info('Home componentDidMount')
+    Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.isMobile) {
       // TODO: support chrome (android)
       if (window.navigator.standalone) {

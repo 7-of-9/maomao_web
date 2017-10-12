@@ -43,9 +43,14 @@ class TermStore {
 
   @action setTerms (findTerms) {
     logger.info('setTerms', findTerms)
+    const preloadTermIds = []
     for (let term of findTerms) {
-      if (term.child_suggestions || term.child_topics) { this.termsCache[term.term_id] = term }
+      if ((term.child_suggestions && term.child_suggestions.length) || (term.child_topics && term.child_topics.length)) {
+        this.termsCache[term.term_id] = term
+      }
+      preloadTermIds.push(term.term_id)
     }
+    _.uniqBy(preloadTermIds).forEach(termId => this.preloadTerm(termId))
   }
 
   @action getSelectDiscoverItem (urlId) {
@@ -69,6 +74,7 @@ class TermStore {
     if (!this.isProcessingTopicTree && this.tree.length === 0) {
       const allTopics = getAllTopicTree()
       this.isProcessingTopicTree = true
+      const preloadTermIds = []
       when(
         () => allTopics.state !== 'pending',
         () => {
@@ -77,12 +83,13 @@ class TermStore {
           this.tree = tree
           _.forEach(tree, term => {
             this.termsCache[term.term_id] = term
-            this.preloadTerm(term.term_id)
+            preloadTermIds.push(term.term_id)
             _.forEach(term.child_topics, item => {
               this.termsCache[item.term_id] = item
-              this.preloadTerm(item.term_id)
+              preloadTermIds.push(item.term_id)
             })
           })
+          _.uniqBy(preloadTermIds).forEach(termId => this.preloadTerm(termId))
           logger.info('tree', tree)
         })
     }
@@ -93,63 +100,31 @@ class TermStore {
   }
 
   @action preloadTerm (termId) {
-    preLoadTerm(termId).then(response => {
-      const { term } = response.data
-      this.termsCache[term.term_id] = term
-    }).catch(error => { logger.warn('error on preloadTerm', error) })
-  }
-
-  @action loadNewTerm (termId) {
-    const existTerm = this.termsCache[termId]
-    logger.info('loadNewTerm', termId, existTerm)
-    const keyCache = `loadNewTerm-${termId}`
-    if (
-      (!existTerm && _.indexOf(this.pendings, keyCache) === -1) ||
-      (
-        existTerm &&
-        (existTerm.child_suggestions.length === 0 || existTerm.child_topics.length === 0)
-      )
-    ) {
-      const termInfo = getTerm(termId)
-      this.pendings.push(keyCache)
-      when(
-        () => termInfo.state !== 'pending',
-        () => {
-          if (termInfo.value.data) {
-            const { term } = termInfo.value.data
-            this.termsCache[term.term_id] = term
-          }
-          this.pendings = this.pendings.filter(item => item !== keyCache)
-          logger.info('loadNewTerm result', this.pendings, termInfo.value.data)
-        }
-      )
-    }
-
-    // preload for children and suggestion
-    if (existTerm) {
-      _.forEach(existTerm.child_suggestions, ({ term_id: termId }) => {
-        this.preloadTerm(termId)
-      })
-      _.forEach(existTerm.child_topics, ({ term_id: termId }) => {
-        this.preloadTerm(termId)
-      })
+    if (!this.termsCache[termId]) {
+      preLoadTerm(termId).then(response => {
+        const { term } = response.data
+        this.termsCache[term.term_id] = term
+      }).catch(error => { logger.warn('error on preloadTerm', error) })
     }
   }
 
   @action addNewTerm (newTerm) {
     if (!this.termsInfo.terms.find(item => isSameStringOnUrl(item.term_name, newTerm.term_name))) {
       this.termsInfo.terms.push(newTerm)
-      const termInfo = getTerm(newTerm.term_id)
-      when(
-        () => termInfo.state !== 'pending',
-        () => {
-          if (termInfo.value.data) {
-            const { term } = termInfo.value.data
-            const terms = this.termsInfo.terms.filter(item => !isSameStringOnUrl(item.term_name, term.term_name))
-            this.termsInfo.terms = [...terms, term]
+      if (!this.termsCache[newTerm.term_id]) {
+        const termInfo = getTerm(newTerm.term_id)
+        when(
+          () => termInfo.state !== 'pending',
+          () => {
+            if (termInfo.value.data) {
+              const { term } = termInfo.value.data
+              const terms = this.termsInfo.terms.filter(item => !isSameStringOnUrl(item.term_name, term.term_name))
+              this.termsInfo.terms = [...terms, term]
+              this.termsCache[term.term_id] = term
+            }
           }
-        }
-      )
+        )
+      }
     }
   }
 

@@ -95,6 +95,7 @@ export default class IndexPage extends React.Component {
     if (this.store.isLogin && this.store.user) {
       this.setState({ profileUrl: `/${this.store.user.nav_id}` })
     }
+    this.term.getTopicTree()
   }
 
   componentDidMount () {
@@ -135,7 +136,6 @@ export default class IndexPage extends React.Component {
     } else {
       this.uiStore.toggleSplitView(false)
     }
-    this.term.getTopicTree()
     logger.warn('IndexPage componentDidMount', this)
   }
 

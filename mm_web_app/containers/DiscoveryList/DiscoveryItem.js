@@ -119,16 +119,6 @@ export default class DiscoveryItem extends Component {
     )
   }
 
-  componentDidMount () {
-    const { main_term_id, sub_term_id } = this.props
-    if (!this.props.term.termsCache[main_term_id]) {
-      this.props.term.preloadTerm(main_term_id)
-    }
-    if (!this.props.term.termsCache[sub_term_id]) {
-      this.props.term.preloadTerm(sub_term_id)
-    }
-  }
-
   renderThumnails = (images) => {
     if (images.length > 0) {
       return (
