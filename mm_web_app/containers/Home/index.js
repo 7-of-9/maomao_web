@@ -51,15 +51,6 @@ class Home extends React.Component {
     }
   }
 
-  componentWillMount () {
-    if (this.props.store.userId > 0 && this.props.store.isHome) {
-      this.props.store.getUserHistory()
-    }
-    if (!this.props.store.isLogin) {
-      this.props.term.getTopicTree()
-    }
-  }
-
   componentDidMount () {
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.isMobile) {
