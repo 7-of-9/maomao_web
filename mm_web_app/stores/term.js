@@ -1,5 +1,5 @@
 import { action, computed, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover, getTerm, preLoadTerm, getAllTopicTree, getDiscoverItem, unfollowTopic, followedTopics } from '../services/topic'
+import { rootDiscover, termDiscover, getTerm, preLoadTerm, getAllTopicTree, getDiscoverItem, unfollowTopic, followedTopics, addBulkTopics } from '../services/topic'
 import logger from '../utils/logger'
 import { isSameStringOnUrl } from '../utils/helper'
 import _ from 'lodash'
@@ -204,15 +204,33 @@ class TermStore {
       })
   }
 
-  @action unfollowTopicUser (userId, userHash, topicId) {
+  @action followTopicUser (topicId, callback) {
+    logger.info('followTopic')
+    const res = addBulkTopics(this.userId, this.userHash, [topicId])
+    logger.info('unfollowTopic', res)
+    when(
+      () => res.state !== 'pending',
+      () => {
+        logger.info('followTopic', res)
+        this.getFollowedTopics(this.userId, this.userHash)
+        if (callback) {
+          callback()
+        }
+      })
+  }
+
+  @action unfollowTopicUser (topicId, callback) {
     logger.info('unfollowTopic')
-    const res = unfollowTopic(userId, userHash, topicId)
+    const res = unfollowTopic(this.userId, this.userHash, topicId)
     logger.info('unfollowTopic', res)
     when(
       () => res.state !== 'pending',
       () => {
         logger.info('unfollowTopic', res)
-        this.getFollowedTopics(userId, userHash)
+        this.getFollowedTopics(this.userId, this.userHash)
+        if (callback) {
+          callback()
+        }
       })
   }
 }

@@ -39,10 +39,19 @@ class DiscoveryPath extends Component {
     onSelectChildTerm: () => {}
   }
 
+  changeFollow = (termId, followed, title) => {
+    console.log(termId)
+    if (followed) {
+      this.props.term.unfollowTopicUser(termId, () => this.props.ui.addNotification(`${title} unfollowed`))
+    } else {
+      this.props.term.followTopicUser(termId, () => this.props.ui.addNotification(`${title} followed`))
+    }
+  }
+
   renderDiscoveryPath = () => {
     const { isSplitView, discoveryTermId } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
-    const { findTerms, termsInfo: { terms } } = this.props.term
+    const { findTerms, termsInfo: { terms }, followedTopics } = toJS(this.props.term)
     const { currentWidth } = this.props
     const items = []
     const topics = []
@@ -101,19 +110,31 @@ class DiscoveryPath extends Component {
       _.forEach(_.uniqBy(topics, 'term_id'), term => {
         const { img, term_name: title, term_id: termId } = term
         if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
-          carouselItems.push(<span
-            key={`navigate-to-${title}-${termId}`}
-            onClick={() => this.props.onSelectChildTerm(term)}
-            style={{
-              background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
-              backgroundSize: 'cover',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              padding: '3px'
-            }}
-            className='current-topic-name tags' rel='tag'>
-            {title}
-          </span>)
+          const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === termId) : false
+          carouselItems.push(
+            <div className='topic' key={`navigate-to-${title}-${termId}`}>
+              <span
+                onClick={() => this.props.onSelectChildTerm(term)}
+                style={{
+                  background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
+                  backgroundSize: 'cover',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem',
+                  padding: '3px'
+                }}
+                className='current-topic-name tags' rel='tag'>
+                {title}
+              </span>
+              <div className='topic-follow'>
+                <input
+                  checked={followed}
+                  type='checkbox'
+                  id={`followCheck-${termId}`}
+                  onChange={() => this.changeFollow(termId, followed, title)}
+                  />
+                <label for={`followCheck-${termId}`} />
+              </div>
+            </div>)
         }
       })
     }

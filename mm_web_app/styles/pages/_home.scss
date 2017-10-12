@@ -558,7 +558,7 @@ the home page
     display: inline-block;
     @include border-radius(8px);
     margin: 0 2.5px;
-    padding: 10px;
+    padding: 10px 30px;
     font-size: 1.2rem;
     text-align: left;
     line-height: 30px;
@@ -566,6 +566,46 @@ the home page
     min-width: 100px;
     text-transform: capitalize;
     text-align: center;
+  }
+  .topic-follow {
+    position: absolute;
+    right: 14.5px;
+    top: 0;
+    opacity: 0;
+    animation: all 0.3s;
+  }
+  .topic:hover .topic-follow {
+    opacity: 1;
+  }
+  .topic-follow label {
+    cursor: pointer;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 0;
+    left: 0;
+    background: #eee;
+    border:1px solid #ddd;
+  }
+  .topic-follow label:after {
+    opacity: 0.2;
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 5px;
+    background: transparent;
+    top: 6px;
+    left: 7px;
+    border: 3px solid #333;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+  }
+  .topic-follow label:hover::after {
+    opacity: 0.5;
+  }
+  .topic-follow input[type=checkbox]:checked + label:after {
+    opacity: 1;
   }
 }
 
