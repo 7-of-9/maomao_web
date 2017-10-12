@@ -21,8 +21,6 @@ import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
 
-// const MARGIN_FOR_SLITTER = 50
-
 @inject('term')
 @inject('store')
 @inject('ui')
@@ -40,7 +38,6 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     logger.info('onSelect', item)
-    this.props.term.removeDiscoveryItem()
     this.props.ui.selectDiscoveryItem(item)
     if (this.props.ui.discoveryTermId > 0) {
       this.props.ui.toggleSplitView(true)
@@ -169,7 +166,6 @@ class DiscoveryList extends Component {
 
   closePreview = () => {
     this.props.ui.toggleSplitView(false)
-    this.props.term.removeDiscoveryItem()
     this.props.ui.removeDiscoveryItem()
     this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
@@ -231,14 +227,7 @@ class DiscoveryList extends Component {
   renderDetail = () => {
     logger.info('renderDetail')
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
-    const { terms, discoveryItem } = toJS(this.props.term)
-    if (discoveryItem) {
-      this.props.ui.selectDiscoveryItem(discoveryItem)
-      if (this.props.ui.discoveryUrlId > 0) {
-        this.props.ui.toggleSplitView(true)
-      }
-    }
-
+    const { terms } = toJS(this.props.term)
     const ingoreTerms = []
     if (discoveryTermId !== -1) {
       ingoreTerms.push(discoveryTermId)
@@ -380,16 +369,6 @@ class DiscoveryList extends Component {
     this.setState({
       innerWidth: window.innerWidth
     })
-  }
-
-  componentWillReceiveProps (nextProps) {
-    const { discoveryItem } = toJS(nextProps.term)
-    if (discoveryItem) {
-      nextProps.ui.selectDiscoveryItem(discoveryItem)
-      if (nextProps.ui.discoveryUrlId > 0) {
-        nextProps.ui.toggleSplitView(true)
-      }
-    }
   }
 
   render () {

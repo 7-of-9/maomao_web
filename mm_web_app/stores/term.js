@@ -17,7 +17,6 @@ class TermStore {
   @observable isProcessingTopicTree = false
   terms = []
   preloadPendings = []
-  discoveryItem = undefined
   tree = []
   userId = -1
   userHash = ''
@@ -54,7 +53,7 @@ class TermStore {
     _.uniqBy(preloadTermIds).forEach(termId => this.preloadTerm(termId))
   }
 
-  @action getSelectDiscoverItem (urlId) {
+  @action getSelectDiscoverItem (urlId, callback) {
     logger.info('getDiscoveryItem')
     const discoveryItem = getDiscoverItem(urlId)
     logger.info('discoveryItem', discoveryItem)
@@ -62,12 +61,10 @@ class TermStore {
       () => discoveryItem.state !== 'pending',
       () => {
         logger.info('discoveryItem', discoveryItem)
-        this.discoveryItem = discoveryItem.value.data
+        if (callback) {
+          callback(discoveryItem.value.data)
+        }
       })
-  }
-
-  @action removeDiscoveryItem () {
-    this.discoveryItem = undefined
   }
 
   @action getTopicTree () {
