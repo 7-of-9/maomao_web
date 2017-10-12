@@ -10,9 +10,9 @@ import { observer, inject } from 'mobx-react'
 import Head from 'next/head'
 import Raven from 'raven-js'
 import _ from 'lodash'
+import SelectedPanel from '../SelectedPanel'
 import Loading from '../../components/Loading'
 import Layout from '../../components/Layout'
-import SelectedPanel from '../../components/SelectedPanel'
 import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
@@ -26,7 +26,7 @@ const ChromeInstall = dynamic(
 )
 
 const TopicTree = dynamic(
-import('../../components/TopicTree'),
+import('../TopicTree'),
   {
     loading: () => (<Loading isLoading />)
   }

@@ -8,7 +8,7 @@ import React, { Component } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import InlinePreview from '../../components/Streams/InlinePreview'
+import InlinePreview from '../../components/InlinePreview'
 import DiscoveryNavigation from '../../containers/DiscoveryNavigation'
 
 @observer

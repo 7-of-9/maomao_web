@@ -15,10 +15,10 @@ import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
 import StreamItem from './StreamItem'
-import InlinePreview from './InlinePreview'
+import FilterSearch from '../FilterSearch'
+import InlinePreview from '../../components/InlinePreview'
 import GridView from '../../components/GridView'
 import Loading from '../../components/Loading'
-import FilterSearch from '../../components/FilterSearch'
 import { tagColor } from '../../utils/helper'
 
 const LIMIT = 10

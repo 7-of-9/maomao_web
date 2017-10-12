@@ -272,16 +272,18 @@ class DiscoveryList extends Component {
       return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)
     }
     return (
-      <DiscoveryDetail
-        items={items}
-        title={title}
-        termIds={termIds}
-        url={url}
-        utc={utc}
-        width={'100%'}
-        closePreview={this.closePreview}
-        onSelectTerm={this.onSelectChildTerm}
-      />
+      <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
+        <DiscoveryDetail
+          items={items}
+          title={title}
+          termIds={termIds}
+          url={url}
+          utc={utc}
+          width={'100%'}
+          closePreview={this.closePreview}
+          onSelectTerm={this.onSelectChildTerm}
+       />
+      </div>
     )
   }
 
