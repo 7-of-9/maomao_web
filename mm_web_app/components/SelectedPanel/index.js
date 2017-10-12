@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import Sticky from 'react-sticky-el'
@@ -14,7 +14,7 @@ import logger from '../../utils/logger'
 @inject('store')
 @inject('ui')
 @observer
-class SelectedPanel extends PureComponent {
+class SelectedPanel extends Component {
   static propTypes = {
     items: PropTypes.array.isRequired
   }

@@ -8,7 +8,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import urlParser from 'js-video-url-parser'
-import logger from '../../utils/logger'
 
 export default class InlinePreview extends Component {
   static propTypes = {
@@ -31,7 +30,6 @@ export default class InlinePreview extends Component {
 
   renderPlayer = () => {
     const { url, width, height } = this.props
-    logger.info('renderPlayer', url, width, height)
     if (!url) {
       return <div />
     }
@@ -47,7 +45,6 @@ export default class InlinePreview extends Component {
 
   renderIframe = () => {
     const { url, width, height, allowScript } = this.props
-    logger.warn('renderIframe', url, width, height)
     if (!url) {
       return <div />
     }
@@ -98,9 +95,7 @@ export default class InlinePreview extends Component {
   render () {
     const { url, width, height } = this.props
     const parsed = urlParser.parse(url)
-    logger.info('video parse result', parsed)
     const isVideoPlayer = !!parsed
-    logger.info('isVideoPlayer', isVideoPlayer)
     const { isReady } = this.state
     if (!isReady) {
       return (<div className='grid-item--full'>

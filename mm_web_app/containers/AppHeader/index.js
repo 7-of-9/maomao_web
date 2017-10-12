@@ -57,12 +57,10 @@ class AppHeader extends React.Component {
   }
 
   onInternalLogin = () => {
-    logger.info('onInternalLogin', this.props)
     this.addNotification('Test Internal: New User')
     this.props.ui.redirectToSpecialUrl(true)
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
-      logger.info('test user', user)
       const { selectedTopics } = this.props.ui
       this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
       this.saveProfileUrl({ url: `/${user.nav_id}`, ...user })
@@ -82,7 +80,6 @@ class AppHeader extends React.Component {
 
   onFacebookLogin = (evt) => {
     evt.preventDefault()
-    logger.info('onFacebookLogin', this.props, evt)
     this.props.ui.redirectToSpecialUrl(true)
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
@@ -93,7 +90,6 @@ class AppHeader extends React.Component {
 
   onGoogleLogin = (evt) => {
     evt.preventDefault()
-    logger.info('onGoogleLogin', this.props, evt)
     this.props.ui.redirectToSpecialUrl(true)
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/plus.me')
@@ -112,7 +108,6 @@ class AppHeader extends React.Component {
 
   onLogout = (evt) => {
     evt.preventDefault()
-    logger.info('onLogout', this.props)
     firebase.auth().signOut().then(() => {
       fetch('/api/auth/logout', {
         method: 'POST',
@@ -124,12 +119,11 @@ class AppHeader extends React.Component {
       this.props.ui.clean()
       window.location.href = '/' // go to home page
     }).catch((error) => {
-      logger.warn(error)
+      logger.warn('found error on logout', error)
     })
   }
 
   onClose = () => {
-    logger.info('onClose', this.props)
     this.props.ui.toggleSignIn(false)
   }
 
@@ -193,11 +187,9 @@ class AppHeader extends React.Component {
   }
 
   saveProfileUrl = (user) => {
-    logger.info('saveProfileUrl', user)
     /* global URL */
     const { url } = user
     const { pathname } = new URL(window.location.href)
-    logger.info('pathname', pathname)
     if (pathname !== encodeURI(url)) {
       fetch('/api/auth/profile', {
         method: 'POST',
@@ -216,13 +208,10 @@ class AppHeader extends React.Component {
 
   /* global fetch */
   componentDidMount () {
-    logger.info('AppHeader componentDidMount', this.props.store)
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
-        logger.info('firebase - onAuthStateChanged', user)
         if (user) {
-          logger.info('firebase - user', user)
           const { photoURL } = user
           return user.getIdToken()
           .then((token) => {
@@ -241,7 +230,6 @@ class AppHeader extends React.Component {
               // register for new user
                 res.json().then(json => {
                   // register new user
-                  logger.info('logged-in user', json)
                   if (!user.isAnonymous) {
                     const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
                   /* eslint-disable camelcase */
@@ -249,7 +237,6 @@ class AppHeader extends React.Component {
                     logger.info('identities', identities)
                     let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
                     let google_user_id = identities['google.com'] && identities['google.com'][0]
-                    let user_email = identities['email'] && identities['email'][0]
                     if (sign_in_provider === 'google.com') {
                       if (!email) {
                         _.forEach(user.providerData, item => {
@@ -268,7 +255,6 @@ class AppHeader extends React.Component {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
                         }, (currentUser) => {
-                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
@@ -281,7 +267,6 @@ class AppHeader extends React.Component {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
                             }, (currentUser) => {
-                              logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                               this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
@@ -292,27 +277,23 @@ class AppHeader extends React.Component {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
                         }, (currentUser) => {
-                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'password') {
-                      logger.info('found user email', user_email)
-                      logger.info('photoURL', photoURL)
                       // hack here, try to store intenal user
                       try {
                         const loggedUser = JSON.parse(photoURL)
                         // TODO: need to get nav_id for internal user
                         this.props.store.retrylLoginForInternalUser(loggedUser, (currentUser) => {
-                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                         })
                       } catch (error) {
-                        logger.warn(error)
+                        logger.warn('found error on sign in with password', error)
                       }
                     }
                   } else {
@@ -331,30 +312,21 @@ class AppHeader extends React.Component {
     this.props.store.checkInstall()
     let counter = 0
     this.timer = setInterval(() => {
-      logger.info('AppHeader componentDidMount setInterval')
       counter += 1
       if (this.props.store.isChrome && !this.props.store.isMobile && counter < 10) {
         this.props.store.checkInstall()
         if (this.props.store.isInstalledOnChromeDesktop) {
-          logger.info('AppHeader clearInterval')
           this.setState({isHide: true})
           clearInterval(this.timer)
         }
       } else {
-        logger.info('AppHeader clearInterval')
         clearInterval(this.timer)
       }
     }, 2 * 1000) // check mm extension has installed on every 2s
   }
 
-  componentWillReact () {
-    logger.info('AppHeader componentWillReact')
-  }
-
   componentWillUnmount () {
-    logger.info('AppHeader componentWillUnmount')
     if (this.timer) {
-      logger.info('AppHeader clearInterval')
       clearInterval(this.timer)
     }
   }

@@ -27,7 +27,6 @@ export default class IndexPage extends React.Component {
       userAgent = req.headers['user-agent']
     }
     const user = req && req.session ? req.session.currentUser : null
-    logger.warn('IndexPage query', query, user)
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
     let termsInfo = { terms: [] }
@@ -38,7 +37,7 @@ export default class IndexPage extends React.Component {
     if (query && query.findTerms) {
       findTerms = query.findTerms
       const termsResult = await IndexPage.lockupTerms(findTerms, statusCode, termsInfo)
-      logger.warn('termsResult', termsResult)
+      logger.info('termsResult', termsResult)
       statusCode = termsResult.statusCode
       termsInfo = termsResult.termsInfo
     }
@@ -49,7 +48,6 @@ export default class IndexPage extends React.Component {
 
   constructor (props) {
     super(props)
-    logger.warn('IndexPage', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
@@ -59,7 +57,7 @@ export default class IndexPage extends React.Component {
   static async lockupTerms (findTerms, statusCode, termsInfo) {
     if (_.isArray(findTerms)) {
       const lockupTerms = _.map(findTerms, item => `names[]=${item}`).join('&')
-      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
+      logger.info('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
       /* global fetch */
       const res = await fetch(`${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
       const json = await res.json()
@@ -70,7 +68,7 @@ export default class IndexPage extends React.Component {
         statusCode = 404
       }
     } else {
-      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
+      logger.info('fetch URL', `${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
       /* global fetch */
       const res = await fetch(`${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
       const json = await res.json()
@@ -85,7 +83,6 @@ export default class IndexPage extends React.Component {
   }
 
   componentWillMount () {
-    logger.warn('IndexPage componentWillMount', this)
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
     }
@@ -103,16 +100,15 @@ export default class IndexPage extends React.Component {
       navigator.serviceWorker
         .register('/service-worker.js')
         .then(registration => {
-          logger.log('service worker registration successful')
+          logger.info('service worker registration successful')
         })
         .catch(err => {
-          logger.info('service worker registration failed', err.message)
+          logger.warn('service worker registration failed', err.message)
         })
     }
     const { findTerms, termsInfo } = this.term
     if (this.props.statusCode === false) {
       if (termsInfo.terms && termsInfo.terms.length) {
-        logger.warn('IndexPage terms findTerms', termsInfo.terms, findTerms)
         const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms[findTerms.length - 1]))
         this.term.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
@@ -139,15 +135,13 @@ export default class IndexPage extends React.Component {
     } else {
       this.uiStore.toggleSplitView(false)
     }
-    logger.warn('IndexPage componentDidMount', this)
   }
 
   componentWillReceiveProps (nextProps) {
     // back button on browser logic
-    const { pathname, query } = nextProps.url
+    const { query } = nextProps.url
     // fetch data based on the new query
     const { findTerms, profileUrl, urlId } = query
-    logger.warn('IndexPage componentWillReceiveProps', pathname, query, findTerms, profileUrl, urlId)
     if (profileUrl) {
       if (profileUrl !== this.state.profileUrl) {
         this.setState({ profileUrl })
@@ -162,7 +156,6 @@ export default class IndexPage extends React.Component {
         this.term.setCurrentTerms([].concat(findTerms))
         const { termsInfo } = this.term
         const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms))
-        logger.warn('IndexPage currentTerm', currentTerm, termsInfo, findTerms)
         this.term.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
@@ -172,7 +165,6 @@ export default class IndexPage extends React.Component {
         this.term.setCurrentTerms(findTerms)
         const { termsInfo } = this.term
         const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms[findTerms.length - 1]))
-        logger.warn('IndexPage currentTerm', currentTerm, termsInfo, findTerms)
         this.term.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
@@ -199,7 +191,6 @@ export default class IndexPage extends React.Component {
   }
 
   render () {
-    logger.warn('IndexPage render', this)
     if (_.isNumber(this.props.statusCode)) {
       return <Error statusCode={this.props.statusCode} />
     }

@@ -49,7 +49,7 @@ export default class Invite extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('Invite componentDidMount', this)
+    logger.info('Invite componentDidMount', this)
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/service-worker.js')

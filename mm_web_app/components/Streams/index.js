@@ -19,7 +19,6 @@ import InlinePreview from './InlinePreview'
 import GridView from '../../components/GridView'
 import Loading from '../../components/Loading'
 import FilterSearch from '../../components/FilterSearch'
-import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
 const LIMIT = 10
@@ -137,12 +136,10 @@ class Streams extends React.Component {
   }
 
   loadMore = () => {
-    logger.info('loadMore')
     this.props.ui.page += 1
   }
 
   onPreview = (url) => {
-    logger.info('onPreview', url)
     const { isMobile } = this.props.store
     if (!isMobile) {
       this.setState({ currentUrl: url })
@@ -152,7 +149,6 @@ class Streams extends React.Component {
   }
 
   closePreview = () => {
-    logger.info('closePreview')
     this.setState({ currentUrl: '' })
     this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
@@ -161,7 +157,6 @@ class Streams extends React.Component {
   }
 
   onDragStarted = () => {
-    logger.warn('onDragStarted')
     const overlay = document.querySelector('#overlay')
     if (overlay) {
       overlay.style.display = 'block'
@@ -169,7 +164,6 @@ class Streams extends React.Component {
   }
 
   onDragFinished = (width) => {
-    logger.warn('onDragFinished', width)
     const overlay = document.querySelector('#overlay')
     if (overlay) {
       overlay.style.display = 'none'
@@ -180,15 +174,13 @@ class Streams extends React.Component {
 
   forceRenderForSticky = () => {
     if (document.querySelector('div[class=" sticky"]')) {
-      logger.warn('forceUpdate')
       // scroll down 1px for re-render for sticky
       /* global $ */
       $(window).scrollTop($(window).scrollTop() + 1)
     }
   }
 
-  onZoomLayout = () => {
-    logger.info('onZoomLayout')
+  onChangeLayoutSize = () => {
     this.setState({
       innerWidth: window.innerWidth
     })
@@ -198,7 +190,6 @@ class Streams extends React.Component {
     // populate urls and users
     const { urls, users, topics, owners, isInstall } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
-    logger.info('Streams render', urls, users, topics, owners, myUrls)
     if (urls && urls.length === 0 && isInstall) {
       return (
         <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
@@ -213,7 +204,6 @@ class Streams extends React.Component {
     /* eslint-disable camelcase */
     const currentUrls = _.slice(this.sortedUrls, 0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls ? myUrls && _.map(myUrls, item => item.url_id) : []
-    logger.info('currentUrls', currentUrls)
     const { currentUrl } = this.state
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
@@ -254,7 +244,7 @@ class Streams extends React.Component {
 
     return (
       <div className='streams'>
-        <ReactResizeDetector handleWidth handleHeight onResize={this.onZoomLayout} />
+        <ReactResizeDetector handleWidth handleHeight onResize={this.onChangeLayoutSize} />
         <div className='standand-sort'>
           <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
         </div>

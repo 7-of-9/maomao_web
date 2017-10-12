@@ -10,7 +10,6 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import InlinePreview from '../../components/Streams/InlinePreview'
 import DiscoveryNavigation from '../../containers/DiscoveryNavigation'
-import logger from '../../utils/logger'
 
 @observer
 class DiscoveryDetail extends Component {
@@ -41,14 +40,9 @@ class DiscoveryDetail extends Component {
     window.open(this.props.url, '_blank')
   }
 
-  componentWillReact () {
-    logger.info('DiscoveryDetail componentWillReact', this.props)
-  }
-
   render () {
     /* eslint-disable camelcase */
     const { items, title, url, utc, termIds, width } = this.props
-    logger.info('DiscoveryDetail render', items, title, url, utc, termIds, width)
     const isReady = termIds.length === items.length
     const date = moment.utc(utc).local().format('LLLL')
     return (

@@ -37,7 +37,6 @@ class DiscoveryList extends Component {
   }
 
   onSelect = (item) => {
-    logger.info('onSelect', item)
     this.props.ui.selectDiscoveryItem(item)
     if (this.props.ui.discoveryTermId > 0) {
       this.props.ui.toggleSplitView(true)
@@ -55,11 +54,9 @@ class DiscoveryList extends Component {
   }
 
   onSelectChildTerm = (term) => {
-    logger.info('onSelectChildTerm term', term)
     this.props.ui.selectDiscoveryTerm(term.term_id)
     const { findTerms } = toJS(this.props.term)
     findTerms.push(_.toLower(term.term_name))
-    logger.info('findTerms', findTerms)
     this.props.term.getTermDiscover(term.term_id)
     this.props.term.setCurrentTerms(findTerms)
     this.props.term.addNewTerm(term)
@@ -75,7 +72,6 @@ class DiscoveryList extends Component {
   }
 
   onBack = (term) => {
-    logger.info('onBack term', term)
     const position = _.findIndex(this.props.term.findTerms, item => isSameStringOnUrl(item, term.term_name))
     const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
     this.props.term.setCurrentTerms(terms)
@@ -108,7 +104,6 @@ class DiscoveryList extends Component {
   }
 
   onChangeLayoutSize = () => {
-    logger.info('onChangeLayoutSize')
     this.setState({
       innerWidth: window.innerWidth
     })
@@ -131,12 +126,10 @@ class DiscoveryList extends Component {
   }
 
   loadMore = () => {
-    logger.info('DiscoveryList loadMore')
     this.props.term.loadMore()
   }
 
   onDragStarted = () => {
-    logger.warn('onDragStarted')
     const overlay = document.querySelector('#overlay')
     if (overlay) {
       overlay.style.display = 'block'
@@ -144,7 +137,6 @@ class DiscoveryList extends Component {
   }
 
   onDragFinished = (width) => {
-    logger.warn('onDragFinished', width)
     const overlay = document.querySelector('#overlay')
     if (overlay) {
       overlay.style.display = 'none'
@@ -157,7 +149,6 @@ class DiscoveryList extends Component {
 
   forceRenderForSticky = () => {
     if (document.querySelector('div[class=" sticky"]')) {
-      logger.warn('forceUpdate')
       // scroll down 1px for re-render for sticky
       /* global $ */
       $(window).scrollTop($(window).scrollTop() + 1)
@@ -225,7 +216,6 @@ class DiscoveryList extends Component {
   }
 
   renderDetail = () => {
-    logger.info('renderDetail')
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const { terms } = toJS(this.props.term)
     const ingoreTerms = []
@@ -278,7 +268,6 @@ class DiscoveryList extends Component {
         </div>
       )
     }
-    logger.info('discoveryTermId', discoveryTermId)
     if (discoveryTermId > 0) {
       return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)
     }
@@ -297,7 +286,6 @@ class DiscoveryList extends Component {
   }
 
   renderRootList = () => {
-    logger.info('renderRootList')
     const items = []
     const { discoveries } = toJS(this.props.term)
     _.forEach(discoveries, (item) => {
@@ -342,19 +330,15 @@ class DiscoveryList extends Component {
         })
       })
     }
-    logger.warn('preloadTermIds', _.uniq(preloadTermIds))
     _.uniqBy(preloadTermIds).forEach(termId => this.props.term.preloadTerm(termId))
   }
 
   componentWillUpdate () {
-    logger.info('DiscoveryList componentWillUpdate')
     this.cleanClassName()
   }
 
   componentWillReact () {
-    const { userId, userHash } = this.props.store
-    const { page, discoveries, terms } = this.props.term
-    logger.info('DiscoveryList componentWillReact', userId, userHash, page)
+    const { discoveries, terms } = this.props.term
     this.preloadTermsOnBg(discoveries, terms)
   }
 
@@ -364,7 +348,6 @@ class DiscoveryList extends Component {
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
     }
-    logger.info('DiscoveryList componentDidMount', userId, userHash, page)
     this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
       innerWidth: window.innerWidth
@@ -375,7 +358,6 @@ class DiscoveryList extends Component {
     const { profileUrl } = this.props
     const { spliterWidth: currentWidth } = this.props.ui
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
-    logger.info('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
     const isRootView = discoveryUrlId === -1 && discoveryTermId === -1
     return (

@@ -12,7 +12,6 @@ import { toJS } from 'mobx'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
-import logger from '../../utils/logger'
 
 const MARGIN_FOR_SLITTER = 50
 
@@ -40,9 +39,8 @@ class DiscoveryPath extends Component {
     onSelectChildTerm: () => {}
   }
 
-  renderDiscoveryPath = (isRootView) => {
+  renderDiscoveryPath = () => {
     const { isSplitView, discoveryTermId } = toJS(this.props.ui)
-    logger.info('discoveryTermId', discoveryTermId)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
     const { findTerms, termsInfo: { terms } } = this.props.term
     const { currentWidth } = this.props
@@ -84,7 +82,6 @@ class DiscoveryPath extends Component {
     }
 
     const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
-    logger.warn('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
     if (childSuggestions) {
       _.forEach(childSuggestions, term => {
         if (term.term_name !== '...') {
@@ -121,7 +118,6 @@ class DiscoveryPath extends Component {
       })
     }
 
-    logger.warn('carouselItems', carouselItems)
     if (carouselItems.length > 0) {
       const settings = {
         navContainerClass: 'carousel-nav owl-nav',
@@ -152,10 +148,6 @@ class DiscoveryPath extends Component {
         </div>
       )
     }
-  }
-
-  componentWillReact () {
-    logger.warn('DiscoveryPath componentWillReact', this)
   }
 
   render () {

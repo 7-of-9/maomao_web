@@ -9,10 +9,8 @@ import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import TopicItem from './TopicItem'
-import logger from '../../utils/logger'
 
 const parentTopicInfo = (tree, termId, treeLevel) => {
-  logger.warn('parentTopicInfo', tree, termId, treeLevel)
   if (treeLevel <= 2) {
     return { term_id: '', term_name: '', img: '' }
   } else {
@@ -63,7 +61,6 @@ class TopicTree extends Component {
   }
 
   selectChildTopics = (topics) => {
-    logger.info('selectChildTopics', topics)
     // this.props.ui.selectChildTopics(topics)
   }
 
@@ -100,7 +97,6 @@ class TopicTree extends Component {
   }
 
   cleanClassName = () => {
-    logger.info('TopicTree cleanClassName', this.animateEl)
     /* global $ */
     if (this.animateEl && typeof $ !== 'undefined') {
       $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
@@ -108,7 +104,6 @@ class TopicTree extends Component {
   }
 
   componentWillUpdate () {
-    logger.info('TopicTree componentWillUpdate')
     this.cleanClassName()
   }
 
@@ -119,8 +114,6 @@ class TopicTree extends Component {
       return <div />
     }
     const { currentTermId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
-    logger.info('TopicTree render', currentTermId, treeLevel)
-
     _.forEach(currentTopicTree(tree, currentTermId), (item) => {
       /* eslint-disable camelcase */
       const { term_id, term_name: title, img, child_topics } = item

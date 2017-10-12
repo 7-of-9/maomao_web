@@ -9,7 +9,6 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import { Textfit } from 'react-textfit'
 import _ from 'lodash'
-import logger from '../../utils/logger'
 import { tagColor, dynamicFontSize } from '../../utils/helper'
 
 @inject('term')
@@ -54,7 +53,6 @@ export default class DiscoveryItem extends Component {
   handleClick = (evt) => {
     evt.preventDefault()
     if (!this.clickOnTerm) {
-      logger.info('handleClick', evt.target)
       this.props.onSelect(this.props)
     }
   }
@@ -66,7 +64,6 @@ export default class DiscoveryItem extends Component {
   selectMainTerm = (evt) => {
     evt.preventDefault()
     const { main_term_id, main_term_img, main_term_name } = this.props
-    logger.info('selectMainTerm', main_term_id, evt.target)
     this.clickOnTerm = true
     this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
   }
@@ -74,7 +71,6 @@ export default class DiscoveryItem extends Component {
   selectSubTerm = (evt) => {
     evt.preventDefault()
     const { sub_term_id, sub_term_img, sub_term_name } = this.props
-    logger.info('selectSubTerm', sub_term_id, evt.target)
     this.clickOnTerm = true
     this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
   }
@@ -161,7 +157,6 @@ export default class DiscoveryItem extends Component {
     const proxyUrl = `${PROXY_URL}?url=${origin}${pathname}`
     const findPreloadLink = document.querySelector(`link[href="${proxyUrl}"]`)
     if (!findPreloadLink) {
-      logger.warn('preloadUrl', url)
       const preloadLink = document.createElement('link')
       preloadLink.href = proxyUrl
       preloadLink.rel = 'preload'
