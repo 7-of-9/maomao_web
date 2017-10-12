@@ -41,10 +41,10 @@ class TermStore {
     return this.pendings.length > 0
   }
 
-  @action setTerms (findTerms) {
-    logger.info('setTerms', findTerms)
+  @action setTerms (terms) {
+    logger.info('setTerms', terms)
     const preloadTermIds = []
-    for (let term of findTerms) {
+    for (let term of terms) {
       if ((term.child_suggestions && term.child_suggestions.length) || (term.child_topics && term.child_topics.length)) {
         this.termsCache[term.term_id] = term
       }
@@ -78,22 +78,27 @@ class TermStore {
         () => {
           this.isProcessingTopicTree = false
           const { tree } = allTopics.value.data
+          logger.info('tree', tree)
           this.tree = tree
           _.forEach(tree, term => {
-            this.termsCache[term.term_id] = term
+            if (!this.termsCache[term.term_id]) {
+              this.termsCache[term.term_id] = term
+            }
             preloadTermIds.push(term.term_id)
             _.forEach(term.child_topics, item => {
-              this.termsCache[item.term_id] = item
+              if (!this.termsCache[item.term_id]) {
+                this.termsCache[item.term_id] = item
+              }
               preloadTermIds.push(item.term_id)
             })
           })
           _.uniqBy(preloadTermIds).forEach(termId => this.preloadTerm(termId))
-          logger.info('tree', tree)
         })
     }
   }
 
   @action setCurrentTerms (findTerms) {
+    logger.info('setCurrentTerms', findTerms)
     this.findTerms = findTerms
   }
 
@@ -131,7 +136,6 @@ class TermStore {
 
   @action getRootDiscover (userId, userHash, page) {
     logger.info('getRootDiscover', userId, userHash, page)
-    this.getFollowedTopics(userId, userHash)
     this.page = page
     this.userId = userId
     this.userHash = userHash

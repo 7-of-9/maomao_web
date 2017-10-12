@@ -7,7 +7,6 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import _ from 'lodash'
-import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
 const avatar = (user) => {
@@ -35,15 +34,13 @@ const hasShareTopic = (friend, shareLists) => {
 @inject('store')
 @inject('ui')
 @observer
-class ShareList extends React.PureComponent {
+class ShareList extends React.Component {
   noImage = (evt) => {
     evt.target.src = '/static/images/no-image.png'
   }
   render () {
     const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
-    logger.info('ShareList friendStreams', friendStreams)
-    logger.info('ShareList shareLists', shareLists)
     const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
     return (
       <div>

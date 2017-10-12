@@ -272,16 +272,18 @@ class DiscoveryList extends Component {
       return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)
     }
     return (
-      <DiscoveryDetail
-        items={items}
-        title={title}
-        termIds={termIds}
-        url={url}
-        utc={utc}
-        width={'100%'}
-        closePreview={this.closePreview}
-        onSelectTerm={this.onSelectChildTerm}
-      />
+      <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
+        <DiscoveryDetail
+          items={items}
+          title={title}
+          termIds={termIds}
+          url={url}
+          utc={utc}
+          width={'100%'}
+          closePreview={this.closePreview}
+          onSelectTerm={this.onSelectChildTerm}
+       />
+      </div>
     )
   }
 
@@ -347,6 +349,7 @@ class DiscoveryList extends Component {
     const { page } = this.props.term
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
+      this.props.term.getFollowedTopics(userId, userHash)
     }
     this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({

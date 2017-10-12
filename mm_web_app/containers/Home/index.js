@@ -10,9 +10,9 @@ import { observer, inject } from 'mobx-react'
 import Head from 'next/head'
 import Raven from 'raven-js'
 import _ from 'lodash'
+import SelectedPanel from '../SelectedPanel'
 import Loading from '../../components/Loading'
 import Layout from '../../components/Layout'
-import SelectedPanel from '../../components/SelectedPanel'
 import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
@@ -26,7 +26,7 @@ const ChromeInstall = dynamic(
 )
 
 const TopicTree = dynamic(
-import('../../components/TopicTree'),
+import('../TopicTree'),
   {
     loading: () => (<Loading isLoading />)
   }
@@ -48,15 +48,6 @@ class Home extends React.Component {
       this.setState({
         hasAddToHome: true
       })
-    }
-  }
-
-  componentWillMount () {
-    if (this.props.store.userId > 0 && this.props.store.isHome) {
-      this.props.store.getUserHistory()
-    }
-    if (!this.props.store.isLogin) {
-      this.props.term.getTopicTree()
     }
   }
 

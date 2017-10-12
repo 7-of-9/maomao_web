@@ -127,7 +127,9 @@ export default class IndexPage extends React.Component {
       const { urlId } = this.state
       if (urlId) {
         // preview current item
-        this.uiStore.toggleSplitView(true)
+        if (this.uiStore.discoveryTermId > 0) {
+          this.uiStore.toggleSplitView(true)
+        }
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })
@@ -176,7 +178,9 @@ export default class IndexPage extends React.Component {
       this.setState({ urlId })
       if (Number(urlId) > 0) {
         // preview current item
-        this.uiStore.toggleSplitView(true)
+        if (this.uiStore.discoveryTermId > 0) {
+          this.uiStore.toggleSplitView(true)
+        }
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })
