@@ -335,6 +335,28 @@ class DiscoveryList extends Component {
     return (<div className='discovery-list'> {items} </div>)
   }
 
+  preloadTermsOnBg = (discoveries, terms) => {
+    const preloadTermIds = []
+    if (discoveries.length) {
+      _.forEach(discoveries, (item) => {
+                /* eslint-disable camelcase */
+        preloadTermIds.push(item.main_term_id)
+        preloadTermIds.push(item.sub_term_id)
+      })
+    }
+    if (terms.length) {
+      _.forEach(terms, (term) => {
+        _.forEach(term.discoveries, (item) => {
+                    /* eslint-disable camelcase */
+          preloadTermIds.push(item.main_term_id)
+          preloadTermIds.push(item.sub_term_id)
+        })
+      })
+    }
+    logger.warn('preloadTermIds', _.uniq(preloadTermIds))
+    _.uniqBy(preloadTermIds).forEach(termId => this.props.term.preloadTerm(termId))
+  }
+
   componentWillUpdate () {
     logger.info('DiscoveryList componentWillUpdate')
     this.cleanClassName()
@@ -342,8 +364,9 @@ class DiscoveryList extends Component {
 
   componentWillReact () {
     const { userId, userHash } = this.props.store
-    const { page } = this.props.term
+    const { page, discoveries, terms } = this.props.term
     logger.info('DiscoveryList componentWillReact', userId, userHash, page)
+    this.preloadTermsOnBg(discoveries, terms)
   }
 
   componentDidMount () {

@@ -16,6 +16,7 @@ class TermStore {
   @observable hasMore = true
   @observable isProcessingTopicTree = false
   terms = []
+  preloadPendings = []
   discoveryItem = undefined
   tree = []
   userId = -1
@@ -100,11 +101,14 @@ class TermStore {
   }
 
   @action preloadTerm (termId) {
-    if (!this.termsCache[termId]) {
+    if (!this.termsCache[termId] && this.preloadPendings.indexOf(termId) === -1) {
+      this.preloadPendings.push(termId)
       preLoadTerm(termId).then(response => {
         const { term } = response.data
         this.termsCache[term.term_id] = term
-      }).catch(error => { logger.warn('error on preloadTerm', error) })
+      }).catch(error => {
+        logger.warn('error on preloadTerm', error)
+      })
     }
   }
 
@@ -171,6 +175,7 @@ class TermStore {
     const isExist = _.find(this.terms, item => item.termId === termId)
     const keyCache = `getTermDiscover-${termId}`
     const isProcess = _.indexOf(this.pendings, keyCache) !== -1
+    this.preloadTerm(termId)
     if (!isExist && !isProcess) {
       const termData = termDiscover(termId)
       this.pendings.push(keyCache)
