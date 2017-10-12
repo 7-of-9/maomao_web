@@ -11,7 +11,7 @@ class TermStore {
   @observable termsCache = {}
   @observable findTerms = []
   @observable pendings = []
-  @observable followedTopics = []
+  @observable followedTopics = {}
   @observable page = 0
   @observable hasMore = true
   @observable isProcessingTopicTree = false

@@ -159,8 +159,11 @@ export class UIStore {
   }
 
   @action removeNotification (uuid) {
+    logger.info('removeNotification', uuid, this.notifications)
     if (this.notifications) {
-      this.notifications = _.filter(this.notifications, (item) => item && item.key !== uuid)
+      logger.info('removeNotification', uuid, this.notifications)
+      this.notifications = _.filter(this.notifications, (item) => item && item.key !== uuid.key)
+      logger.info('removeNotification', uuid, this.notifications)
     } else {
       this.clearNotifications()
     }
