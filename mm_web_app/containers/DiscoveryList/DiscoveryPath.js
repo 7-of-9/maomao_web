@@ -109,7 +109,6 @@ class DiscoveryPath extends Component {
       _.forEach(_.uniqBy(topics, 'term_id'), term => {
         const { img, term_name: title, term_id: termId } = term
         if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
-
           const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === termId) : false
           carouselItems.push(
             <div className='topic' key={`navigate-to-${title}-${termId}`}>
@@ -125,7 +124,7 @@ class DiscoveryPath extends Component {
                 className='current-topic-name tags' rel='tag'>
                 {title}
               </span>
-              { followedTopics.topics && 
+              {followedTopics.topics &&
                 <div className='topic-follow'>
                   <input
                     checked={followed}
