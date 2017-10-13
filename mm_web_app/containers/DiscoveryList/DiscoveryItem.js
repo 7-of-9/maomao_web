@@ -9,7 +9,7 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import { Textfit } from 'react-textfit'
 import _ from 'lodash'
-import { tagColor, dynamicFontSize } from '../../utils/helper'
+import { tagColor, dynamicFontSize, isVideo } from '../../utils/helper'
 
 @inject('term')
 @observer
@@ -151,17 +151,19 @@ export default class DiscoveryItem extends Component {
 
   preloadUrl = () => {
     const { url } = this.props
-    const PROXY_URL = '/api/preview'
-    /* global URL */
-    const { origin, pathname } = new URL(url)
-    const proxyUrl = `${PROXY_URL}?url=${origin}${pathname}`
-    const findPreloadLink = document.querySelector(`link[href="${proxyUrl}"]`)
-    if (!findPreloadLink) {
-      const preloadLink = document.createElement('link')
-      preloadLink.href = proxyUrl
-      preloadLink.rel = 'preload'
-      preloadLink.as = 'fetch'
-      document.head.appendChild(preloadLink)
+    if (!isVideo(url)) {
+      const PROXY_URL = '/api/preview'
+      /* global URL */
+      const { origin, pathname } = new URL(url)
+      const proxyUrl = `${PROXY_URL}?url=${origin}${pathname}`
+      const findPreloadLink = document.querySelector(`link[href="${proxyUrl}"]`)
+      if (!findPreloadLink) {
+        const preloadLink = document.createElement('link')
+        preloadLink.href = proxyUrl
+        preloadLink.rel = 'preload'
+        preloadLink.as = 'fetch'
+        document.head.appendChild(preloadLink)
+      }
     }
   }
 

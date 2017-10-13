@@ -7,7 +7,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
-import urlParser from 'js-video-url-parser'
+import { isVideo } from '../../utils/helper'
 
 export default class InlinePreview extends Component {
   static propTypes = {
@@ -94,8 +94,7 @@ export default class InlinePreview extends Component {
 
   render () {
     const { url, width, height } = this.props
-    const parsed = urlParser.parse(url)
-    const isVideoPlayer = !!parsed
+    const isVideoPlayer = isVideo(url)
     const { isReady } = this.state
     if (!isReady) {
       return (<div className='grid-item--full'>

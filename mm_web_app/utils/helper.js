@@ -1,3 +1,5 @@
+import urlParser from 'js-video-url-parser'
+
 const MAX_COLORS = 12
 const toLowerCase = String.prototype.toLowerCase
 
@@ -13,4 +15,9 @@ export function dynamicFontSize (text) {
 
 export function isSameStringOnUrl (str1, str2) {
   return str1 && str2 && encodeURI(toLowerCase.call(str1)) === encodeURI(toLowerCase.call(str2))
+}
+
+export function isVideo (url) {
+  const parsed = urlParser.parse(url)
+  return !!parsed
 }
