@@ -54,12 +54,12 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <link rel='apple-touch-icon' href='/static/images/logo.png' />
       <link rel='icon' href='/static/images/logo.png' />
       <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
-      <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
+      <link rel='stylesheet' href='/static/vendors/font-awesome/css/font-awesome.min.css' />
       <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
       <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
-      <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
-      <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
-      <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
+      <script src='/static/vendors/js/jquery-3.2.1.slim.min.js' />
+      <script src='/static/vendors/js/tether.min.js' />
+      <script src='/static/vendors/js/bootstrap.min.js' />
       <script src='/static/vendors/js/snoowrap-v1.min.js' />
       <script src='/static/vendors/js/addtohomescreen.min.js' />
     </Head>
