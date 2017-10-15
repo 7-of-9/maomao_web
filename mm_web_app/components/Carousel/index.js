@@ -10,7 +10,7 @@ import { Subscribe } from 'react-subscribe'
 import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
 
-class Carousel extends React.PureComponent {
+class Carousel extends React.Component {
   onCarousel = (isAdd) => {
     logger.info('onCarousel', isAdd, this.slider)
     if (isAdd) {

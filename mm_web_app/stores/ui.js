@@ -1,4 +1,4 @@
-import { observable, action, toJS } from 'mobx'
+import { observable, action, computed, toJS } from 'mobx'
 import _ from 'lodash'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
@@ -41,6 +41,14 @@ export class UIStore {
   shareUrlId = -1
   userId = -1
   title = 'Sign In'
+
+  @computed get isRootView () {
+    return this.discoveryUrlId === -1 && this.discoveryTermId === -1
+  }
+
+  @computed get animateClassName () {
+    return this.animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
+  }
 
   @action redirectToSpecialUrl (isEnable) {
     this.isRedirectToUrl = isEnable

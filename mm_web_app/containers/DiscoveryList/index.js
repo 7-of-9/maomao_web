@@ -15,6 +15,7 @@ import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import SplitPane from 'react-split-pane'
 import DiscoveryPath from './DiscoveryPath'
+import DiscoveryRoot from './DiscoveryRoot'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
 import Loading from '../../components/Loading'
@@ -54,11 +55,10 @@ class DiscoveryList extends Component {
   }
 
   onSelectChildTerm = (term) => {
-    this.props.ui.selectDiscoveryTerm(term.term_id)
     const { findTerms } = toJS(this.props.term)
     findTerms.push(_.toLower(term.term_name))
+    this.props.term.resetPagination()
     this.props.term.getTermDiscover(term.term_id)
-    this.props.term.setCurrentTerms(findTerms)
     this.props.term.addNewTerm(term)
     const href = this.props.urlId > 0 ? `/${findTerms.join('/')}?urlId=${this.props.urlId}` : `/${findTerms.join('/')}`
     Router.push(
@@ -74,7 +74,6 @@ class DiscoveryList extends Component {
   onBack = (term) => {
     const position = _.findIndex(this.props.term.findTerms, item => isSameStringOnUrl(item, term.term_name))
     const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
-    this.props.term.setCurrentTerms(terms)
     if (terms.length) {
       const href = this.props.urlId > 0 ? `/${terms.join('/')}?urlId=${this.props.urlId}` : `/${terms.join('/')}`
       Router.push(
@@ -85,20 +84,17 @@ class DiscoveryList extends Component {
         href,
         { shallow: true }
       )
-      const currentTerm = _.find(this.props.term.termsInfo.terms, item => isSameStringOnUrl(item.term_name, terms[terms.length - 1]))
-      if (currentTerm && currentTerm.term_id) {
-        this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
-        this.props.term.getTermDiscover(currentTerm.term_id)
-      }
     } else {
       if (this.props.store.userId > 0) {
-        this.props.ui.backToRootDiscovery()
         const { user } = this.props.store
         if (user) {
-          Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
+          Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`)
+          this.props.term.restoreLastPagination()
+        } else {
+          Router.push('/')
         }
       } else {
-        Router.push('/', '/', { shallow: true })
+        Router.push('/')
       }
     }
   }
@@ -126,7 +122,9 @@ class DiscoveryList extends Component {
   }
 
   loadMore = () => {
-    this.props.term.loadMore()
+    if (this.props.ui.isRootView) {
+      this.props.term.loadMore()
+    }
   }
 
   onDragStarted = () => {
@@ -288,51 +286,36 @@ class DiscoveryList extends Component {
   }
 
   renderRootList = () => {
-    const items = []
-    const { discoveries } = toJS(this.props.term)
-    _.forEach(discoveries, (item) => {
-      /* eslint-disable camelcase */
-      const term = this.getCurrentTerm(item.main_term_id)
-      const subTerm = this.getCurrentTerm(item.sub_term_id)
-      if (term && subTerm) {
-        const { img: main_term_img, term_name: main_term_name } = term
-        const { img: sub_term_img, term_name: sub_term_name } = subTerm
-        items.push(
-          <DiscoveryItem
-            key={`${item.disc_url_id}-${item.url}`}
-            main_term_img={main_term_img}
-            main_term_name={main_term_name}
-            sub_term_img={sub_term_img}
-            sub_term_name={sub_term_name}
-            onSelect={this.onSelect}
-            onSelectTerm={this.onSelectChildTerm}
-            {...item}
+    return (
+      <div className='discovery-list'>
+        <DiscoveryRoot
+          getCurrentTerm={this.getCurrentTerm}
+          onSelect={this.onSelect}
+          onSelectChildTerm={this.onSelectChildTerm}
           />
-        )
-      }
-    })
-    return (<div className='discovery-list'> {items} </div>)
+      </div>
+    )
   }
 
   preloadTermsOnBg = (discoveries, terms) => {
     const preloadTermIds = []
-    if (discoveries.length) {
+    if (discoveries.length && this.props.ui.isRootView) {
       _.forEach(discoveries, (item) => {
-                /* eslint-disable camelcase */
-        preloadTermIds.push(item.main_term_id)
-        preloadTermIds.push(item.sub_term_id)
+        /* eslint-disable camelcase */
+        if (!preloadTermIds.includes(item.main_term_id)) preloadTermIds.push(item.main_term_id)
+        if (!preloadTermIds.includes(item.sub_term_id)) preloadTermIds.push(item.sub_term_id)
       })
     }
-    if (terms.length) {
+    if (terms.length && !this.props.ui.isRootView) {
       _.forEach(terms, (term) => {
         _.forEach(term.discoveries, (item) => {
-                    /* eslint-disable camelcase */
-          preloadTermIds.push(item.main_term_id)
-          preloadTermIds.push(item.sub_term_id)
+          /* eslint-disable camelcase */
+          if (!preloadTermIds.includes(item.main_term_id)) preloadTermIds.push(item.main_term_id)
+          if (!preloadTermIds.includes(item.sub_term_id)) preloadTermIds.push(item.sub_term_id)
         })
       })
     }
-    _.uniqBy(preloadTermIds).forEach(termId => this.props.term.preloadTerm(termId))
+    _.forEach(preloadTermIds, termId => this.props.term.preloadTerm(termId))
   }
 
   componentWillUpdate () {
@@ -341,32 +324,26 @@ class DiscoveryList extends Component {
 
   componentWillReact () {
     const { discoveries, terms } = this.props.term
+    logger.warn('DiscoveryList componentWillReact', toJS(discoveries), toJS(terms))
     this.preloadTermsOnBg(discoveries, terms)
   }
 
   componentDidMount () {
-    const { userId, userHash } = this.props.store
-    const { page } = this.props.term
-    if (userId > 0) {
-      this.props.term.getRootDiscover(userId, userHash, page)
-      this.props.term.getFollowedTopics(userId, userHash)
-    }
+    logger.warn('DiscoveryList componentDidMount')
     this.props.ui.resizeSplitter(window.innerWidth / 2)
     this.setState({
       innerWidth: window.innerWidth
     })
+    const { userId, userHash } = this.props.store
+    this.props.term.setApiToken(userId, userHash)
   }
 
   render () {
-    const { profileUrl } = this.props
-    const { spliterWidth: currentWidth } = this.props.ui
-    const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
-    const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
-    const isRootView = discoveryUrlId === -1 && discoveryTermId === -1
+    const { spliterWidth: currentWidth } = toJS(this.props.ui)
     return (
       <div className='topic-tree'>
         {
-          !isRootView &&
+          !this.props.ui.isRootView &&
           <DiscoveryPath
             currentWidth={currentWidth}
             onBack={this.onBack}
@@ -376,25 +353,24 @@ class DiscoveryList extends Component {
         <ReactResizeDetector handleWidth handleHeight onResize={this.onChangeLayoutSize} />
         <div className='main-inner'>
           <div className='container-masonry'>
-            <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
-              {
-                isRootView && profileUrl.length > 0 &&
-                <InfiniteScroll
-                  pageStart={0}
-                  loadMore={this.loadMore}
-                  hasMore={this.props.term.hasMore}
-                  loader={<Loading isLoading />}
-                >
-                  <div className='discover-root'>
-                    {this.renderRootList()}
-                  </div>
-                </InfiniteScroll>
+            <div ref={(el) => { this.animateEl = el }} className={this.props.ui.animateClassName}>
+
+              { !this.props.ui.isRootView
+                ? this.renderDetail()
+                : [
+                  <InfiniteScroll
+                    key='infinite-scroll-container'
+                    pageStart={0}
+                    loadMore={this.loadMore}
+                    hasMore={this.props.term.hasLoadMore}
+                    loader={<Loading isLoading />}
+                     >
+                    <div className='discover-root'>
+                      { this.renderRootList() }
+                    </div>
+                  </InfiniteScroll>,
+                  <Loading key='loading-for-main-scroll-container' isLoading={this.props.ui.isRootView && this.props.term.isLoading} />]
               }
-              {
-                isRootView && profileUrl.length > 0 &&
-                <Loading isLoading={this.props.term.isLoading} />
-              }
-              {!isRootView && this.renderDetail()}
             </div>
           </div>
         </div>

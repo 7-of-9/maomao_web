@@ -1,4 +1,4 @@
-import { action, computed, reaction, when, observable } from 'mobx'
+import { action, when, observable, computed, reaction } from 'mobx'
 import { rootDiscover, termDiscover, getTerm, preLoadTerm, getAllTopicTree, getDiscoverItem, unfollowTopic, followedTopics, addBulkTopics } from '../services/topic'
 import logger from '../utils/logger'
 import { isSameStringOnUrl } from '../utils/helper'
@@ -7,38 +7,60 @@ import _ from 'lodash'
 let store = null
 
 class TermStore {
-  @observable.shallow discoveries = []
-  @observable termsCache = {}
-  @observable findTerms = []
-  @observable pendings = []
-  @observable followedTopics = {}
-  @observable page = 0
-  @observable hasMore = true
+  @observable page = 1
+  @observable hasMore = false
+  @observable userId = -1
+  @observable userHash = ''
   @observable isProcessingTopicTree = false
-  terms = []
-  preloadPendings = []
+  @observable isProcessingDiscoverTerm = false
+  @observable isProcessingRootDiscover = false
+  @observable.shallow discoveries = []
+  @observable.shallow findTerms = []
+  @observable.shallow terms = []
+  @observable.ref termsCache = {}
   tree = []
-  userId = -1
-  userHash = ''
+  rootData = { page: 1, discoveries: [] }
+  preloadPendings = []
   termsInfo = { terms: [] }
+  followedTopics = {}
 
   constructor (isServer, findTerms, termsInfo) {
     this.findTerms = findTerms
     this.termsInfo = termsInfo
-    reaction(() => this.page,
-      (page) => {
+    reaction(
+      () => this.userId > 0,
+      () => {
+        logger.warn('get followed topic for userId', this.userId)
+        this.getFollowedTopics()
+      }
+    )
+    reaction(
+      () => `${this.page}-${this.userId}`,
+      () => {
         if (this.userId > 0) {
-          logger.info('reaction to page', page, this.userId, this.userHash)
-          if (page === 1) {
+          logger.warn('get root discover for page', this.page, this.discoveries)
+          if (this.page < 1) {
             this.discoveries = []
+          } else {
+            this.getRootDiscover(this.page)
           }
-          this.getRootDiscover(this.userId, this.userHash, page)
         }
-      })
+      }
+    )
   }
 
   @computed get isLoading () {
-    return this.pendings.length > 0
+    return this.isProcessingRootDiscover || this.isProcessingDiscoverTerm
+  }
+
+  @computed get hasLoadMore () {
+    return !this.isLoading && this.hasMore
+  }
+
+  @action setApiToken (userId, userHash) {
+    logger.warn('setApiToken', userId, userHash)
+    this.userId = userId
+    this.userHash = userHash
   }
 
   @action setTerms (terms) {
@@ -103,7 +125,7 @@ class TermStore {
   }
 
   @action preloadTerm (termId) {
-    if (!this.termsCache[termId] && this.preloadPendings.indexOf(termId) === -1) {
+    if (termId && this.preloadPendings.indexOf(termId) === -1) {
       this.preloadPendings.push(termId)
       preLoadTerm(termId).then(response => {
         const { term } = response.data
@@ -134,16 +156,12 @@ class TermStore {
     }
   }
 
-  @action getRootDiscover (userId, userHash, page) {
-    logger.info('getRootDiscover', userId, userHash, page)
-    this.page = page
-    this.userId = userId
-    this.userHash = userHash
-    this.hasMore = false
-    const rootData = rootDiscover(userId, userHash, page)
-    const keyCache = `getRootDiscover-${userId}-${userHash}-${page}`
-    if (_.indexOf(this.pendings, keyCache) === -1) {
-      this.pendings.push(keyCache)
+  @action getRootDiscover (page) {
+    logger.info('getRootDiscover', page)
+    if (!this.isProcessingRootDiscover) {
+      this.isProcessingRootDiscover = true
+      this.hasMore = false
+      const rootData = rootDiscover(this.userId, this.userHash, page)
       when(
         () => rootData.state !== 'pending',
         () => {
@@ -154,15 +172,10 @@ class TermStore {
               this.hasMore = false
             } else {
               this.hasMore = true
+              this.discoveries.push(...discoveries)
             }
-            _.forEach(discoveries, item => {
-              if (!_.includes(this.discoveries, item)) {
-                this.discoveries.push(item)
-              }
-            })
-            this.discoveries = _.uniqBy(this.discoveries, 'url')
           }
-          this.pendings = this.pendings.filter(item => item !== keyCache)
+          this.isProcessingRootDiscover = false
         }
       )
     }
@@ -172,14 +185,28 @@ class TermStore {
     this.page += 1
   }
 
+  @action resetPagination () {
+    if (this.page > 0) {
+      this.rootData = Object.assign({}, {
+        page: this.page,
+        discoveries: this.discoveries.peek()
+      })
+      this.page = 0
+    }
+  }
+
+  @action restoreLastPagination () {
+    const { page, discoveries } = this.rootData
+    this.discoveries.push(...discoveries)
+    this.page = page + 1 // preload one more page when back to root discover
+  }
+
   @action getTermDiscover (termId) {
     const isExist = _.find(this.terms, item => item.termId === termId)
-    const keyCache = `getTermDiscover-${termId}`
-    const isProcess = _.indexOf(this.pendings, keyCache) !== -1
     this.preloadTerm(termId)
-    if (!isExist && !isProcess) {
+    if (!isExist && !this.isProcessingDiscoverTerm) {
+      this.isProcessingDiscoverTerm = true
       const termData = termDiscover(termId)
-      this.pendings.push(keyCache)
       when(
         () => termData.state !== 'pending',
         () => {
@@ -190,15 +217,15 @@ class TermStore {
               discoveries: _.uniqBy(discoveries, 'url') || []
             })
           }
-          this.pendings = this.pendings.filter(item => item !== keyCache)
+          this.isProcessingDiscoverTerm = false
         }
       )
     }
   }
 
-  @action getFollowedTopics (userId, userHash) {
+  @action getFollowedTopics () {
     logger.info('getFollowTopics')
-    const res = followedTopics(userId, userHash)
+    const res = followedTopics(this.userId, this.userHash)
     logger.info('followedTopics', res)
     when(
       () => res.state !== 'pending',
@@ -216,7 +243,7 @@ class TermStore {
       () => res.state !== 'pending',
       () => {
         logger.info('followTopic', res)
-        this.getFollowedTopics(this.userId, this.userHash)
+        this.getFollowedTopics()
         if (callback) {
           callback()
         }
@@ -231,7 +258,7 @@ class TermStore {
       () => res.state !== 'pending',
       () => {
         logger.info('unfollowTopic', res)
-        this.getFollowedTopics(this.userId, this.userHash)
+        this.getFollowedTopics()
         if (callback) {
           callback()
         }

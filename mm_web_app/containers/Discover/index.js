@@ -5,15 +5,12 @@
  */
 
 import React from 'react'
-import { observer, inject } from 'mobx-react'
+import { observer } from 'mobx-react'
 import Raven from 'raven-js'
 import DiscoveryList from '../../containers/DiscoveryList'
 import Layout from '../../components/Layout'
 import logger from '../../utils/logger'
 
-@inject('term')
-@inject('store')
-@inject('ui')
 @observer
 class Discover extends React.Component {
   componentDidMount () {
@@ -24,7 +21,6 @@ class Discover extends React.Component {
   render () {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    logger.info('Discover render', this.props)
     return (
       <Layout title={title} description={description}>
         <div className='wrapper-slide'>

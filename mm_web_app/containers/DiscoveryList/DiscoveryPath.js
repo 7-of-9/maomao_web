@@ -78,7 +78,7 @@ class DiscoveryPath extends Component {
       return <div />
     }
 
-    if (this.props.term.isLoading || !currentTerm) {
+    if (!currentTerm) {
       return (
         <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth ? currentWidth + MARGIN_FOR_SLITTER / 2 : 0 }}>
           <div className='breadcrum'>

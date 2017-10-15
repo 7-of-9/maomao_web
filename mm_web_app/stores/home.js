@@ -70,8 +70,11 @@ export class HomeStore extends CoreStore {
   }
 
   @computed get myStream () {
-    const { mine: me } = this.userHistory
-    return me
+    if (this.userHistory) {
+      const { mine: me } = this.userHistory
+      return me
+    }
+    return {}
   }
 
   @computed get friendsStream () {
@@ -250,7 +253,6 @@ export class HomeStore extends CoreStore {
             const normalizedData = normalizedHistoryData(toJS(this.userHistory))
             logger.info('normalizedData', normalizedData)
             this.normalizedData = normalizedData
-
             const { received, mine, topics } = this.userHistory
             const friends = toJS(received)
             const { urls: myUrls, user_id, fullname, avatar } = toJS(mine)

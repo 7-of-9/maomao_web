@@ -10,7 +10,6 @@ import { MAOMAO_API_URL } from '../containers/App/constants'
 import Discover from '../containers/Discover'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
-import { md5hash } from '../utils/hash'
 import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
 
@@ -116,12 +115,6 @@ export default class IndexPage extends React.Component {
           this.term.getTermDiscover(currentTerm.term_id)
         }
       }
-      // login for special route
-      if (this.state.profileUrl && this.state.profileUrl.length && this.props.currentUser) {
-        const { id: userId, fb_user_id: fbUserId, google_user_id: googleUserId } = this.props.currentUser
-        const userHash = md5hash(fbUserId || googleUserId)
-        this.term.getRootDiscover(userId, userHash, 1)
-      }
     }
     if (Number(this.state.urlId) > 0) {
       const { urlId } = this.state
@@ -150,8 +143,6 @@ export default class IndexPage extends React.Component {
       }
       this.term.setCurrentTerms([])
       this.uiStore.backToRootDiscovery()
-      const { userId, userHash } = this.store
-      this.term.getRootDiscover(userId, userHash, 1)
     } else if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature
       if (_.isString(findTerms)) {
