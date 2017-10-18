@@ -51,6 +51,9 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
       <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
       <meta name='google-site-verification' content='R5eOMNDR503rLLPoq12fEQbVWTWxBWaRYqUJiKasHkk' />
+      <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+      <link rel="dns-prefetch" href="https://mmapi00.azurewebsites.net" />
+      <link rel="dns-prefetch" href="https://maomao.blob.core.windows.net:" />
       <link rel='apple-touch-icon' href='/static/images/logo.png' />
       <link rel='icon' href='/static/images/logo.png' />
       <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
