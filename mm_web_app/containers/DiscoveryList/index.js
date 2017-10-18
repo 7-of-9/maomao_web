@@ -56,19 +56,22 @@ class DiscoveryList extends Component {
 
   onSelectChildTerm = (term) => {
     const { findTerms } = toJS(this.props.term)
-    findTerms.push(_.toLower(term.term_name))
-    this.props.term.resetPagination()
-    this.props.term.getTermDiscover(term.term_id)
-    this.props.term.addNewTerm(term)
-    const href = this.props.urlId > 0 ? `/${findTerms.join('/')}?urlId=${this.props.urlId}` : `/${findTerms.join('/')}`
-    Router.push(
-      {
-        pathname: '/',
-        query: { findTerms, urlId: this.props.urlId }
-      },
-      href,
-      { shallow: true }
-    )
+    const exist = findTerms.find(n => n === _.toLower(term.term_name))
+    if (!(exist && exist.length)) {
+      findTerms.push(_.toLower(term.term_name))
+      this.props.term.resetPagination()
+      this.props.term.getTermDiscover(term.term_id)
+      this.props.term.addNewTerm(term)
+      const href = this.props.urlId > 0 ? `/${findTerms.join('/')}?urlId=${this.props.urlId}` : `/${findTerms.join('/')}`
+      Router.push(
+        {
+          pathname: '/',
+          query: { findTerms, urlId: this.props.urlId }
+        },
+        href,
+        { shallow: true }
+      )
+    }
   }
 
   onBack = (term) => {
