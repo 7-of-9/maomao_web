@@ -39,6 +39,7 @@ export default ({ children, title = 'homepage', description = 'discover & share 
   <Page>
     <Head>
       <meta charSet='utf-8' />
+      <meta http-equiv="x-dns-prefetch-control" content="on" />
       <title>{title}</title>
       <meta name='apple-mobile-web-app-capable' content='yes' />
       <meta name='mobile-web-app-capable' content='yes' />
