@@ -58,19 +58,33 @@ class DiscoveryPath extends Component {
     _.forEach(findTerms, item => {
       const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
       if (term) {
-        const { img, term_name: title } = term
-        items.push(<span
-          key={`back-to-${title}`}
-          onClick={() => this.props.onBack(term)}
-          style={{
-            background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-            backgroundSize: 'cover',
-            cursor: 'pointer'
-          }}
-          className='current-topic-name tags' rel='tag'>
-          <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-          {title}
-        </span>)
+        const { img, term_name: title, term_id: termId } = term
+        const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === termId) : false
+        items.push(
+        <div className='topic' key={`back-to-${title}`}>
+          {followedTopics.topics &&
+            <div className='topic-follow'>
+              <input
+                checked={followed}
+                type='checkbox'
+                id={`followCheck-${termId}`}
+                onChange={() => this.changeFollow(termId, followed, title)}
+                />
+              <label htmlFor={`followCheck-${termId}`} />
+            </div>
+          }
+          <span
+            onClick={() => this.props.onBack(term)}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: 'pointer'
+            }}
+            className='current-topic-name tags' rel='tag'>
+            <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+            {title}
+          </span>
+        </div>)
       }
     })
 
@@ -112,6 +126,17 @@ class DiscoveryPath extends Component {
           const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === termId) : false
           carouselItems.push(
             <div className='topic' key={`navigate-to-${title}-${termId}`}>
+              {followedTopics.topics &&
+                <div className='topic-follow'>
+                  <input
+                    checked={followed}
+                    type='checkbox'
+                    id={`followCheck-${termId}`}
+                    onChange={() => this.changeFollow(termId, followed, title)}
+                    />
+                  <label htmlFor={`followCheck-${termId}`} />
+                </div>
+              }
               <span
                 onClick={() => this.props.onSelectChildTerm(term)}
                 style={{
@@ -124,17 +149,6 @@ class DiscoveryPath extends Component {
                 className='current-topic-name tags' rel='tag'>
                 {title}
               </span>
-              {followedTopics.topics &&
-                <div className='topic-follow'>
-                  <input
-                    checked={followed}
-                    type='checkbox'
-                    id={`followCheck-${termId}`}
-                    onChange={() => this.changeFollow(termId, followed, title)}
-                    />
-                  <label htmlFor={`followCheck-${termId}`} />
-                </div>
-              }
             </div>)
         }
       })

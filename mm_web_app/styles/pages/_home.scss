@@ -567,6 +567,10 @@ the home page
     text-transform: capitalize;
     text-align: center;
   }
+  .topic {
+    display: inline-block;
+    position: relative;
+  }
   .topic-follow {
     position: absolute;
     right: 14.5px;
@@ -584,6 +588,7 @@ the home page
     height: 25px;
     top: 0;
     left: 0;
+    z-index: 1;
     background: #eee;
     border:1px solid #ddd;
   }
