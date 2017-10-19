@@ -218,12 +218,18 @@ class DiscoveryList extends Component {
 
   renderDetail = () => {
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
-    const { terms } = toJS(this.props.term)
+    const { terms, findTerms, termsInfo } = toJS(this.props.term)
     const ingoreTerms = []
-    if (discoveryTermId !== -1) {
-      ingoreTerms.push(discoveryTermId)
-    }
-    if (termId !== -1) {
+    _.forEach(findTerms, item => {
+      const term = _.find(termsInfo.terms, term => isSameStringOnUrl(term.term_name, item))
+      console.log(term)
+      if (term) {
+        const { term_id: termId } = term
+        console.log(termId)
+        ingoreTerms.push(termId)
+      }
+    })
+    if (termId && termId !== -1) {
       ingoreTerms.push(termId)
     }
     const items = []
