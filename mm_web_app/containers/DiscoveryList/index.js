@@ -222,10 +222,8 @@ class DiscoveryList extends Component {
     const ingoreTerms = []
     _.forEach(findTerms, item => {
       const term = _.find(termsInfo.terms, term => isSameStringOnUrl(term.term_name, item))
-      console.log(term)
       if (term) {
         const { term_id: termId } = term
-        console.log(termId)
         ingoreTerms.push(termId)
       }
     })

@@ -145,7 +145,7 @@ class DiscoveryPath extends Component {
                   backgroundSize: 'cover',
                   cursor: 'pointer',
                   fontSize: '0.8rem',
-                  padding: '3px'
+                  padding: '3px 20px'
                 }}
                 className='current-topic-name tags' rel='tag'>
                 {title}

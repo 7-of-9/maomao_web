@@ -18,11 +18,11 @@ class TermStore {
   @observable.shallow findTerms = []
   @observable.shallow terms = []
   @observable.ref termsCache = {}
+  @observable followedTopics = {}
   tree = []
   rootData = { page: 1, discoveries: [] }
   preloadPendings = []
   termsInfo = { terms: [] }
-  followedTopics = {}
 
   constructor (isServer, findTerms, termsInfo) {
     this.findTerms = findTerms
