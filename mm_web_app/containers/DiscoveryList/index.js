@@ -39,9 +39,7 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
-    if (this.props.ui.discoveryTermId > 0) {
-      this.props.ui.toggleSplitView(true)
-    }
+    this.props.ui.toggleSplitView(true)
     const { findTerms } = toJS(this.props.term)
     const href = `/${findTerms.join('/')}?urlId=${item.disc_url_id}`
     Router.push(
@@ -88,7 +86,17 @@ class DiscoveryList extends Component {
         { shallow: true }
       )
     } else {
-      if (this.props.store.userId > 0) {
+      if (this.props.urlId > 0) {
+        const href = `/?urlId=${this.props.urlId}`
+        Router.push(
+          {
+            pathname: '/',
+            query: { findTerms: terms, urlId: this.props.urlId }
+          },
+          href,
+          { shallow: true }
+        )
+      } else if (this.props.store.userId > 0) {
         const { user } = this.props.store
         if (user) {
           Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`)
@@ -130,7 +138,7 @@ class DiscoveryList extends Component {
     }
   }
 
-  onDragStarted = () => {
+  onDragStarted = (width) => {
     const overlay = document.querySelector('#overlay')
     if (overlay) {
       overlay.style.display = 'block'
@@ -142,10 +150,13 @@ class DiscoveryList extends Component {
     if (overlay) {
       overlay.style.display = 'none'
     }
+    this.forceRenderForSticky()
+  }
+
+  onSplitChange = (width) => {
     if (width) {
       this.props.ui.resizeSplitter(width)
     }
-    this.forceRenderForSticky()
   }
 
   forceRenderForSticky = () => {
@@ -209,15 +220,39 @@ class DiscoveryList extends Component {
         })
         return items
       } else {
-        return (<div className='split-view' style={{ minHeight: 500, margin: '0 auto' }}>
-          <h3 className='text-engine animated fadeInUp'>Coming soon...</h3>
-        </div>)
+        return (
+          <InfiniteScroll
+            key='infinite-scroll-container'
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.props.term.hasLoadMore}
+            loader={<Loading isLoading />}
+            >
+            <div className='discover-root'>
+              { this.renderRootList() }
+            </div>
+          </InfiniteScroll>
+        )
       }
+    } else {
+      return (
+        <InfiniteScroll
+          key='infinite-scroll-container'
+          pageStart={0}
+          loadMore={this.loadMore}
+          hasMore={this.props.term.hasLoadMore}
+          loader={<Loading isLoading />}
+          >
+          <div className='discover-root'>
+            { this.renderRootList() }
+          </div>
+        </InfiniteScroll>
+      )
     }
   }
 
   renderDetail = () => {
-    const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const { isSplitView, spliterWidth, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const { terms, findTerms, termsInfo } = toJS(this.props.term)
     const ingoreTerms = []
     _.forEach(findTerms, item => {
@@ -243,7 +278,7 @@ class DiscoveryList extends Component {
     }
     if (isSplitView && discoveryUrlId !== -1) {
       return (
-        <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
+        <div className='discovery-list' style={{ width: '100%', height: 'calc(100vh - 162px)' }}>
           <SplitPane
             split='vertical'
             minSize={330}
@@ -252,6 +287,8 @@ class DiscoveryList extends Component {
             style={{ position: 'relative', overflow: 'visible' }}
             onDragStarted={this.onDragStarted}
             onDragFinished={this.onDragFinished}
+            onChange={width => this.onSplitChange(width)}
+            pane2Style={{ overflow: 'auto' }}
             >
             <Sticky>
               <div id='overlay' style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'none', opacity: 0 }} />
@@ -261,15 +298,19 @@ class DiscoveryList extends Component {
                 termIds={termIds}
                 url={url}
                 utc={utc}
-                closePreview={this.closePreview}
                 onSelectTerm={this.onSelectChildTerm}
                 width={'100%'}
               />
             </Sticky>
             <div className='split-view'>
+              <DiscoveryPath
+                onBack={this.onBack}
+                onSelectChildTerm={this.onSelectChildTerm}
+              />
               {this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)}
             </div>
           </SplitPane>
+          <div className='close_button' onClick={this.closePreview} style={{left: (spliterWidth || window.innerWidth / 2) - 23}} />
         </div>
       )
     }
@@ -346,13 +387,12 @@ class DiscoveryList extends Component {
   }
 
   render () {
-    const { spliterWidth: currentWidth } = toJS(this.props.ui)
+    const { isSplitView } = toJS(this.props.ui)
     return (
       <div className='topic-tree'>
         {
-          !this.props.ui.isRootView &&
+          !(this.props.ui.isRootView || isSplitView) &&
           <DiscoveryPath
-            currentWidth={currentWidth}
             onBack={this.onBack}
             onSelectChildTerm={this.onSelectChildTerm}
           />

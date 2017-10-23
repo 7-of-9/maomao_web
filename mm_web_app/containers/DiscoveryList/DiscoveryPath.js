@@ -13,8 +13,6 @@ import _ from 'lodash'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 
-const MARGIN_FOR_SLITTER = 50
-
 const Carousel = dynamic(
   import('../../components/Carousel'),
   {
@@ -29,12 +27,10 @@ const Carousel = dynamic(
 @observer
 class DiscoveryPath extends Component {
   static propTypes = {
-    currentWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     onBack: PropTypes.func.isRequired,
     onSelectChildTerm: PropTypes.func.isRequired
   }
   static defaultProps = {
-    currentWidth: 0,
     onBack: () => {},
     onSelectChildTerm: () => {}
   }
@@ -48,10 +44,9 @@ class DiscoveryPath extends Component {
   }
 
   renderDiscoveryPath = () => {
-    const { isSplitView, discoveryTermId } = toJS(this.props.ui)
+    const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
     const { findTerms, termsInfo: { terms }, followedTopics } = toJS(this.props.term)
-    const { currentWidth } = this.props
     const items = []
     const topics = []
     const carouselItems = []
@@ -95,7 +90,7 @@ class DiscoveryPath extends Component {
 
     if (!currentTerm) {
       return (
-        <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth ? currentWidth + MARGIN_FOR_SLITTER / 2 : 0 }}>
+        <div className={'navigation-pane bounceInLeft animated'}>
           <div className='breadcrum'>
             {items}
             <div style={{ width: 50, height: 50 }}><Loading isLoading /></div>
@@ -157,19 +152,20 @@ class DiscoveryPath extends Component {
 
     if (carouselItems.length > 0) {
       const settings = {
-        navContainerClass: 'carousel-nav owl-nav',
+        navContainerClass: 'carousel-nav owl-nav owl-nav-small',
         stageOuterClass: 'carousel-outer owl-stage-outer',
         stageClass: 'carousel-stage owl-stage',
-        nav: false,
         dots: false,
         autoWidth: true
       }
       return (
-        <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth ? currentWidth + MARGIN_FOR_SLITTER / 2 : 0 }}>
+        <div className={'navigation-pane bounceInLeft animated'}>
           <div className='breadcrum'>
             {items}
+          </div>
+          <div className='breadcrum' style={{ width: isSplitView ? `calc(100vw - ${spliterWidth}px)` : '100%' }}>
             {carouselItems.length > 0 &&
-              <Carousel settings={settings}>
+              <Carousel settings={settings} className='carousel-wrapper'>
                 {carouselItems}
               </Carousel>
             }
@@ -178,7 +174,7 @@ class DiscoveryPath extends Component {
       )
     } else {
       return (
-        <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth ? currentWidth + MARGIN_FOR_SLITTER / 2 : 0 }}>
+        <div className={'navigation-pane bounceInLeft animated'}>
           <div className='breadcrum'>
             {items}
           </div>

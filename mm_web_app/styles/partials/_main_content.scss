@@ -68,7 +68,7 @@ body {
 
 .main-inner {
   @include clearfix();
-  padding: 0 15px;
+  padding: 0;
   min-height: 100px;
 }
 

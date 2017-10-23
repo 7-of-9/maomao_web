@@ -28,7 +28,7 @@ class DiscoveryRoot extends Component {
   render () {
     const items = []
     const { discoveries } = this.props.term
-    _.forEach(discoveries, (item) => {
+    _.forEach(discoveries, (item, index) => {
       /* eslint-disable camelcase */
       if (item.main_term_id) {
         const term = this.props.getCurrentTerm(item.main_term_id)
@@ -38,7 +38,7 @@ class DiscoveryRoot extends Component {
           const { img: sub_term_img, term_name: sub_term_name } = subTerm
           items.push(
             <DiscoveryItem
-              key={`${item.disc_url_id}-${item.url}`}
+              key={`${item.disc_url_id}-${item.url}-${index}`}
               main_term_img={main_term_img}
               main_term_name={main_term_name}
               sub_term_img={sub_term_img}

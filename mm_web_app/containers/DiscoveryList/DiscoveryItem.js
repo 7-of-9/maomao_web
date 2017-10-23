@@ -99,7 +99,7 @@ export default class DiscoveryItem extends Component {
         </div>
         {
           sub_term_name && sub_term_name !== main_term_name &&
-          <div className='mix-tag-topic' onClick={this.selectSubTerm}>
+          <div className='mix-tag-topic' onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? this.selectSubTerm : _.noop}>
             <span
               style={{
                 background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,

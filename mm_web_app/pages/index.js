@@ -120,9 +120,7 @@ export default class IndexPage extends React.Component {
       const { urlId } = this.state
       if (urlId) {
         // preview current item
-        if (this.uiStore.discoveryTermId > 0) {
-          this.uiStore.toggleSplitView(true)
-        }
+        this.uiStore.toggleSplitView(true)
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })
@@ -143,6 +141,10 @@ export default class IndexPage extends React.Component {
       }
       this.term.setCurrentTerms([])
       this.uiStore.backToRootDiscovery()
+    } else if (urlId && !findTerms) {
+      this.term.setCurrentTerms([])
+      this.uiStore.selectDiscoveryTerm(-1)
+      this.term.getRootDiscover(0)
     } else if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature
       if (_.isString(findTerms)) {
@@ -169,9 +171,7 @@ export default class IndexPage extends React.Component {
       this.setState({ urlId })
       if (Number(urlId) > 0) {
         // preview current item
-        if (this.uiStore.discoveryTermId > 0) {
-          this.uiStore.toggleSplitView(true)
-        }
+        this.uiStore.toggleSplitView(true)
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })

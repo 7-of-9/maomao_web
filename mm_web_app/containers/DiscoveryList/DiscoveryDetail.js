@@ -20,7 +20,6 @@ class DiscoveryDetail extends Component {
     url: PropTypes.string.isRequired,
     utc: PropTypes.string.isRequired,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    closePreview: PropTypes.func.isRequired,
     onSelectTerm: PropTypes.func.isRequired
   }
 
@@ -31,7 +30,6 @@ class DiscoveryDetail extends Component {
     url: '',
     utc: '',
     width: '100%',
-    closePreview: () => { },
     onSelectTerm: (term) => { }
   }
 
@@ -47,9 +45,8 @@ class DiscoveryDetail extends Component {
     const date = moment.utc(utc).local().format('LLLL')
     return (
       <div>
-        <div className='close_button' onClick={this.props.closePreview} />
         <div className='discovery-detail'>
-          <h3><a onClick={this.handleClick}>{title}</a></h3>
+          <h4><a onClick={this.handleClick}>{title}</a></h4>
           <span>{date}</span>
         </div>
         {
