@@ -270,7 +270,7 @@ img {
 
 .container-masonry {
   @include clearfix();
-  margin: 15px 0;
+  margin: 0;
 }
 
 .panel-user {
@@ -1983,7 +1983,7 @@ a.btn-box-remove {
 }
 
 .wrapper-slide {
-  margin-bottom: 15px;
+  margin-bottom: 0;
   overflow: hidden;
   height: 100%;
 }

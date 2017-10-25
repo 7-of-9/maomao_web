@@ -163,13 +163,13 @@ class DiscoveryPath extends Component {
           <div className='breadcrum'>
             {items}
           </div>
-          <div className='breadcrum' style={{ width: isSplitView ? `calc(100vw - ${spliterWidth}px)` : '100%' }}>
-            {carouselItems.length > 0 &&
+          {carouselItems.length > 0 &&
+            <div className='breadcrum' style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
               <Carousel settings={settings} className='carousel-wrapper'>
                 {carouselItems}
               </Carousel>
-            }
-          </div>
+            </div>
+          }
         </div>
       )
     } else {

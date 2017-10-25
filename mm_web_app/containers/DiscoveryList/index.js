@@ -91,7 +91,7 @@ class DiscoveryList extends Component {
         Router.push(
           {
             pathname: '/',
-            query: { findTerms: terms, urlId: this.props.urlId }
+            query: { urlId: this.props.urlId }
           },
           href,
           { shallow: true }
@@ -175,25 +175,37 @@ class DiscoveryList extends Component {
       innerWidth: window.innerWidth
     })
     const { findTerms } = toJS(this.props.term)
-    const href = `/${findTerms.join('/')}`
-    Router.push(
-      {
-        pathname: '/',
-        query: { findTerms }
-      },
-      href,
-      { shallow: true }
-    )
+    if (findTerms.length) {
+      const href = `/${findTerms.join('/')}`
+      Router.push(
+        {
+          pathname: '/',
+          query: { findTerms }
+        },
+        href,
+        { shallow: true }
+      )
+    } else if (this.props.store.userId > 0) {
+      const { user } = this.props.store
+      if (user) {
+        this.props.term.restoreLastPagination()
+        Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
+      } else {
+        Router.push('/')
+      }
+    } else {
+      Router.push('/')
+    }
   }
 
   renderTermList = (ingoreTerms, discoveryTermId, terms, urlId) => {
     if (this.props.term.isLoading) {
       return <Loading isLoading />
     }
+    const items = []
     if (terms.length) {
       const topics = _.find(terms, item => item.termId === discoveryTermId)
       if (topics && topics.discoveries && topics.discoveries.length) {
-        const items = []
         _.forEach(topics.discoveries, (item) => {
           /* eslint-disable camelcase */
           if (urlId !== item.disc_url_id) {
@@ -219,36 +231,36 @@ class DiscoveryList extends Component {
           }
         })
         return items
-      } else {
-        return (
-          <InfiniteScroll
-            key='infinite-scroll-container'
-            pageStart={0}
-            loadMore={this.loadMore}
-            hasMore={this.props.term.hasLoadMore}
-            loader={<Loading isLoading />}
-            >
-            <div className='discover-root'>
-              { this.renderRootList() }
-            </div>
-          </InfiniteScroll>
-        )
       }
-    } else {
-      return (
-        <InfiniteScroll
-          key='infinite-scroll-container'
-          pageStart={0}
-          loadMore={this.loadMore}
-          hasMore={this.props.term.hasLoadMore}
-          loader={<Loading isLoading />}
-          >
-          <div className='discover-root'>
-            { this.renderRootList() }
-          </div>
-        </InfiniteScroll>
-      )
     }
+    const { discoveries } = this.props.term
+    _.forEach(discoveries, (item, index) => {
+      /* eslint-disable camelcase */
+      if (item.main_term_id) {
+        const term = this.getCurrentTerm(item.main_term_id)
+        const subTerm = this.getCurrentTerm(item.sub_term_id)
+        if (urlId !== item.disc_url_id) {
+          if (term && subTerm) {
+            const { img: main_term_img, term_name: main_term_name } = term
+            const { img: sub_term_img, term_name: sub_term_name } = subTerm
+            items.push(
+              <DiscoveryItem
+                key={`${item.disc_url_id}-${item.url}`}
+                ingoreTerms={ingoreTerms}
+                main_term_img={main_term_img}
+                main_term_name={main_term_name}
+                sub_term_img={sub_term_img}
+                sub_term_name={sub_term_name}
+                onSelect={this.onSelect}
+                onSelectTerm={this.onSelectChildTerm}
+                {...item}
+              />
+            )
+          }
+        }
+      }
+    })
+    return items
   }
 
   renderDetail = () => {
@@ -278,7 +290,7 @@ class DiscoveryList extends Component {
     }
     if (isSplitView && discoveryUrlId !== -1) {
       return (
-        <div className='discovery-list' style={{ width: '100%', height: 'calc(100vh - 162px)' }}>
+        <div className='discovery-list' style={{ width: '100%', height: 'calc(100vh - 140px)' }}>
           <SplitPane
             split='vertical'
             minSize={330}
@@ -310,7 +322,7 @@ class DiscoveryList extends Component {
               {this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)}
             </div>
           </SplitPane>
-          <div className='close_button' onClick={this.closePreview} style={{left: (spliterWidth || window.innerWidth / 2) - 23}} />
+          <div className='close_button' onClick={this.closePreview} style={{left: (spliterWidth || window.innerWidth / 2) - 15}} />
         </div>
       )
     }

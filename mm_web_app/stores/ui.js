@@ -262,6 +262,7 @@ export class UIStore {
     if (!isSelect) {
       this.discoveryUrlId = -1
       this.selectedDiscoveryItem = {}
+      this.spliterWidth = window.innerWidth / 2
     }
   }
 

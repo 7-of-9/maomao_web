@@ -158,7 +158,8 @@ class TermStore {
 
   @action getRootDiscover (page) {
     logger.info('getRootDiscover', page)
-    if (!this.isProcessingRootDiscover) {
+    const isExist = _.find(this.terms, item => item.termId === -1)
+    if (!isExist && !this.isProcessingDiscoverTerm && page) {
       this.isProcessingRootDiscover = true
       this.hasMore = false
       const rootData = rootDiscover(this.userId, this.userHash, page)
@@ -173,6 +174,10 @@ class TermStore {
             } else {
               this.hasMore = true
               this.discoveries.push(...discoveries)
+              this.terms.push({
+                termId: -1,
+                discoveries: _.uniqBy(discoveries, 'url') || []
+              })
             }
           }
           this.isProcessingRootDiscover = false
