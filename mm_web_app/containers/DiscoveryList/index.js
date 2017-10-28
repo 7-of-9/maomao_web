@@ -290,7 +290,7 @@ class DiscoveryList extends Component {
     }
     if (isSplitView && discoveryUrlId !== -1) {
       return (
-        <div className='discovery-list' style={{ width: '100%', height: 'calc(100vh - 140px)' }}>
+        <div className='discovery-list' style={{ width: '100%', height: '100vh' }}>
           <SplitPane
             split='vertical'
             minSize={330}
@@ -300,7 +300,7 @@ class DiscoveryList extends Component {
             onDragStarted={this.onDragStarted}
             onDragFinished={this.onDragFinished}
             onChange={width => this.onSplitChange(width)}
-            pane2Style={{ overflow: 'auto' }}
+            pane2Style={{ overflowY: 'auto', overflowX: 'hidden' }}
             >
             <Sticky>
               <div id='overlay' style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'none', opacity: 0 }} />

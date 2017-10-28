@@ -9,7 +9,7 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import { Textfit } from 'react-textfit'
 import _ from 'lodash'
-import { tagColor, dynamicFontSize, isVideo } from '../../utils/helper'
+import { tagColor, isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -78,21 +78,15 @@ export default class DiscoveryItem extends Component {
 
   renderTerms = () => {
     /* eslint-disable camelcase */
-    const { main_term_img, main_term_name, sub_term_img, sub_term_name, main_term_id, sub_term_id, ingoreTerms } = this.props
-    let customStyle = { height: '52px' }
+    const { main_term_name, sub_term_name, main_term_id, sub_term_id, ingoreTerms } = this.props
+    let customStyle = { height: '52px', right: '20px', top: '-29px', position: 'relative' }
     if (sub_term_name !== main_term_name) {
-      customStyle = Object.assign({}, customStyle, { top: '-15px' })
+      customStyle = Object.assign({}, customStyle, { top: '-54px' })
     }
     return (
       <div className='mix-tag' style={customStyle}>
         <div className='mix-tag-topic' onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? this.selectMainTerm : _.noop}>
           <span
-            style={{
-              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
-              backgroundSize: 'cover',
-              fontSize: dynamicFontSize(main_term_name),
-              cursor: _.indexOf(ingoreTerms, main_term_id) === -1 ? 'pointer' : 'default'
-            }}
             className={`tags ${tagColor(main_term_name)}`} rel='tag'>
             {main_term_name}
           </span>
@@ -101,12 +95,6 @@ export default class DiscoveryItem extends Component {
           sub_term_name && sub_term_name !== main_term_name &&
           <div className='mix-tag-topic' onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? this.selectSubTerm : _.noop}>
             <span
-              style={{
-                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover',
-                fontSize: dynamicFontSize(sub_term_name),
-                cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
-              }}
               className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
               {sub_term_name}
             </span>
@@ -119,7 +107,7 @@ export default class DiscoveryItem extends Component {
   renderThumnails = (images) => {
     if (images.length > 0) {
       return (
-        <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '30px' }}>
+        <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: 8, left: 8 }}>
           {_.map(images, item =>
             <a
               key={`thumbnail-${item.name}`}
@@ -128,7 +116,7 @@ export default class DiscoveryItem extends Component {
               data-position='bottom'
               className='bottom'>
               <img
-                style={{ width: '40px', height: '40px' }}
+                style={{ width: '40px', height: '40px', borderRadius: 8 }}
                 className='thumbnail'
                 width='40'
                 height='40'
@@ -174,45 +162,47 @@ export default class DiscoveryItem extends Component {
 
   render () {
     /* eslint-disable camelcase */
-    const { disc_url_id, site_tld, site_img, title, desc, search_num, img } = this.props
+    const { disc_url_id, site_tld, site_img, title, desc, img } = this.props
     const images = [{ name: site_tld, img: site_img }]
     const inlineStyle = {
-      height: 160
+      height: 'calc(100% - 65px)',
+      overflow: 'hidden'
     }
     return (
-      <div key={disc_url_id} className='grid-item shuffle-item'>
-        <div className='thumbnail-box'>
+      <div
+        key={disc_url_id}
+        className='grid-item shuffle-item'
+        onClick={this.handleClick}
+        onMouseEnter={this.preloadUrl}
+      >
+        <div className='thumbnail-box' >
           <div
             className='thumbnail'
           >
-            <a
+            <div
               style={{
                 backgroundImage: `url(${img || '/static/images/no-image.png'})`,
                 backgroundSize: 'cover'
               }}
               className='thumbnail-image'
-              onClick={this.handleClick}
-              onMouseEnter={this.preloadUrl}
-            >
-              <div className='discovery-title-wrap'>
-                <p className='discovery-title'>{title}</p>
-              </div>
-              <div ref={el => { this.textContainer = el }} >
-                <Textfit
-                  mode='multi'
-                  style={inlineStyle}
-                  onReady={this.onFitTextReady}
-                >
-                  {desc}
-                </Textfit>
-              </div>
-              <div className='caption' style={{ bottom: '72px', right: '-12px' }}>
-                {this.renderTerms()}
-              </div>
-            </a>
+            />
             {this.renderThumnails(images)}
-            <span style={{ fontSize: '11px' }}>S: {search_num} ID: {disc_url_id}</span>
           </div>
+        </div>
+        <div className='discovery-title-wrap'>
+          <p className='discovery-title'>{title}</p>
+        </div>
+        <div ref={el => { this.textContainer = el }} >
+          <Textfit
+            mode='multi'
+            style={inlineStyle}
+            onReady={this.onFitTextReady}
+          >
+            {desc}
+          </Textfit>
+        </div>
+        <div className='caption'>
+          {this.renderTerms()}
         </div>
       </div>
     )

@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Router from 'next/router'
 import NProgress from 'nprogress'
 import NoSSR from 'react-no-ssr'
-import { Footer, Page } from 'neal-react'
+import { Footer } from 'neal-react'
 // TODO: DevTools only use for development mode
 // import DevTools from 'mobx-react-devtools'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
@@ -35,8 +35,8 @@ const businessAddress = (
   </address>
 )
 
-export default ({ children, title = 'homepage', description = 'discover & share ' }) => (
-  <Page>
+export default ({ children, title = 'homepage', description = 'discover & share ', isSplitView }) => (
+  <div style={isSplitView ? { paddingBottom: 0 } : {}} className='neal-page'>
     <Head>
       <meta charSet='utf-8' />
       <meta http-equiv='x-dns-prefetch-control' content='on' />
@@ -67,17 +67,18 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <script src='/static/vendors/js/snoowrap-v1.min.js' />
       <script src='/static/vendors/js/addtohomescreen.min.js' />
     </Head>
-    <NoSSR>
-      <AppHeader />
-    </NoSSR>
+    { isSplitView ? undefined : <NoSSR><AppHeader /></NoSSR> }
     {children}
     <Notification />
-    <div className='footer-area'>
-      <Footer brandName={brandName}
-        facebookUrl='https://www.facebook.com/maomao.hiring'
-        address={businessAddress}
-      />
-    </div>
+    {
+      isSplitView ? undefined
+      : <div className='footer-area'>
+        <Footer brandName={brandName}
+          facebookUrl='https://www.facebook.com/maomao.hiring'
+          address={businessAddress}
+        />
+      </div>
+    }
     { /* <DevTools /> */}
-  </Page>
+  </div>
 )
