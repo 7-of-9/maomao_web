@@ -9,6 +9,7 @@ export class UIStore {
   /* app header component - show modal */
   @observable showSignInModal = false
   @observable showExtensionModal = false
+  @observable showWelcomeModal = false
   @observable isRedirectToUrl = false
   /* homepage filter */
   @observable onlyMe = false
@@ -156,6 +157,10 @@ export class UIStore {
   @action toggleSignIn (isShow, title = 'Sign In') {
     this.showSignInModal = isShow
     this.title = title
+  }
+
+  @action toggleWelcome (isShow) {
+    this.showWelcomeModal = isShow
   }
 
   @action openExtensionModal () {

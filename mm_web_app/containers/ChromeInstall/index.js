@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { inject, observer } from 'mobx-react'
+import _ from 'lodash'
 import logger from '../../utils/logger'
 
 const replaceMMIcon = (desc) => {
@@ -27,8 +28,15 @@ class ChromeInstall extends React.PureComponent {
     this.props.ui.openExtensionModal()
   }
 
+  showSignUp = (evt) => {
+    evt.preventDefault()
+    this.props.ui.toggleSignIn(true, 'Sign Up')
+  }
+
   render () {
     const { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } = this.props.store
+    const { selectedTopics } = this.props.ui
+    const selectedItems = selectedTopics ? _.map(selectedTopics, item => ({img: item.img, id: item.termId, name: item.termName})) : []
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
@@ -87,6 +95,11 @@ class ChromeInstall extends React.PureComponent {
               </div>
             }
           </div>
+          <p style={{ marginTop: 16 }}>To sign up choose your topics to follow</p>
+          {
+            !isLogin && selectedItems.length > 0 &&
+            <button style={{ fontSize: '1.2rem', margin: 0 }} className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
+          }
         </div>
           }
       </div>

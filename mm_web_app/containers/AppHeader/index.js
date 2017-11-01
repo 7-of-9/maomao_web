@@ -132,11 +132,6 @@ class AppHeader extends React.Component {
     this.props.ui.toggleSignIn(true, 'Sign In')
   }
 
-  showSignUp = (evt) => {
-    evt.preventDefault()
-    this.props.ui.toggleSignIn(true, 'Sign Up')
-  }
-
   openShareManagement = (evt) => {
     evt.preventDefault()
     this.props.ui.displayShareManagement()
@@ -333,16 +328,10 @@ class AppHeader extends React.Component {
 
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
-    const { showSignInModal, title, selectedTopics } = this.props.ui
+    const { showSignInModal, title } = this.props.ui
 
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand(user)}>
-        {
-          !isLogin && selectedTopics.length > 0 &&
-          <NavItem className='fadeIn'>
-            <button style={{ fontSize: '1.2rem' }} className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
-          </NavItem>
-        }
         <NavItem>
           <a data-toggle='dropdown' style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }}>
             Hiring

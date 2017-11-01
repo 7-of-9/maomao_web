@@ -7,10 +7,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import { inject, observer } from 'mobx-react'
 import logger from '../../utils/logger'
-import { tagColor } from '../../utils/helper'
 import eventEmitter from '../../utils/eventEmitter'
 
+@inject('store')
+@inject('term')
+@inject('ui')
+@observer
 class TopicItem extends Component {
   static propTypes = {
     term_id: PropTypes.number.isRequired,
@@ -73,10 +77,10 @@ class TopicItem extends Component {
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', bottom: '0' }}>
-          {_.map(images, item =>
-            <a
+          {_.map(images, item => {
+            const isSelect = _.find(this.props.ui.selectedTopics, item2 => item2.termId === item.termId)
+            return <a
               key={`thumbnail-${item.name}`}
-              style={{ display: 'inline-block' }}
               data-tooltip={item.name}
               data-position='bottom'
               className='bottom'>
@@ -89,8 +93,9 @@ class TopicItem extends Component {
                 src={item.img}
                 alt={item.name}
                 />
-            </a>)
-          }
+              { isSelect && <div className='selected-sub' /> }
+            </a>
+          })}
         </div>
       )
     }
@@ -104,8 +109,8 @@ class TopicItem extends Component {
 
   render () {
     /* eslint-disable camelcase */
-    const { term_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
-    const images = _.map(childTopics, item => ({img: item.img, name: item.term_name}))
+    const { term_id, title, img, isSelect, childTopics } = this.props
+    const images = _.map(childTopics, item => ({img: item.img, name: item.term_name, termId: item.term_id}))
     return (
       <div key={term_id} className='grid-item shuffle-item home-item'>
         <div className='thumbnail-box'>

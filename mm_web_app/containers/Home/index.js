@@ -70,6 +70,12 @@ class Home extends React.Component {
         logger.info('addToHome', this.addToHome)
       }
     }
+    this.props.ui.toggleWelcome(true)
+  }
+
+  showSignUp = (evt) => {
+    evt.preventDefault()
+    this.props.ui.toggleSignIn(true, 'Sign Up')
   }
 
   renderTopicTree = () => {
@@ -80,6 +86,16 @@ class Home extends React.Component {
     return (
       <div className='wrapper-slide'>
         { shareInfo && <ChromeInstall /> }
+        { !isLogin && !shareInfo &&
+          <div className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero' style={{ textAlign: 'center' }}>
+            <h2>Welcome to Maomao</h2>
+            <p>To sign up choose your topics to follow</p>
+            {
+              !isLogin && selectedItems.length > 0 &&
+              <button style={{ fontSize: '1.2rem', margin: 0 }} className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
+            }
+          </div>
+        }
         {
           selectedItems.length > 0 &&
           <SelectedPanel
