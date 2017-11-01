@@ -72,6 +72,22 @@ class DiscoveryList extends Component {
     }
   }
 
+  onSelectChildTermDetail = (term) => {
+    this.props.term.setCurrentTerms([].concat(term.term_name))
+    this.props.term.resetPagination()
+    this.props.term.getTermDiscover(term.term_id)
+    this.props.term.addNewTerm(term)
+    const href = this.props.urlId > 0 ? `/${term.term_name}?urlId=${this.props.urlId}` : `/${term.term_name}`
+    Router.push(
+      {
+        pathname: '/',
+        query: { findTerms: term.term_name, urlId: this.props.urlId }
+      },
+      href,
+      { shallow: true }
+    )
+  }
+
   onBack = (term) => {
     const position = _.findIndex(this.props.term.findTerms, item => isSameStringOnUrl(item, term.term_name))
     const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
@@ -274,9 +290,6 @@ class DiscoveryList extends Component {
         ingoreTerms.push(termId)
       }
     })
-    if (termId && termId !== -1) {
-      ingoreTerms.push(termId)
-    }
     const items = []
     if (termIds) {
       _.forEach(termIds, id => {
@@ -310,7 +323,7 @@ class DiscoveryList extends Component {
                 termIds={termIds}
                 url={url}
                 utc={utc}
-                onSelectTerm={this.onSelectChildTerm}
+                onSelectTerm={this.onSelectChildTermDetail}
                 width={'100%'}
               />
             </Sticky>
