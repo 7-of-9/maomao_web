@@ -47,6 +47,12 @@ class DiscoveryDetail extends Component {
       <div>
         <div className='discovery-detail'>
           <h4><a onClick={this.handleClick}>{title}</a></h4>
+          <a href={url} style={{
+            display: 'block',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}>{url}</a>
           <span>{date}</span>
         </div>
         {
