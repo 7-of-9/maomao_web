@@ -14,18 +14,12 @@ import 'isomorphic-fetch'
 import _ from 'lodash'
 import Modal from 'react-modal'
 import { Navbar, NavItem } from 'neal-react'
-import Header from '../../components/Header'
-import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import { guid } from '../../utils/hash'
 import { clientCredentials } from '../../firebaseCredentials'
 import logger from '../../utils/logger'
 
-const brand = (user) => (
-  <Header>
-    <LogoIcon />
-    <Slogan redirectUrl={user && user.nav_id} />
-  </Header>)
+const brand = (user) => (<Slogan redirectUrl={user && user.nav_id} />)
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {

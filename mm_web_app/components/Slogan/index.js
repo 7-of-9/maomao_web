@@ -8,6 +8,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
+import LogoIcon from '../../components/LogoIcon'
+import Header from '../../components/Header'
 
 @inject('term')
 @inject('store')
@@ -35,9 +37,12 @@ class Slogan extends Component {
 
   render () {
     return (
-      <div style={{margin: '0 16px'}}>
-        <img className='logo-image' onClick={(evt) => this.redirectToSpecialUrl(evt, this.props.redirectUrl)} src='/static/images/maomao.png' alt='maomao' width='165' height='24' />
-        <span className='paragraph-smarter'> discover & share </span>
+      <div style={{margin: '0 16px'}} onClick={(evt) => this.redirectToSpecialUrl(evt, this.props.redirectUrl)}>
+        <Header>
+          <LogoIcon />
+          <img className='logo-image' src='/static/images/maomao.png' alt='maomao' width='165' height='24' />
+          <span className='paragraph-smarter'> discover & share </span>
+        </Header>
       </div>
     )
   }
