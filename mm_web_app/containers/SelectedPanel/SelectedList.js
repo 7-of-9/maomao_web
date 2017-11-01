@@ -32,7 +32,7 @@ class SelectedList extends React.PureComponent {
   render () {
     const { items } = this.props
     return (
-      <Carousel className='carousel-wrapper'>
+      <Carousel className='carousel-wrapper' settings={{ dots: false }}>
         {
         _.map(items, ({name, img, id}) => (
           <SelectedItem

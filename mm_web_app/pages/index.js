@@ -166,6 +166,8 @@ export default class IndexPage extends React.Component {
           this.term.getTermDiscover(currentTerm.term_id)
         }
       }
+    } else if (!profileUrl && !urlId) {
+      this.term.setCurrentTerms([])
     }
     if (urlId !== this.state.urlId) {
       this.setState({ urlId })

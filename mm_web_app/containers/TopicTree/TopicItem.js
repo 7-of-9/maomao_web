@@ -72,7 +72,7 @@ class TopicItem extends Component {
   renderThumnails = (images) => {
     if (images.length > 0) {
       return (
-        <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '0' }}>
+        <div className='preview-child-topics' style={{ width: 'fit-content', bottom: '0' }}>
           {_.map(images, item =>
             <a
               key={`thumbnail-${item.name}`}
@@ -81,7 +81,7 @@ class TopicItem extends Component {
               data-position='bottom'
               className='bottom'>
               <img
-                style={{width: '25px', height: '25px'}}
+                style={{width: '25px', height: '25px', borderRadius: 4}}
                 className='thumbnail'
                 width='25'
                 height='25'
@@ -107,46 +107,32 @@ class TopicItem extends Component {
     const { term_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
     const images = _.map(childTopics, item => ({img: item.img, name: item.term_name}))
     return (
-      <div key={term_id} className='grid-item shuffle-item'>
+      <div key={term_id} className='grid-item shuffle-item home-item'>
         <div className='thumbnail-box'>
           <div
             className='thumbnail'
             >
             <a
               style={{
-                backgroundImage: `url(${img || '/static/images/no-image.png'})`,
+                background: `linear-gradient(rgba(68, 68, 68, 0.4),rgba(68, 68, 68, 0.4)), url(${img || '/static/images/no-image.png'})`,
                 backgroundSize: 'cover',
                 opacity: '1.0'
               }}
               className={isSelect ? 'thumbnail-image active' : 'thumbnail-image'}
-              onClick={this.handleClick}
               >
               <div className='caption'>
-                <div className='mix-tag'>
-                  <div className='mix-tag-topic'>
-                    <span
-                      style={{
-                        background: `linear-gradient(rgba(111, 111, 111, 0.2),rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5),rgba(111, 111, 111, 0.2)), url(${img || '/static/images/no-image.png'})`,
-                        backgroundSize: 'cover'
-                      }}
-                      className={`tags ${tagColor(title)}`} rel='tag'>
-                      {title}
-                    </span>
-                    {
-                      totals > 0 &&
-                      <span className={this.hasSelected(childTopics, selectedTopics)}>{totals}</span>
-                    }
-                  </div>
-                </div>
+                {title}
               </div>
+              <input
+                checked={isSelect}
+                type='checkbox'
+                className='select-topic'
+                onChange={this.onChange}
+                />
             </a>
-            {this.renderThumnails(images)}
-            <input
-              checked={isSelect}
-              type='checkbox'
-              className='select-topic'
-              onChange={this.onChange}
-              />
+            <div onClick={this.handleClick}>
+              {this.renderThumnails(images)}
+            </div>
           </div>
         </div>
       </div>
