@@ -37,6 +37,8 @@ export class UIStore {
   @observable discoveryTermId = -1
   @observable isSplitView = false
   @observable spliterWidth = '100%'
+  @observable termHover = undefined
+  termHoverVisible = false
   selectedDiscoveryItem = {}
   shareTopics = []
   shareUrlId = -1
@@ -287,6 +289,23 @@ export class UIStore {
     this.shareUrlId = -1
     this.userId = -1
     this.title = 'Sign In'
+  }
+
+  @action showTermHover (term) {
+    this.termHover = term
+  }
+
+  @action setFollowedTermHover (followed) {
+    this.termHover.followed = followed
+  }
+
+  @action hideTermHover () {
+    this.termHover = undefined
+    this.termHoverVisible = false
+  }
+
+  @action keepTermHover () {
+    this.termHoverVisible = true
   }
 }
 

@@ -236,6 +236,8 @@ class DiscoveryList extends Component {
                   ingoreTerms={ingoreTerms}
                   main_term_img={main_term_img}
                   main_term_name={main_term_name}
+                  main_term={term}
+                  sub_term={subTerm}
                   sub_term_img={sub_term_img}
                   sub_term_name={sub_term_name}
                   onSelect={this.onSelect}
@@ -265,6 +267,8 @@ class DiscoveryList extends Component {
                 ingoreTerms={ingoreTerms}
                 main_term_img={main_term_img}
                 main_term_name={main_term_name}
+                main_term={term}
+                sub_term={subTerm}
                 sub_term_img={sub_term_img}
                 sub_term_name={sub_term_name}
                 onSelect={this.onSelect}

@@ -39,6 +39,7 @@ const customModalStyles = {
 }
 
 @inject('store')
+@inject('term')
 @inject('ui')
 @observer
 class AppHeader extends React.Component {
@@ -320,9 +321,31 @@ class AppHeader extends React.Component {
     }
   }
 
+  handleHideTermHover = () => {
+    this.props.ui.hideTermHover()
+  }
+
+  handleKeepTermHover = () => {
+    this.props.ui.keepTermHover()
+  }
+
+  changeFollow = (termId, followed, title) => {
+    if (followed) {
+      this.props.term.unfollowTopicUser(termId, () => {
+        this.props.ui.addNotification(`${title} unfollowed`)
+        this.props.ui.setFollowedTermHover(!followed)
+      })
+    } else {
+      this.props.term.followTopicUser(termId, () => {
+        this.props.ui.addNotification(`${title} followed`)
+        this.props.ui.setFollowedTermHover(!followed)
+      })
+    }
+  }
+
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
-    const { showSignInModal, title } = this.props.ui
+    const { showSignInModal, title, termHover } = this.props.ui
 
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand(user)}>
@@ -441,6 +464,105 @@ class AppHeader extends React.Component {
             </div>
           </div>
         </Modal>
+        <div
+          style={{
+            display: termHover ? 'block' : 'none',
+            top: termHover ? termHover.top + 10 : 0,
+            left: termHover ? termHover.left : 0,
+            position: 'fixed',
+            zIndex: 10031,
+            animation: 'fadeIn 0.5s'
+          }}
+          onMouseLeave={this.handleHideTermHover}
+          onMouseEnter={this.handleKeepTermHover}
+        >
+          { termHover &&
+            <div
+              style={{
+                border: 0,
+                borderRadius: 4,
+                width: 200,
+                height: 150,
+                background: `linear-gradient(rgba(68, 68, 68, 0.4),rgba(68, 68, 68, 0.4)), url(${termHover.term.img || '/static/images/no-image.png'})`,
+                backgroundColor: '#fff',
+                backgroundSize: 'cover',
+                boxShadow: '0 0 1px 1px rgba(0,0,0,0.25)'
+              }}
+            >
+              <div
+                style={{
+                  bottom: 'auto',
+                  top: -10,
+                  width: '100%',
+                  height: 10,
+                  position: 'absolute',
+                  overflow: 'hidden'
+                }}
+              >
+                <div
+                  style={{
+                    top: 10,
+                    left: 30,
+                    position: 'absolute',
+                    height: 10,
+                    width: 10,
+                    backgroundColor: 'rgb(210, 210, 210)',
+                    transform: 'translateY(-7px) rotate(45deg)',
+                    pointerEvents: 'none'
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: 'inline-block',
+                  height: 35,
+                  margin: '0 0 -4px 0',
+                  position: 'absolute',
+                  right: 0,
+                  verticalAlign: 'bottom'
+                }}
+              >
+                <div
+                  style={{
+                    right: 20,
+                    top: 15,
+                    position: 'relative'
+                  }}
+                >
+                  <button
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                      border: termHover.followed ? '1px solid #f21d1d' : '1px solid #1da1f2',
+                      color: termHover.followed ? '#f21d1d' : '#1da1f2',
+                      borderRadius: 100,
+                      boxShadow: 'none',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      whiteSpace: 'nowrap',
+                      minWidth: 89,
+                      textAlign: 'center'
+                    }}
+                    onClick={() => this.changeFollow(termHover.term.term_id, termHover.followed, termHover.term.term_name)}
+                  >
+                    {termHover.followed ? 'unfollow' : 'follow'}
+                  </button>
+                </div>
+              </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 8,
+                  left: 8,
+                  color: '#Fff',
+                  fontSize: '1.5em',
+                  fontWeight: 'bold'
+                }}
+              >
+                {termHover.term.term_name}
+              </div>
+            </div>
+          }
+        </div>
       </Navbar>
     )
   }

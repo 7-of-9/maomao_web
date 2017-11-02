@@ -24,8 +24,6 @@ class Discover extends React.Component {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     const { isSplitView } = toJS(this.props.ui)
-    console.log('test')
-    console.log(isSplitView)
     return (
       <Layout title={title} description={description} isSplitView={isSplitView}>
         <div className='wrapper-slide'>

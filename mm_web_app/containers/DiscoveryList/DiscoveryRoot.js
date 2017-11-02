@@ -41,6 +41,8 @@ class DiscoveryRoot extends Component {
               key={`${item.disc_url_id}-${item.url}-${index}`}
               main_term_img={main_term_img}
               main_term_name={main_term_name}
+              main_term={term}
+              sub_term={subTerm}
               sub_term_img={sub_term_img}
               sub_term_name={sub_term_name}
               onSelect={this.props.onSelect}

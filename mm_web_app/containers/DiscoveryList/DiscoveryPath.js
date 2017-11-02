@@ -7,7 +7,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import { inject, observer } from 'mobx-react'
+import { inject } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
@@ -24,7 +24,6 @@ const Carousel = dynamic(
 @inject('term')
 @inject('store')
 @inject('ui')
-@observer
 class DiscoveryPath extends Component {
   static propTypes = {
     onBack: PropTypes.func.isRequired,
@@ -35,18 +34,31 @@ class DiscoveryPath extends Component {
     onSelectChildTerm: () => {}
   }
 
-  changeFollow = (termId, followed, title) => {
-    if (followed) {
-      this.props.term.unfollowTopicUser(termId, () => this.props.ui.addNotification(`${title} unfollowed`))
-    } else {
-      this.props.term.followTopicUser(termId, () => this.props.ui.addNotification(`${title} followed`))
+  handleHoverTerm = (evt, term) => {
+    const { followedTopics } = toJS(this.props.term)
+    const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
+    const termHover = {
+      top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
+      left: evt.target.getBoundingClientRect().left,
+      term,
+      followed,
+      height: evt.target.offsetHeight
     }
+    this.props.ui.showTermHover(termHover)
+  }
+
+  handleLeaveHoverTerm = (term) => {
+    setTimeout(() => {
+      if (!this.props.ui.termHoverVisible && term.term_id === toJS(this.props.ui.termHover.term).term_id) {
+        this.props.ui.hideTermHover()
+      }
+    }, 10)
   }
 
   renderDiscoveryPath = () => {
     const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
-    const { findTerms, termsInfo: { terms }, followedTopics } = toJS(this.props.term)
+    const { findTerms, termsInfo: { terms } } = toJS(this.props.term)
     const items = []
     const topics = []
     const carouselItems = []
@@ -54,22 +66,18 @@ class DiscoveryPath extends Component {
       const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
       if (term) {
         const { img, term_name: title, term_id: termId } = term
-        const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === termId) : false
         items.push(
-          <div className='topic' key={`back-to-${title}`}>
-            {followedTopics.topics &&
-              <div className='topic-follow'>
-                <input
-                  checked={followed}
-                  type='checkbox'
-                  id={`followCheck-${termId}`}
-                  onChange={() => this.changeFollow(termId, followed, title)}
-                  />
-                <label htmlFor={`followCheck-${termId}`} />
-              </div>
-            }
+          <div
+            className='topic'
+            key={`back-to-${title}-${termId}`}
+            onMouseEnter={(evt) => this.handleHoverTerm(evt, term)}
+            onMouseLeave={() => this.handleLeaveHoverTerm(term)}
+          >
             <span
-              onClick={() => this.props.onBack(term)}
+              onClick={() => {
+                this.props.ui.hideTermHover()
+                this.props.onBack(term)
+              }}
               style={{
                 background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
                 backgroundSize: 'cover',
@@ -119,22 +127,18 @@ class DiscoveryPath extends Component {
       _.forEach(_.uniqBy(topics, 'term_id'), term => {
         const { img, term_name: title, term_id: termId } = term
         if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
-          const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === termId) : false
           carouselItems.push(
-            <div className='topic' key={`navigate-to-${title}-${termId}`}>
-              {followedTopics.topics &&
-                <div className='topic-follow'>
-                  <input
-                    checked={followed}
-                    type='checkbox'
-                    id={`followCheck-${termId}`}
-                    onChange={() => this.changeFollow(termId, followed, title)}
-                    />
-                  <label htmlFor={`followCheck-${termId}`} />
-                </div>
-              }
+            <div
+              className='topic'
+              key={`navigate-to-${title}-${termId}`}
+              onMouseEnter={(evt) => this.handleHoverTerm(evt, term)}
+              onMouseLeave={() => this.handleLeaveHoverTerm(term)}
+            >
               <span
-                onClick={() => this.props.onSelectChildTerm(term)}
+                onClick={() => {
+                  this.props.ui.hideTermHover()
+                  this.props.onSelectChildTerm(term)
+                }}
                 style={{
                   background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
                   backgroundSize: 'cover',
@@ -181,6 +185,10 @@ class DiscoveryPath extends Component {
         </div>
       )
     }
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return false
   }
 
   render () {

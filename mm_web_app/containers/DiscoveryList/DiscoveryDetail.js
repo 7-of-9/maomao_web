@@ -51,7 +51,7 @@ class DiscoveryDetail extends Component {
             display: 'block',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-            overflow: 'hidden',
+            overflow: 'hidden'
           }}>{url}</a>
           <span>{date}</span>
         </div>

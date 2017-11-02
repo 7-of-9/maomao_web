@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
+import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
 import { Textfit } from 'react-textfit'
 import _ from 'lodash'
@@ -13,6 +14,7 @@ import { tagColor, isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
 
 @inject('term')
+@inject('ui')
 @observer
 export default class DiscoveryItem extends Component {
   static propTypes = {
@@ -24,6 +26,8 @@ export default class DiscoveryItem extends Component {
     desc: PropTypes.string.isRequired,
     main_term_name: PropTypes.string.isRequired,
     sub_term_name: PropTypes.string.isRequired,
+    main_term: PropTypes.string.isRequired,
+    sub_term: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     main_term_img: PropTypes.string.isRequired,
     sub_term_img: PropTypes.string.isRequired,
@@ -42,6 +46,8 @@ export default class DiscoveryItem extends Component {
     url: '',
     main_term_name: '',
     sub_term_name: '',
+    main_term: '',
+    sub_term: '',
     img: '',
     main_term_img: '',
     sub_term_img: '',
@@ -76,26 +82,68 @@ export default class DiscoveryItem extends Component {
     this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
   }
 
+  handleHoverTerm = (evt, term) => {
+    const { followedTopics } = toJS(this.props.term)
+    const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
+    const termHover = {
+      top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
+      left: evt.target.getBoundingClientRect().left,
+      term,
+      followed,
+      height: evt.target.offsetHeight
+    }
+    console.log(evt.target)
+    this.props.ui.showTermHover(termHover)
+  }
+
+  handleLeaveHoverTerm = (term) => {
+    setTimeout(() => {
+      if (!this.props.ui.termHoverVisible && term.term_id === toJS(this.props.ui.termHover.term).term_id) {
+        this.props.ui.hideTermHover()
+      }
+    }, 10)
+  }
+
   renderTerms = () => {
     /* eslint-disable camelcase */
-    const { main_term_name, sub_term_name, main_term_id, sub_term_id, ingoreTerms } = this.props
+    const { main_term_name, sub_term_name, main_term_id, sub_term_id, ingoreTerms, main_term, sub_term } = this.props
     let customStyle = { height: '52px', right: '20px', top: '-29px', position: 'relative' }
     if (sub_term_name !== main_term_name) {
       customStyle = Object.assign({}, customStyle, { top: '-54px' })
     }
     return (
       <div className='mix-tag' style={customStyle}>
-        <div className='mix-tag-topic' onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? this.selectMainTerm : _.noop}>
+        <div
+          className='mix-tag-topic'
+        >
           <span
-            className={`tags ${tagColor(main_term_name)}`} rel='tag'>
+            className={`tags ${tagColor(main_term_name)}`}
+            rel='tag'
+            onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? () => {
+              this.selectMainTerm()
+              this.props.ui.hideTermHover()
+            } : _.noop}
+            onMouseEnter={(evt) => this.handleHoverTerm(evt, main_term)}
+            onMouseLeave={() => this.handleLeaveHoverTerm(main_term)}
+          >
             {main_term_name}
           </span>
         </div>
         {
           sub_term_name && sub_term_name !== main_term_name &&
-          <div className='mix-tag-topic' onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? this.selectSubTerm : _.noop}>
+          <div
+            className='mix-tag-topic'
+            >
             <span
-              className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
+              className={`tags ${tagColor(sub_term_name)}`}
+              rel='tag'
+              onMouseEnter={(evt) => this.handleHoverTerm(evt, sub_term)}
+              onMouseLeave={() => this.handleLeaveHoverTerm(sub_term)}
+              onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? () => {
+                this.selectSubTerm()
+                this.props.ui.hideTermHover()
+              } : _.noop}
+            >
               {sub_term_name}
             </span>
           </div>
