@@ -468,7 +468,7 @@ class AppHeader extends React.Component {
           style={{
             display: termHover ? 'block' : 'none',
             top: termHover ? termHover.top + 10 : 0,
-            left: termHover ? termHover.left : 0,
+            left: termHover ? termHover.left + 200 > window.innerWidth ? termHover.left - 120 : termHover.left : 0,
             position: 'fixed',
             zIndex: 10031,
             animation: 'fadeIn 0.5s'
@@ -502,7 +502,8 @@ class AppHeader extends React.Component {
                 <div
                   style={{
                     top: 10,
-                    left: 30,
+                    left: termHover.left + 200 > window.innerWidth ? 'auto' : 30,
+                    right: termHover.left + 200 > window.innerWidth ? 30 : 'auto',
                     position: 'absolute',
                     height: 10,
                     width: 10,
