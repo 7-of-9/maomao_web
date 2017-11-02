@@ -115,14 +115,14 @@ export default class DiscoveryItem extends Component {
       <div className='mix-tag' style={customStyle}>
         <div
           className='mix-tag-topic'
+          onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
+            this.selectMainTerm(evt)
+            this.props.ui.hideTermHover()
+          } : _.noop}
         >
           <span
             className={`tags ${tagColor(main_term_name)}`}
             rel='tag'
-            onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? () => {
-              this.selectMainTerm()
-              this.props.ui.hideTermHover()
-            } : _.noop}
             onMouseEnter={(evt) => this.handleHoverTerm(evt, main_term)}
             onMouseLeave={() => this.handleLeaveHoverTerm(main_term)}
           >
@@ -133,16 +133,16 @@ export default class DiscoveryItem extends Component {
           sub_term_name && sub_term_name !== main_term_name &&
           <div
             className='mix-tag-topic'
-            >
+            onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? (evt) => {
+              this.selectSubTerm(evt)
+              this.props.ui.hideTermHover()
+            } : _.noop}
+          >
             <span
               className={`tags ${tagColor(sub_term_name)}`}
               rel='tag'
               onMouseEnter={(evt) => this.handleHoverTerm(evt, sub_term)}
               onMouseLeave={() => this.handleLeaveHoverTerm(sub_term)}
-              onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? () => {
-                this.selectSubTerm()
-                this.props.ui.hideTermHover()
-              } : _.noop}
             >
               {sub_term_name}
             </span>
