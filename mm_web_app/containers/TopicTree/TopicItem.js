@@ -128,12 +128,14 @@ class TopicItem extends Component {
               <div className='caption'>
                 {title}
               </div>
-              <input
-                checked={isSelect}
-                type='checkbox'
-                className='select-topic'
-                onChange={this.onChange}
-                />
+              <label className='select-topic'>
+                <input
+                  checked={isSelect}
+                  type='checkbox'
+                  onChange={this.onChange}
+                  />
+                <span />
+              </label>
             </a>
             <div onClick={this.handleClick}>
               {this.renderThumnails(images)}

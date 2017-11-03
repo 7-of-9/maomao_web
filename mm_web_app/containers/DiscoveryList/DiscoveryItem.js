@@ -211,10 +211,6 @@ export default class DiscoveryItem extends Component {
     /* eslint-disable camelcase */
     const { disc_url_id, site_tld, site_img, title, desc, img } = this.props
     const images = [{ name: site_tld, img: site_img }]
-    const inlineStyle = {
-      height: 'calc(100% - 65px)',
-      overflow: 'hidden'
-    }
     return (
       <div
         key={disc_url_id}

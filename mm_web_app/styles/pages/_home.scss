@@ -845,29 +845,40 @@ the home page
             content: "";
             border-radius: 4px;
           }
-          input.select-topic {
-            @include border-radius(8px);
-            position: absolute;
-            visibility: hidden;
-            top: 0;
-            right: 0;
-            -webkit-appearance:none;
+          .select-topic {
             width:100%;
             height:100%;
-            border-radius:2px;
-            border:none;
-            transition: all .2s linear;
-            cursor: pointer;
-            &:checked {
-              background: url('/static/images/tick.png') no-repeat center;
-              background-size: contain;
-              background-color: rgba(68, 184, 212, 0.7);
-              visibility: visible;
+            display: block;
+            position: absolute;
+            visibility: hidden;
+            input[type="checkbox"] {
+              display: none;
+              &:checked {
+                + span {
+                  background: url('/static/images/tick.png') no-repeat center;
+                  background-size: contain;
+                  background-color: rgba(68, 184, 212, 0.7);
+                  visibility: visible;
+                }
+              }
+            }
+            span {
+              @include border-radius(8px);
+              top: 0;
+              right: 0;
+              border-radius:2px;
+              border:none;
+              width:100%;
+              height:100%;
+              display: block;
+              position: absolute;
+              transition: all .2s linear;
+              cursor: pointer;
             }
           }
         }
         &:hover {
-          input.select-topic {
+          .select-topic {
             visibility: visible;
           }
         }
