@@ -8,7 +8,6 @@ import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
-import { Textfit } from 'react-textfit'
 import _ from 'lodash'
 import { tagColor, isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
@@ -240,14 +239,8 @@ export default class DiscoveryItem extends Component {
         <div className='discovery-title-wrap'>
           <p className='discovery-title'>{title}</p>
         </div>
-        <div ref={el => { this.textContainer = el }} >
-          <Textfit
-            mode='multi'
-            style={inlineStyle}
-            onReady={this.onFitTextReady}
-          >
-            {desc}
-          </Textfit>
+        <div className='discovery-description'>
+          {desc}
         </div>
         <div className='caption'>
           {this.renderTerms()}
