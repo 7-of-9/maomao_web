@@ -37,6 +37,9 @@ class DiscoveryPath extends Component {
   handleHoverTerm = (evt, term) => {
     const { followedTopics } = toJS(this.props.term)
     const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
+    if (term.term_name === '...' && this.props.term.termsCache[term.term_id]) {
+      term = toJS(this.props.term.termsCache[term.term_id])
+    }
     const termHover = {
       top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
       left: evt.target.getBoundingClientRect().left,

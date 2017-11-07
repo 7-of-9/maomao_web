@@ -12,6 +12,9 @@ the header section
   visibility: visible;
   position: relative;
   z-index: 1001;
+  .header-hidden {
+    display: none;
+  }
   .header-nav {
     padding: 0;
     height: 72px;

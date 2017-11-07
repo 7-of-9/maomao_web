@@ -19,6 +19,7 @@ class TermStore {
   @observable.shallow terms = []
   @observable.ref termsCache = {}
   @observable followedTopics = {}
+  termFollowChanged = false
   tree = []
   rootData = { page: 1, discoveries: [] }
   preloadPendings = []
@@ -159,7 +160,7 @@ class TermStore {
   @action getRootDiscover (page) {
     logger.info('getRootDiscover', page)
     const isExist = _.find(this.terms, item => item.termId === -1)
-    if (!isExist && !this.isProcessingDiscoverTerm && page) {
+    if ((!isExist || this.termFollowChanged) && !this.isProcessingDiscoverTerm && page) {
       this.isProcessingRootDiscover = true
       this.hasMore = false
       const rootData = rootDiscover(this.userId, this.userHash, page)
@@ -173,6 +174,7 @@ class TermStore {
               this.hasMore = false
             } else {
               this.hasMore = true
+              this.termFollowChanged = false
               this.discoveries.push(...discoveries)
               this.terms.push({
                 termId: -1,
@@ -249,6 +251,7 @@ class TermStore {
       () => {
         logger.info('followTopic', res)
         this.getFollowedTopics()
+        this.termFollowChanged = true
         if (callback) {
           callback()
         }
@@ -264,6 +267,7 @@ class TermStore {
       () => {
         logger.info('unfollowTopic', res)
         this.getFollowedTopics()
+        this.termFollowChanged = true
         if (callback) {
           callback()
         }

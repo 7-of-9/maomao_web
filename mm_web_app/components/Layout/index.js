@@ -67,7 +67,7 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <script src='/static/vendors/js/snoowrap-v1.min.js' />
       <script src='/static/vendors/js/addtohomescreen.min.js' />
     </Head>
-    { isSplitView ? undefined : <NoSSR><AppHeader /></NoSSR> }
+    <NoSSR><AppHeader hidden={isSplitView} /></NoSSR>
     {children}
     <Notification />
     {

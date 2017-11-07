@@ -44,11 +44,13 @@ const customModalStyles = {
 @observer
 class AppHeader extends React.Component {
   static propTypes = {
-    isHome: PropTypes.bool
+    isHome: PropTypes.bool,
+    hidden: PropTypes.bool
   }
 
   static defaultProps = {
-    isHome: true
+    isHome: true,
+    hidden: false
   }
 
   onInternalLogin = () => {
@@ -346,91 +348,93 @@ class AppHeader extends React.Component {
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
     const { showSignInModal, title, termHover } = this.props.ui
-
+    const { hidden } = this.props
     return (
-      <Navbar className='header-nav animated fadeInDown' brand={brand(user)}>
-        <NavItem>
-          <a data-toggle='dropdown' style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }}>
-            Hiring
-            <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-          </a>
-          <ul className='dropdown-menu dropdown-hiring pull-right'>
-            <li key={guid()}>
-              <Link prefetch href='/hiring/?type=js' as='/hiring-js'>
-                <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
-              </Link>
-            </li>
-            <li key={guid()}>
-              <Link prefetch href='/hiring/?type=vp' as='/hiring-vp'>
-                <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
-              </Link>
-            </li>
-          </ul>
-        </NavItem>
-        {
-          (!isMobile && isLogin && isChrome && !isInstalledOnChromeDesktop) &&
+      <div>
+        <Navbar className={`header-nav animated fadeInDown ${hidden ? 'header-hidden' : ''}`} brand={brand(user)}>
           <NavItem>
-            <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
-          </NavItem>
-        }
-        {
-          isLogin && this.isOldHomePage() &&
-          <NavItem>
-            <a onClick={this.openShareManagement}>
-              <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
-              <span className='nav-text'>Share Management</span>
+            <a data-toggle='dropdown' style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }}>
+              Hiring
+              <i className='fa fa-chevron-circle-down' aria-hidden='true' />
             </a>
+            <ul className='dropdown-menu dropdown-hiring pull-right'>
+              <li key={guid()}>
+                <Link prefetch href='/hiring/?type=js' as='/hiring-js'>
+                  <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
+                </Link>
+              </li>
+              <li key={guid()}>
+                <Link prefetch href='/hiring/?type=vp' as='/hiring-vp'>
+                  <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
+                </Link>
+              </li>
+            </ul>
           </NavItem>
-        }
-        <NavItem>
-          {userId > 0 &&
-            <div className='dropdown account-dropdown'>
-              <a className='dropdown-toggle' data-toggle='dropdown'>
-                <img onError={this.noImage} className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
-              </a>
-              <a className='link-logout-res' onClick={this.onLogout}>
-                <i className='fa fa-sign-out' />
-                <span className='nav-text'>Sign Out</span>
-              </a>
-              <ul className='dropdown-menu pull-right'>
-                {
-                  user && user.name &&
-                  <div className='account-dropdown__identity account-dropdown__segment'>
-                  Signed in as <strong>({user.name} ({user.email}))</strong>
-                  </div>
-                }
-                {
-                  user && user.name &&
-                  <li style={{color: '#333', backgroundColor: '#fff'}}>
-                    <Link
-                      as={`/${user.nav_id}`}
-                      prefetch
-                      href={{
-                        pathname: '/',
-                        query: { profileUrl: `/${user.nav_id}` }
-                      }}>
-                      <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
-                    </Link>
-                  </li>
-                }
-                <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
-              </ul>
-            </div>
+          {
+            (!isMobile && isLogin && isChrome && !isInstalledOnChromeDesktop) &&
+            <NavItem>
+              <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
+            </NavItem>
           }
-          {userId < 0 && <a style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }} onClick={this.showSignIn}>Sign In</a>}
-        </NavItem>
+          {
+            isLogin && this.isOldHomePage() &&
+            <NavItem>
+              <a onClick={this.openShareManagement}>
+                <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
+                <span className='nav-text'>Share Management</span>
+              </a>
+            </NavItem>
+          }
+          <NavItem>
+            {userId > 0 &&
+              <div className='dropdown account-dropdown'>
+                <a className='dropdown-toggle' data-toggle='dropdown'>
+                  <img onError={this.noImage} className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
+                </a>
+                <a className='link-logout-res' onClick={this.onLogout}>
+                  <i className='fa fa-sign-out' />
+                  <span className='nav-text'>Sign Out</span>
+                </a>
+                <ul className='dropdown-menu pull-right'>
+                  {
+                    user && user.name &&
+                    <div className='account-dropdown__identity account-dropdown__segment'>
+                    Signed in as <strong>({user.name} ({user.email}))</strong>
+                    </div>
+                  }
+                  {
+                    user && user.name &&
+                    <li style={{color: '#333', backgroundColor: '#fff'}}>
+                      <Link
+                        as={`/${user.nav_id}`}
+                        prefetch
+                        href={{
+                          pathname: '/',
+                          query: { profileUrl: `/${user.nav_id}` }
+                        }}>
+                        <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
+                      </Link>
+                    </li>
+                  }
+                  <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
+                </ul>
+              </div>
+            }
+            {userId < 0 && <a style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }} onClick={this.showSignIn}>Sign In</a>}
+          </NavItem>
+        </Navbar>
         <Modal
           isOpen={showSignInModal}
           onRequestClose={this.onClose}
           portalClassName='SignInModal'
           contentLabel={title}
-          >
+        >
           <h2 ref='subtitle'>{title}</h2>
           <div className='social-action' >
             <div className='block-button'>
               <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
                 <i className='fa fa-facebook' /> {title} with Facebook
-               </a>
+              </a>
             </div>
             <div className='block-button'>
               <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
@@ -449,7 +453,8 @@ class AppHeader extends React.Component {
           onRequestClose={this.onCloseExtensionModal}
           portalClassName='InstallModal'
           style={customModalStyles}
-          contentLabel='Install maomao'>
+          contentLabel='Install maomao'
+        >
           <div className='install-modal-content'>
             <div className='modal-header'>
               <h4 className='modal-title'>Install maomao</h4>
@@ -564,7 +569,7 @@ class AppHeader extends React.Component {
             </div>
           }
         </div>
-      </Navbar>
+      </div>
     )
   }
 }

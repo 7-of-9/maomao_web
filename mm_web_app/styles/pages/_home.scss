@@ -767,20 +767,16 @@ the home page
         &:hover {
           opacity: 1.0;
           .discovery-description {
-            height: 360px;
+            padding: 70px 8px 8px 8px;
             display: block;
             color:#232323;
             background: #F4FAFF;
             margin: 0;
             height: calc(100% - 30px);
             width: calc(100% - 30px);
-            padding: 8px;
             position: absolute;
             top: 15px;
             border-radius: 8px;
-          }
-          .caption {
-            top: calc( 100% - 30px);
           }
         }
         &.active {
@@ -804,13 +800,13 @@ the home page
           -webkit-box-orient: vertical;
         }
         .caption {
-          @include abs-pos ($top: 246px, $right: 0, $left: auto);
+          @include abs-pos ($top: 21px, $right: 0, $left: auto);
           transition: 0.2s all linear;
           width: 100%;
           .mix-tag {
             z-index: 1;
             .tags {
-              @include border-radius(8px);
+              @include border-radius(6px);
               margin: 0 2.5px;
               padding: 4px 8px;
               font-size: 0.8rem;

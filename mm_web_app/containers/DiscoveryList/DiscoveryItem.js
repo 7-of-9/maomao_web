@@ -84,6 +84,9 @@ export default class DiscoveryItem extends Component {
   handleHoverTerm = (evt, term) => {
     const { followedTopics } = toJS(this.props.term)
     const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
+    if (term.term_name === '...' && this.props.term.termsCache[term.term_id]) {
+      term = toJS(this.props.term.termsCache[term.term_id])
+    }
     const termHover = {
       top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
       left: evt.target.getBoundingClientRect().left,
@@ -91,7 +94,6 @@ export default class DiscoveryItem extends Component {
       followed,
       height: evt.target.offsetHeight
     }
-    console.log(evt.target)
     this.props.ui.showTermHover(termHover)
   }
 
@@ -105,11 +107,8 @@ export default class DiscoveryItem extends Component {
 
   renderTerms = () => {
     /* eslint-disable camelcase */
-    const { main_term_name, sub_term_name, main_term_id, sub_term_id, ingoreTerms, main_term, sub_term } = this.props
-    let customStyle = { height: '52px', right: '20px', top: '-29px', position: 'relative' }
-    if (sub_term_name !== main_term_name) {
-      customStyle = Object.assign({}, customStyle, { top: '-54px' })
-    }
+    const { main_term_name, sub_term_name, main_term_id, sub_term_id, ingoreTerms, main_term, sub_term, main_term_img, sub_term_img } = this.props
+    let customStyle = { height: '52px', right: '20px', top: '0', position: 'relative' }
     return (
       <div className='mix-tag' style={customStyle}>
         <div
@@ -124,6 +123,11 @@ export default class DiscoveryItem extends Component {
             rel='tag'
             onMouseEnter={(evt) => this.handleHoverTerm(evt, main_term)}
             onMouseLeave={() => this.handleLeaveHoverTerm(main_term)}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: _.indexOf(ingoreTerms, main_term_id) === -1 ? 'pointer' : 'default'
+            }}
           >
             {main_term_name}
           </span>
@@ -142,6 +146,11 @@ export default class DiscoveryItem extends Component {
               rel='tag'
               onMouseEnter={(evt) => this.handleHoverTerm(evt, sub_term)}
               onMouseLeave={() => this.handleLeaveHoverTerm(sub_term)}
+              style={{
+                background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
+                backgroundSize: 'cover',
+                cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
+              }}
             >
               {sub_term_name}
             </span>

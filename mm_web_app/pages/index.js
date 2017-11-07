@@ -141,6 +141,7 @@ export default class IndexPage extends React.Component {
       }
       this.term.setCurrentTerms([])
       this.uiStore.backToRootDiscovery()
+      this.term.getRootDiscover()
     } else if (urlId && !findTerms) {
       this.term.setCurrentTerms([])
       this.uiStore.selectDiscoveryTerm(-1)
