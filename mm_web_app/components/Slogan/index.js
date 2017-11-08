@@ -17,7 +17,7 @@ import Header from '../../components/Header'
 @observer
 class Slogan extends Component {
   static propTypes = {
-    redirectUrl: PropTypes.string.isRequired
+    redirectUrl: PropTypes.string
   }
 
   redirectToSpecialUrl = (evt, url) => {

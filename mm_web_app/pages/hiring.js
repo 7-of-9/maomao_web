@@ -3,6 +3,7 @@ import { Provider } from 'mobx-react'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
+import { initTermStore } from '../stores/term'
 import Layout from '../components/Layout'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
@@ -89,13 +90,15 @@ export default class Hiring extends React.Component {
     const store = initStore(isServer, userAgent, user, true)
     const uiStore = initUIStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])
-    return { isServer, type, ...store, ...uiStore, ...discovery }
+    const term = initTermStore(isServer, [], { terms: [] })
+    return { isServer, type, ...store, ...uiStore, ...discovery, ...term }
   }
 
   constructor (props) {
     super(props)
     logger.info('Hiring', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, true)
+    this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
@@ -118,7 +121,7 @@ export default class Hiring extends React.Component {
     const { type } = this.props
     logger.info('Hiring render')
     return (
-      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
+      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore} term={this.term}>
         <Layout title={"Maomao is coming, and we're hiring..."}>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           { type === 'js' && hiringJs() }

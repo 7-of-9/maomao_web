@@ -215,7 +215,7 @@ class DiscoveryList extends Component {
   }
 
   renderTermList = (ingoreTerms, discoveryTermId, terms, urlId) => {
-    if (this.props.term.isLoading) {
+    if (this.props.term.isProcessingDiscoverTerm) {
       return <Loading isLoading />
     }
     const items = []

@@ -141,11 +141,10 @@ export default class IndexPage extends React.Component {
       }
       this.term.setCurrentTerms([])
       this.uiStore.backToRootDiscovery()
-      this.term.getRootDiscover()
     } else if (urlId && !findTerms) {
       this.term.setCurrentTerms([])
       this.uiStore.selectDiscoveryTerm(-1)
-      this.term.getRootDiscover()
+      this.term.getRootDiscover(1)
     } else if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature
       if (_.isString(findTerms)) {

@@ -416,7 +416,18 @@ class AppHeader extends React.Component {
                       </Link>
                     </li>
                   }
-                  <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
+                  <li style={{color: '#333', backgroundColor: '#fff'}}>
+                    <Link
+                      as={`/${user.nav_id}/topics`}
+                      prefetch
+                      href={{
+                        pathname: '/topics',
+                        query: { profileUrl: `/${user.nav_id}` }
+                      }}>
+                      <a className='btn btn-logout' href={`/${user.nav_id}/topics`}><i className='fa fa-list-ul' /> <strong>Your Followed Topics</strong></a>
+                    </Link>
+                  </li>
+                  <li style={{color: '#333', backgroundColor: '#fff'}}><a className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> <strong>Sign Out</strong></a></li>
                 </ul>
               </div>
             }

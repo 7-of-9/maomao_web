@@ -160,7 +160,7 @@ class TermStore {
   @action getRootDiscover (page) {
     logger.info('getRootDiscover', page)
     const isExist = _.find(this.terms, item => item.termId === -1)
-    if ((!isExist || this.termFollowChanged) && !this.isProcessingDiscoverTerm && page) {
+    if ((!isExist || this.termFollowChanged || page > 1) && !this.isProcessingDiscoverTerm && page) {
       this.isProcessingRootDiscover = true
       this.hasMore = false
       const rootData = rootDiscover(this.userId, this.userHash, page)
@@ -174,12 +174,21 @@ class TermStore {
               this.hasMore = false
             } else {
               this.hasMore = true
+              if (this.termFollowChanged) {
+                this.discoveries = discoveries
+                const foundIndex = this.terms.findIndex(x => x.termId === -1)
+                this.terms[foundIndex] = {
+                  termId: -1,
+                  discoveries: _.uniqBy(discoveries, 'url') || []
+                }
+              } else {
+                this.discoveries.push(...discoveries)
+                this.terms.push({
+                  termId: -1,
+                  discoveries: _.uniqBy(discoveries, 'url') || []
+                })
+              }
               this.termFollowChanged = false
-              this.discoveries.push(...discoveries)
-              this.terms.push({
-                termId: -1,
-                discoveries: _.uniqBy(discoveries, 'url') || []
-              })
             }
           }
           this.isProcessingRootDiscover = false
@@ -252,6 +261,7 @@ class TermStore {
         logger.info('followTopic', res)
         this.getFollowedTopics()
         this.termFollowChanged = true
+        this.getRootDiscover(1)
         if (callback) {
           callback()
         }
@@ -268,6 +278,7 @@ class TermStore {
         logger.info('unfollowTopic', res)
         this.getFollowedTopics()
         this.termFollowChanged = true
+        this.getRootDiscover(1)
         if (callback) {
           callback()
         }
