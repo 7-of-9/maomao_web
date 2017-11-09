@@ -69,6 +69,7 @@
     "react-placeholder": "^1.0.5",
     "react-player": "^0.25.0",
     "react-resize-detector": "^1.1.0",
+    "react-sortable-tree": "^1.5.0",
     "react-split-pane": "^0.1.66",
     "react-sticky-el": "^1.0.13",
     "react-subscribe": "^1.2.3",

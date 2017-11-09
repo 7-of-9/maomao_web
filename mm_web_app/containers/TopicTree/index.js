@@ -52,6 +52,9 @@ const currentTopicTree = (tree, termId) => {
 @inject('ui')
 @observer
 class TopicTree extends Component {
+  componentWillMount () {
+    console.log('haha')
+  }
   onChange = (isSelect, termId, title, img) => {
     this.props.ui.toggleSelectTopic(isSelect, termId, title, img)
   }
@@ -110,6 +113,7 @@ class TopicTree extends Component {
   render () {
     const items = []
     const { tree, isProcessingTopicTree } = toJS(this.props.term)
+    console.log({ tree, isProcessingTopicTree, message: 'asu' })
     if (isProcessingTopicTree) {
       return <div />
     }
