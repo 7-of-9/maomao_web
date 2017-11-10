@@ -29,7 +29,6 @@ the header section
       padding: 0;
       float: left;
       .logo {
-        padding: 20px 0 0;
         div:first-child {
           margin-left: 0;
         }
@@ -341,7 +340,7 @@ the header section
     }
     .logo {
       align-items: center;
-      height: 51px;
+      height: 72px;
       .iSrAXa {
         position: relative;
         margin: 21px 0 0 10px;
@@ -359,8 +358,8 @@ the header section
       .logo-image {
         margin-top: 0;
         vertical-align: top;
-        width: 165px;
-        height: 24px;
+        width: auto;
+        height: 42px;
         @media (max-width: 690px) {
           display: none;
         }

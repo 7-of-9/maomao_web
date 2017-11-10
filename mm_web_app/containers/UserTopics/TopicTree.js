@@ -108,12 +108,11 @@ class TopicTree extends Component {
   }
 
   render () {
-    const { tree, isProcessingTopicTree, followedTopics } = toJS(this.props.term)
+    const { isProcessingTopicTree } = toJS(this.props.term)
     const { treeData } = this.state
     if (isProcessingTopicTree) {
       return <div />
     }
-    console.log({ tree, isProcessingTopicTree, followedTopics, treeData, message: 'asu' })
     const { treeLevel, animationType } = toJS(this.props.ui)
     const animateClassName = animationType === 'LTR' ? `grid-row grid-user-topic bounceInLeft animated level-${treeLevel}` : `grid-row bounceInRight animated level-${treeLevel}`
     return (

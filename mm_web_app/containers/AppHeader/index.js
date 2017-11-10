@@ -471,10 +471,10 @@ class AppHeader extends React.Component {
             </div>
             <div className='modal-body'>
               <div className='install-description'>
-                <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
+                <h3><img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' /> lets you share topics with friends</h3>
                 <br />
-                <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
-                <button className='btn btn-install' type='button' onClick={this.inlineInstall}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
+                <p><img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
+                <button className='btn btn-install' type='button' onClick={this.inlineInstall}>Ok! Give me <img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' /></button>
               </div>
             </div>
           </div>

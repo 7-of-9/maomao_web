@@ -113,7 +113,6 @@ class TopicTree extends Component {
   render () {
     const items = []
     const { tree, isProcessingTopicTree } = toJS(this.props.term)
-    console.log({ tree, isProcessingTopicTree, message: 'asu' })
     if (isProcessingTopicTree) {
       return <div />
     }

@@ -19,7 +19,6 @@ const Wrapper = styled.div`
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
-  padding: 12px 16px;
 `
 
 function Header (props) {

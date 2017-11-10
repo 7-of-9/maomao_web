@@ -9,8 +9,8 @@ import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
 const hiringJs = () => (
-  <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
-    <img src='/static/images/logo.png' alt='logo' />
+  <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle', paddingTop: 20 }}>
+    <img src='/static/images/logo-blue.png' alt='logo' style={{ width: 300 }} />
     <div style={{ fontFamily: 'Calibri', fontSize: 'xx-large' }}>
       <b>maomao</b> is coming, and we're hiring...<br />
     </div>
@@ -47,8 +47,8 @@ const hiringJs = () => (
 )
 
 const hiringVp = () => (
-  <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
-    <img src='/static/images/logo.png' alt='logo' />
+  <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle', paddingTop: 20 }}>
+    <img src='/static/images/logo-blue.png' alt='logo' style={{ width: 300 }} />
     <div style={{ fontFamily: 'Calibri', fontSize: 'xx-large' }}>
       <b>maomao</b> is coming, and we're hiring...<br />
     </div>

@@ -25,7 +25,6 @@ import('./TopicTree'),
 class UserTopics extends React.Component {
   renderTopicTree = () => {
     const { isLogin } = this.props.store
-    console.log({ isLogin, message: 'asu' })
     return (
       <div className='wrapper-slide'>
         { isLogin && <TopicTree /> }
