@@ -53,7 +53,6 @@ const currentTopicTree = (tree, termId) => {
 @observer
 class TopicTree extends Component {
   componentWillMount () {
-    console.log('haha')
   }
   onChange = (isSelect, termId, title, img) => {
     this.props.ui.toggleSelectTopic(isSelect, termId, title, img)

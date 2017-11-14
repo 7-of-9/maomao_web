@@ -51,6 +51,7 @@ export default class Invite extends React.Component {
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.store.checkEnvironment()
     this.store.shareInfo = this.inviteStore.shareInfo
+    this.store.shareCode = this.inviteStore.shareCode
   }
 
   componentWillMount () {

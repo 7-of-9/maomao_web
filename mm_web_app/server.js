@@ -55,7 +55,9 @@ app.prepare().then(() => {
     '/old',
     '/discovery',
     '/hiring',
-    '/smart'
+    '/smart',
+    '/topics',
+    '/share'
   ]
   const route = pathMatch()
   const matchRoute = route('/:code')
@@ -74,8 +76,6 @@ app.prepare().then(() => {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
       app.render(req, res, '/hiring', {type: 'vp'})
-    } else if (pathname === '/topics') {
-      app.render(req, res, '/topics')
     } else if (_.includes(pages, pathname) || _.indexOf(pathname, '_next') !== -1 ||
      _.indexOf(pathname, 'favicon') !== -1 || _.indexOf(pathname, 'static') !== -1 ||
      _.indexOf(pathname, '.') !== -1 || _.indexOf(pathname, '%20') !== -1 ||

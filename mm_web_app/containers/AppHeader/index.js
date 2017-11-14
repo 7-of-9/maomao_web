@@ -62,6 +62,9 @@ class AppHeader extends React.Component {
       this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
       this.saveProfileUrl({ url: `/${user.nav_id}`, ...user })
       const { email, name: displayName } = user
+      if (this.props.store.shareInfo) {
+        this.props.store.acceptInviteCode()
+      }
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
           displayName,
@@ -424,6 +427,16 @@ class AppHeader extends React.Component {
                         pathname: '/topics'
                       }}>
                       <a className='btn btn-logout' href={`/topics`}><i className='fa fa-list-ul' /> <strong>Topic Following</strong></a>
+                    </Link>
+                  </li>
+                  <li style={{color: '#333', backgroundColor: '#fff'}}>
+                    <Link
+                      as={`/share`}
+                      prefetch
+                      href={{
+                        pathname: '/share'
+                      }}>
+                      <a className='btn btn-logout' href={`/share`}><i className='fa fa-share-alt' /> <strong>Your Share</strong></a>
                     </Link>
                   </li>
                   <li style={{color: '#333', backgroundColor: '#fff'}}><a className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> <strong>Sign Out</strong></a></li>

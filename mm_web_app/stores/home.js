@@ -5,6 +5,7 @@ import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
 import { addBulkTopics } from '../services/topic'
+import { acceptInvite, unfollow, pauseShare } from '../services/share'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -38,7 +39,10 @@ export class HomeStore extends CoreStore {
     sites: [],
     topics: []
   }
-  normalizedData = { entities: {}, result: {} }
+  @observable shareInfo = undefined
+  @observable shareCode = undefined
+  @observable userHistory = { mine: {}, received: [], topics: [] }
+  @observable normalizedData = { entities: {}, result: {} }
   user = {}
   users = []
   topics = []
@@ -47,7 +51,6 @@ export class HomeStore extends CoreStore {
   owners = []
   googleUser = {}
   facebookUser = {}
-  userHistory = { mine: {}, received: [], topics: [] }
   isHome = false
   constructor (isServer, userAgent, user, isHome = true) {
     super(isServer, userAgent, user)
@@ -410,6 +413,45 @@ export class HomeStore extends CoreStore {
         break
       default:
     }
+  }
+
+  @action acceptInviteCode () {
+    this.acceptInviteResult = acceptInvite(this.userId, this.userHash, this.shareCode)
+    when(
+      () => this.acceptInviteResult.state !== 'pending',
+      () => {
+        this.inviteResult = this.acceptInviteResult.value
+        this.shareCode = undefined
+        this.shareInfo = undefined
+        if (this.isHome) {
+          this.getUserHistory()
+        }
+      }
+    )
+  }
+
+  @action unfollowUserShare (code, sourceUserId, callback) {
+    this.unfollowUserShareResult = unfollow(this.userId, this.userHash, code, sourceUserId)
+    when(
+      () => this.unfollowUserShareResult.state !== 'pending',
+      () => {
+        this.unfollowUserShareResult = this.unfollowUserShareResult.value
+        this.getUserHistory()
+        callback && callback()
+      }
+    )
+  }
+
+  @action pauseUserShare (code, sourceUserId, callback) {
+    this.pauseUserShareResult = pauseShare(this.userId, this.userHash, code, sourceUserId)
+    when(
+      () => this.pauseUserShareResult.state !== 'pending',
+      () => {
+        this.pauseUserShareResult = this.pauseUserShareResult.value
+        this.getUserHistory()
+        callback && callback()
+      }
+    )
   }
 }
 

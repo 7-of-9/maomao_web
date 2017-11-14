@@ -149,7 +149,7 @@ class TopicTree extends Component {
                       bottom: -4
                     }}>
                       <label class='label'>
-                        <input class='label__checkbox' type='checkbox' checked={node.followed} onClick={() => this.changeFollow(node.term_id, node.followed, node.term_name, node, path)} />
+                        <input class='label__checkbox' type='checkbox' checked={node.followed} onChange={() => this.changeFollow(node.term_id, node.followed, node.term_name, node, path)} />
                         <span class='label__text'>
                           <span class='label__check'>
                             <i class='fa fa-check icon' />

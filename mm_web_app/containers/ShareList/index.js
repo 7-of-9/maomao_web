@@ -38,15 +38,24 @@ class ShareList extends React.Component {
   noImage = (evt) => {
     evt.target.src = '/static/images/no-image.png'
   }
+  componentWillReceiveProps (nextProps) {
+  }
+  onUnfollowUserShare = (code, sourceUserId, title) => {
+    this.props.store.unfollowUserShare(code, sourceUserId, () => {
+      this.props.ui.addNotification(`${title} unfollowed`)
+    })
+  }
+  onPauseUserShare = (code, sourceUserId, title) => {
+    this.props.store.pauseUserShare(code, sourceUserId, () => {
+      this.props.ui.addNotification(`${title} paused`)
+    })
+  }
   render () {
     const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
     const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
     return (
       <div>
-        <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
-          <i className='fa fa-angle-left' aria-hidden='true' />
-        </button>
         <div className='share-management bounceInRight animated'>
           <div id='accordion' role='tablist' aria-multiselectable='true'>
             <div className='card card-topic'>
@@ -120,7 +129,7 @@ class ShareList extends React.Component {
                           <div className='timeline-panel'>
                             <div className='timeline-panel'>
                               <span className='user-info-share'>{receiver.fullname}</span>
-                              <a href='#' className='btn btn-related'>{receiver.source_user_deactivated ? 'Reshare' : 'Unshare'}</a>
+                              <a href='#' onClick={() => this.onUnfollowUserShare(receiver.share_code, receiver.user_id, receiver.share_all ? 'All browsing history' : receiver.topic_name)} className='btn btn-related'>{receiver.source_user_deactivated ? 'Reshare' : 'Unshare'}</a>
                             </div>
                           </div>
                         </li>
@@ -163,7 +172,7 @@ class ShareList extends React.Component {
                                   <img onError={this.noImage} className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
                                 </div>
                                 <div className='timeline-panel'>
-                                  <a href='#' className='btn btn-unfollow'>{item.target_user_deactivated ? 'Follow' : 'Unfollow'}</a>
+                                  <a href='#' onClick={() => this.onUnfollowUserShare(code, friend.user_id, item.type === 'all' ? 'All browsing history' : item.topic_name)} className='btn btn-unfollow'>{item.target_user_deactivated ? 'Follow' : 'Unfollow'}</a>
                                 </div>
                               </li>
                               <li className='timeline-item'>
