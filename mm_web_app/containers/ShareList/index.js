@@ -129,7 +129,7 @@ class ShareList extends React.Component {
                           <div className='timeline-panel'>
                             <div className='timeline-panel'>
                               <span className='user-info-share'>{receiver.fullname}</span>
-                              <a href='#' onClick={() => this.onUnfollowUserShare(receiver.share_code, receiver.user_id, receiver.share_all ? 'All browsing history' : receiver.topic_name)} className='btn btn-related'>{receiver.source_user_deactivated ? 'Reshare' : 'Unshare'}</a>
+                              <a href='#' onClick={() => this.onPauseUserShare(receiver.share_code, receiver.user_id, receiver.share_all ? 'All browsing history' : receiver.topic_name)} className='btn btn-related'>{receiver.source_user_deactivated ? 'Reshare' : 'Unshare'}</a>
                             </div>
                           </div>
                         </li>
