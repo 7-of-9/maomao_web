@@ -15,6 +15,7 @@ import Loading from '../../components/Loading'
 import Layout from '../../components/Layout'
 import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
+import Share from '../Share'
 
 // dynaymic load container component
 const Discovery = dynamic(
@@ -29,13 +30,6 @@ const ChromeInstall = dynamic(
   {
     loading: () => (<Loading isLoading />),
     ssr: false
-  }
-)
-
-const Share = dynamic(
- import('../Share'),
-  {
-    loading: () => (<Loading isLoading />)
   }
 )
 

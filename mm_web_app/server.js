@@ -61,7 +61,7 @@ app.prepare().then(() => {
   ]
   const route = pathMatch()
   const matchRoute = route('/:code')
-  const API_URL = process.env.API_URL
+  const API_URL = process.env.API_URL || 'https://mmapi00.azurewebsites.net/'
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl

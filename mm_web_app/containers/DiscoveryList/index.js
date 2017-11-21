@@ -326,6 +326,7 @@ class DiscoveryList extends Component {
                 title={title}
                 termIds={termIds}
                 url={url}
+                discoveryUrlId={discoveryUrlId}
                 utc={utc}
                 onSelectTerm={this.onSelectChildTermDetail}
                 width={'100%'}
@@ -353,6 +354,7 @@ class DiscoveryList extends Component {
           title={title}
           termIds={termIds}
           url={url}
+          discoveryUrlId={discoveryUrlId}
           utc={utc}
           width={'100%'}
           closePreview={this.closePreview}

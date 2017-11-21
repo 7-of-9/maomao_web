@@ -10,7 +10,7 @@ const style = {
 }
 
 const StepTwo = compose(({
-  type, shareOption, shareUrl, sendMsgUrl, changeShareType
+  type, shareOption, shareUrl, sendMsgUrl, changeShareType, showPrev
  }) =>
   (<div className='share-social'>
     <h3 className='share-social-title'>
@@ -24,12 +24,12 @@ const StepTwo = compose(({
       />
     </div>
     <div className='share-footer'>
-      <button
+      {showPrev && <button
         className='btn btn-slide-prev'
         onClick={() => changeShareType(type, shareOption, 1)}
       >
         Previous
-      </button>
+      </button>}
     </div>
   </div>
   ))
@@ -37,7 +37,8 @@ const StepTwo = compose(({
 StepTwo.propTypes = {
   type: PropTypes.string.isRequired,
   shareOption: PropTypes.string.isRequired,
-  changeShareType: PropTypes.func.isRequired
+  changeShareType: PropTypes.func.isRequired,
+  showPrev: PropTypes.bool
 }
 
 export default StepTwo

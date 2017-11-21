@@ -5,12 +5,25 @@
 */
 
 import React, { Component } from 'react'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
+import Modal from 'react-modal'
+import { toJS } from 'mobx'
 import InlinePreview from '../../components/InlinePreview'
 import DiscoveryNavigation from '../../containers/DiscoveryNavigation'
+import DiscoveryShare from './DiscoveryShare'
+import logger from '../../utils/logger'
+import { checkGoogleAuth, fetchContacts } from '../../utils/google'
+import { shareThisDiscovery } from '../../utils/share'
+import fbScrapeShareUrl from '../../utils/fb'
+import openUrl from '../../utils/popup'
 
+const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const FB_APP_ID = '386694335037120'
+
+@inject('store')
+@inject('ui')
 @observer
 class DiscoveryDetail extends Component {
   static propTypes = {
@@ -18,6 +31,7 @@ class DiscoveryDetail extends Component {
     termIds: PropTypes.array.isRequired,
     title: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
+    discoveryUrlId: PropTypes.number.isRequired,
     utc: PropTypes.string.isRequired,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onSelectTerm: PropTypes.func.isRequired
@@ -33,18 +47,135 @@ class DiscoveryDetail extends Component {
     onSelectTerm: (term) => { }
   }
 
+  state = {
+    type: 'Google',
+    shareOption: 'site',
+    currentStep: 2,
+    shareCode: ''
+  }
+
   handleClick = (event) => {
     event.preventDefault()
     window.open(this.props.url, '_blank')
   }
 
+  onClose = () => {
+    this.props.ui.closeShareModal()
+  }
+
+  openShare = () => {
+    this.props.ui.addNotification('wumbo')
+    const { discoveryUrlId } = this.props
+    this.props.store.checkGoogleContacts()
+    const { userId, userHash } = this.props.store
+    shareThisDiscovery(userId, userHash, discoveryUrlId).then(result => {
+      const { share_code: code } = result.data
+      this.setState({
+        shareCode: code
+      })
+      fbScrapeShareUrl(`${SITE_URL}/${code}`)
+      this.props.store.saveShareCode('discovery', { ...result.data, disc_url_id: discoveryUrlId })
+    })
+
+    this.setState({
+      shareOption: discoveryUrlId.toString(),
+      currentStep: 2
+    })
+    this.props.ui.openShareModal()
+  }
+
+  changeShareType = (type, shareOption, currentStep) => {
+    if (type.indexOf('Facebook') !== -1) {
+      const code = this.state.shareCode
+      const url = `${SITE_URL}/${code}`
+      const closePopupUrl = `${SITE_URL}/static/success.html`
+      if (type === 'Facebook') {
+        const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`
+        logger.info('shareUrl', src)
+        openUrl(src)
+      } else {
+        const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`
+        logger.info('shareUrl', src)
+        openUrl(src)
+      }
+    } else {
+      this.setState({
+        type, shareOption, currentStep
+      })
+    }
+  }
+
+  fetchGoogleContacts = () => {
+    checkGoogleAuth()
+    .then((data) => {
+      // download data
+      const { googleToken, googleUserId } = data
+      logger.info('checkGoogleAuth result', googleToken, data)
+      this.props.ui.addNotification('Loading google contacts')
+      return fetchContacts(googleToken, 1000).then((result) => {
+        result.json().then(resp => {
+          this.props.store.saveGoogleContacts(resp.contacts, googleToken, googleUserId)
+        })
+      })
+    }).catch((error) => {
+        // Try to logout and remove cache token
+      this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
+      logger.warn('found error on fetchGoogleContacts', error)
+    })
+  }
+
+  sendInvitations = (name, email, topic, url) => {
+    const { name: fullName, email: fromEmail } = this.props.store.user
+    logger.info('sendInvitations', fullName, fromEmail, name, email, topic, url)
+    this.props.ui.addNotification('Sending invitations...')
+     /* global fetch */
+    fetch('/api/email', {
+      method: 'POST',
+    // eslint-disable-next-line no-undef
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+      credentials: 'same-origin',
+      body: JSON.stringify({ fromEmail, fullName, name, email, topic, url })
+    }).then(() => {
+      this.props.ui.addNotification(`Sent invitation to: ${email}`)
+      this.props.ui.closeShareModal()
+    })
+    .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
+  }
+
+  addNotification = (msg) => {
+    this.props.ui.addNotification(msg)
+    this.props.ui.closeShareModal()
+  }
+
   render () {
     /* eslint-disable camelcase */
     const { items, title, url, utc, termIds, width } = this.props
+    const { shareCode } = this.state
     const isReady = termIds.length === items.length
+    const { showShareModal } = this.props.ui
     const date = moment.utc(utc).local().format('LLLL')
     return (
       <div>
+        <Modal
+          isOpen={showShareModal}
+          onRequestClose={this.onClose}
+          portalClassName='ShareModal'
+          contentLabel={`Share ${title}`}
+        >
+          <h2>Share {title}</h2>
+          <DiscoveryShare
+            type={this.state.type}
+            shareOption={this.state.shareOption}
+            currentStep={this.state.currentStep}
+            topics={this.props.ui.shareTopics}
+            shareCode={shareCode}
+            sendEmail={this.sendInvitations}
+            changeShareType={this.changeShareType}
+            accessGoogleContacts={this.fetchGoogleContacts}
+            contacts={toJS(this.props.store.contacts)}
+            notify={this.addNotification}
+          />
+        </Modal>
         <div className='discovery-detail'>
           <h4><a onClick={this.handleClick}>{title}</a></h4>
           <a href={url} style={{
@@ -53,7 +184,7 @@ class DiscoveryDetail extends Component {
             textOverflow: 'ellipsis',
             overflow: 'hidden'
           }}>{url}</a>
-          <span>{date}</span>
+          <span>{date}</span><a className='btn btn-share' onClick={this.openShare}><i className='fa fa-share-alt' /></a>
         </div>
         {
           items.length > 0 &&

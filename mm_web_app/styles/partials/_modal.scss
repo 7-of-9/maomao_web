@@ -173,7 +173,6 @@ the modal section
     align-items: center; */
     text-align: center;
     margin: 0 auto;
-    background: none !important;
     &::before {
       content: '';
       display: inline-block;
@@ -188,9 +187,9 @@ the modal section
     position: static !important;
     display: inline-block;
     margin: 0 auto;
-    padding: 0 !important;
+    padding: 16px !important;
     border-color: #e1e2e6;
-    background: rgba(242, 242, 242, 0.75) !important;
+    background: rgb(242, 242, 242) !important;
     overflow-y: auto !important;
     width: 100%;
     min-width: 400px;

@@ -15,6 +15,13 @@ export function shareThisSite (userId, userHash, urlId) {
   })
 }
 
+export function shareThisDiscovery (userId, userHash, discUrlId) {
+  return axios({
+    method: 'put',
+    url: `${apiUrl}/share/create?user_id=${userId}&hash=${userHash}&disc_url_id=${discUrlId}`
+  })
+}
+
 export function shareTheTopic (userId, userHash, topicId) {
   return axios({
     method: 'put',

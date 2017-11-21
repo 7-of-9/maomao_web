@@ -95,7 +95,7 @@ export default class Share extends React.Component {
   }
 
   changeShareType = (type, shareOption, currentStep) => {
-    if (_.indexOf(type, 'Facebook') !== -1) {
+    if (type.indexOf('Facebook') !== -1) {
       const { shareUrlId, shareTopics } = this.props.ui
       const code = parseShareCode(toJS(this.props.store.codes), shareUrlId, shareTopics)
       const url = `${SITE_URL}/${code[shareOption]}`

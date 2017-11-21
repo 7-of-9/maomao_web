@@ -1,6 +1,7 @@
 import React from 'react'
 import { Provider, observer } from 'mobx-react'
 import _ from 'lodash'
+import Router from 'next/router'
 import { initStore } from '../stores/home'
 import { initStore as initInviteStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
@@ -74,8 +75,9 @@ export default class Invite extends React.Component {
     if (this.store.isLogin) {
       this.inviteStore.acceptInviteCode()
       this.uiStore.redirectToSpecialUrl(true)
+      Router.push({ pathname: '/' }, '/', { shallow: true })
       this.uiStore.addNotification('You will redirect to your profile.')
-      window.location.href = '/'
+      this.uiStore.redirectToSpecialUrl(false)
     }
   }
 

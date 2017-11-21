@@ -9,8 +9,8 @@
   "main": "server.js",
   "author": "Dung Huynh (dunghd.it@gmail.com)",
   "engines": {
-    "node": "6.x.x || 8.x.x",
-    "npm": "3.x.x || 5.x.x"
+    "node": "8.9.0",
+    "npm": "5.5.1"
   },
   "license": "MIT",
   "dependencies": {
@@ -73,7 +73,7 @@
     "react-split-pane": "^0.1.66",
     "react-sticky-el": "^1.0.13",
     "react-subscribe": "^1.2.3",
-    "react-toggle-button": "^2.1.0",
+    "react-toggle-button": "2.2.0",
     "react-toggle-display": "^2.2.0",
     "react-youtube": "^7.5.0",
     "recompose": "^0.26.0",

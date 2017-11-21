@@ -10,6 +10,7 @@ export class UIStore {
   @observable showSignInModal = false
   @observable showExtensionModal = false
   @observable showWelcomeModal = false
+  @observable showShareModal = false
   @observable isRedirectToUrl = false
   /* homepage filter */
   @observable onlyMe = false
@@ -137,6 +138,7 @@ export class UIStore {
         this.shareTopics.push({ id: `${topic.id}-beta-${topic.name}`, topic_id: topic.id, name: topic.name })
       }
     })
+    logger.info('share topic', this.shareTopics)
     this.currentViewer = 'sharetopic'
   }
 
@@ -171,6 +173,14 @@ export class UIStore {
 
   @action closeExtensionModal () {
     this.showExtensionModal = false
+  }
+
+  @action openShareModal () {
+    this.showShareModal = true
+  }
+
+  @action closeShareModal () {
+    this.showShareModal = false
   }
 
   @action removeNotification (uuid) {

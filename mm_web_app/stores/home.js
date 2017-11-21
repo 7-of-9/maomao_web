@@ -37,7 +37,8 @@ export class HomeStore extends CoreStore {
   @observable codes = {
     all: null,
     sites: [],
-    topics: []
+    topics: [],
+    discoveries: []
   }
   @observable shareInfo = undefined
   @observable shareCode = undefined
@@ -409,6 +410,12 @@ export class HomeStore extends CoreStore {
         this.codes.topics.push(code)
         if (this.isInstall) {
           sendMsgToChromeExtension(actionCreator('SHARE_TOPIC_SUCCESS', code))
+        }
+        break
+      case 'discovery':
+        this.codes.discoveries.push(code)
+        if (this.isInstall) {
+          sendMsgToChromeExtension(actionCreator('SHARE_DISCOVERY_SUCCESS', code))
         }
         break
       default:

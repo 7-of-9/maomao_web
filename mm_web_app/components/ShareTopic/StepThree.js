@@ -12,11 +12,11 @@ const style = {
   }
 }
 
-const selectUrl = (code, shareOption) => code[shareOption]
+const selectUrl = (code, shareOption, shareCode) => code ? code[shareOption] : shareCode
 
 const StepThree = ({
   type, contacts, code, shareOption,
-  accessGoogleContacts, handleChange, sendEmails, changeShareType, notify }) => (
+  accessGoogleContacts, handleChange, sendEmails, changeShareType, notify, showPrev, shareCode }) => (
     <div className='modifier-autosuggest'>
       <ToggleDisplay className='link-share-option' show={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
@@ -36,12 +36,12 @@ const StepThree = ({
         <div className='input-group'>
           <input
             className='form-control'
-            value={`${SITE_URL}/${selectUrl(code, shareOption)}`}
+            value={`${SITE_URL}/${selectUrl(code, shareOption, shareCode)}`}
             readOnly
           />
           <CopyToClipboard
-            text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
-            onCopy={() => notify(`You've just copied the link ${SITE_URL}/${selectUrl(code, shareOption)}`)}
+            text={`${SITE_URL}/${selectUrl(code, shareOption, shareCode)}`}
+            onCopy={() => notify(`You've just copied the link ${SITE_URL}/${selectUrl(code, shareOption, shareCode)}`)}
           >
             <div className='input-group-btn'>
               <button type='button' className='btn btn-copy'>Copy</button>
@@ -50,12 +50,12 @@ const StepThree = ({
         </div>
       </ToggleDisplay>
       <div className='share-footer'>
-        <button
+        {showPrev && <button
           className='btn btn-slide-prev'
           onClick={() => changeShareType(type, shareOption, 2)}
         >
           Previous
-        </button>
+        </button>}
         {type === 'Google' && contacts.length > 0 &&
           <div className='share-now'>
             <button
@@ -73,14 +73,15 @@ const StepThree = ({
 
 StepThree.propTypes = {
   type: PropTypes.string.isRequired,
-  code: PropTypes.object.isRequired,
+  code: PropTypes.object,
   contacts: PropTypes.array.isRequired,
   shareOption: PropTypes.string.isRequired,
   accessGoogleContacts: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
   sendEmails: PropTypes.func.isRequired,
-  changeShareType: PropTypes.func.isRequired
+  changeShareType: PropTypes.func.isRequired,
+  showPrev: PropTypes.bool
 }
 
 export default StepThree
