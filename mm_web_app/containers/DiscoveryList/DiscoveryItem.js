@@ -18,6 +18,7 @@ import logger from '../../utils/logger'
 export default class DiscoveryItem extends Component {
   static propTypes = {
     disc_url_id: PropTypes.number.isRequired,
+    url_id: PropTypes.number.isRequired,
     main_term_id: PropTypes.number.isRequired,
     sub_term_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
@@ -25,19 +26,24 @@ export default class DiscoveryItem extends Component {
     desc: PropTypes.string.isRequired,
     main_term_name: PropTypes.string.isRequired,
     sub_term_name: PropTypes.string.isRequired,
-    main_term: PropTypes.object.isRequired,
-    sub_term: PropTypes.object.isRequired,
-    img: PropTypes.string.isRequired,
+    main_term: PropTypes.object,
+    sub_term: PropTypes.object,
+    img: PropTypes.string,
     main_term_img: PropTypes.string.isRequired,
-    sub_term_img: PropTypes.string.isRequired,
+    sub_term_img: PropTypes.string,
     search_num: PropTypes.number.isRequired,
     ingoreTerms: PropTypes.array.isRequired,
     onSelect: PropTypes.func.isRequired,
-    onSelectTerm: PropTypes.func.isRequired
+    onSelectTerm: PropTypes.func,
+    userData: PropTypes.object,
+    shareTerm: PropTypes.object,
+    onSelectShareTerm: PropTypes.func,
+    onSelectUser: PropTypes.func
   }
 
   static defaultProps = {
     disc_url_id: 0,
+    url_id: 0,
     main_term_id: 0,
     sub_term_id: 0,
     title: '',
@@ -45,15 +51,12 @@ export default class DiscoveryItem extends Component {
     url: '',
     main_term_name: '',
     sub_term_name: '',
-    main_term: {},
-    sub_term: {},
-    img: '',
+    img: '/static/images/no-image.png',
     main_term_img: '',
     sub_term_img: '',
     search_num: 0,
     ingoreTerms: [],
-    onSelect: (item) => { },
-    onSelectTerm: (term) => { }
+    onSelect: (item) => { }
   }
 
   handleClick = (evt) => {
@@ -69,16 +72,24 @@ export default class DiscoveryItem extends Component {
 
   selectMainTerm = (evt) => {
     evt.preventDefault()
-    const { main_term_id, main_term_img, main_term_name } = this.props
+    const { main_term_id, main_term_img, main_term_name, main_term: mainTerm, userData } = this.props
     this.clickOnTerm = true
-    this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
+    if (mainTerm) {
+      this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
+    } else if (userData) {
+      this.props.onSelectUser(userData)
+    }
   }
 
   selectSubTerm = (evt) => {
     evt.preventDefault()
-    const { sub_term_id, sub_term_img, sub_term_name } = this.props
+    const { sub_term_id, sub_term_img, sub_term_name, main_term: mainTerm, userData, shareTerm } = this.props
     this.clickOnTerm = true
-    this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
+    if (mainTerm) {
+      this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
+    } else if (userData) {
+      this.props.onSelectShareTerm(userData, shareTerm)
+    }
   }
 
   handleHoverTerm = (evt, term) => {
@@ -121,8 +132,8 @@ export default class DiscoveryItem extends Component {
           <span
             className={`tags ${tagColor(main_term_name)}`}
             rel='tag'
-            onMouseEnter={(evt) => this.handleHoverTerm(evt, main_term)}
-            onMouseLeave={() => this.handleLeaveHoverTerm(main_term)}
+            onMouseEnter={(evt) => main_term ? this.handleHoverTerm(evt, main_term) : _.noop}
+            onMouseLeave={() => main_term ? this.handleLeaveHoverTerm(main_term) : _.noop}
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
@@ -144,8 +155,8 @@ export default class DiscoveryItem extends Component {
             <span
               className={`tags ${tagColor(sub_term_name)}`}
               rel='tag'
-              onMouseEnter={(evt) => this.handleHoverTerm(evt, sub_term)}
-              onMouseLeave={() => this.handleLeaveHoverTerm(sub_term)}
+              onMouseEnter={(evt) => sub_term ? this.handleHoverTerm(evt, sub_term) : _.noop}
+              onMouseLeave={() => sub_term ? this.handleLeaveHoverTerm(sub_term) : _.noop}
               style={{
                 background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
                 backgroundSize: 'cover',
@@ -177,7 +188,7 @@ export default class DiscoveryItem extends Component {
                 width='40'
                 height='40'
                 onError={this.noImage}
-                src={item.img}
+                src={item.img || '/static/images/no-image.png'}
                 alt={item.name}
               />
             </a>)

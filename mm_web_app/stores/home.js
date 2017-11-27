@@ -244,6 +244,34 @@ export class HomeStore extends CoreStore {
     )
   }
 
+  @action getSelectSharedItem (shareUrlId, callback) {
+    logger.info('getSelectSharedItem')
+    const sharedItem = getUserHistory(this.userId, this.userHash)
+    when(
+      () => sharedItem.state !== 'pending',
+      () => {
+        let dataReturn
+        const { mine, received } = toJS(sharedItem.value.data)
+        _.forEach(received, (receivedIten, index) => {
+          _.forEach(receivedIten.shares, (shareItem, index) => {
+            _.forEach(shareItem.urls, (item, index) => {
+              if (item.url_id === shareUrlId) {
+                dataReturn = { userData: receivedIten, url: item.href, ...item }
+              }
+            })
+          })
+        })
+        _.forEach(mine.urls, (item, index) => {
+          if (item.url_id === shareUrlId) {
+            dataReturn = { userData: mine, url: item.href, ...item }
+          }
+        })
+        if (callback) {
+          callback(dataReturn)
+        }
+      })
+  }
+
   @action getUserHistory () {
     logger.info('getUserHistory')
     if (!this.isProcessingHistory) {

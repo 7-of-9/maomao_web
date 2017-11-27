@@ -258,9 +258,10 @@ export class UIStore {
     this.page += 1
   }
 
-  @action selectDiscoveryItem (item) {
-    const { disc_url_id: urlId } = item
-    this.discoveryUrlId = urlId
+  @action selectDiscoveryItem (item, discoveryUrlId) {
+    logger.info('selectDiscoveryItem', item)
+    const { disc_url_id: urlId, url_id: shareUrlId } = item
+    this.discoveryUrlId = urlId || shareUrlId
     this.selectedDiscoveryItem = item
     this.animationType = 'RTL'
   }

@@ -37,19 +37,35 @@ class DiscoveryList extends Component {
     urlId: -1
   }
 
+  componentWillReceiveProps (nextProps) {
+  }
+
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
     this.props.ui.toggleSplitView(true)
-    const { findTerms } = toJS(this.props.term)
-    const href = `/${findTerms.join('/')}?urlId=${item.disc_url_id}`
-    Router.push(
-      {
-        pathname: '/',
-        query: { findTerms, urlId: item.disc_url_id }
-      },
-      href,
-      { shallow: true }
-    )
+    if (item.main_term) {
+      const { findTerms } = toJS(this.props.term)
+      const href = `/${findTerms.join('/')}?urlId=${item.disc_url_id}`
+      Router.push(
+        {
+          pathname: '/',
+          query: { findTerms, urlId: item.disc_url_id }
+        },
+        href,
+        { shallow: true }
+      )
+    } else if (item.userData) {
+      const { userData, shareTerm } = toJS(this.props.term)
+      const href = `/${userData.fullname ? `${userData.fullname}-${userData.user_id}` : ''}${shareTerm.type === 'topic' ? `/${shareTerm.fullname}` : ''}?shareUrlId=${item.url_id}`
+      Router.push(
+        {
+          pathname: '/',
+          query: { userShareId: userData.user_id, shareTerm: shareTerm.fullname, shareUrlId: item.url_id }
+        },
+        href,
+        { shallow: true }
+      )
+    }
   }
 
   onSelectChildTerm = (term) => {
@@ -60,6 +76,8 @@ class DiscoveryList extends Component {
       this.props.term.resetPagination()
       this.props.term.getTermDiscover(term.term_id)
       this.props.term.addNewTerm(term)
+      this.props.term.setCurrentUserData(undefined)
+      this.props.term.setCurrentShareTerm(undefined)
       const href = this.props.urlId > 0 ? `/${findTerms.join('/')}?urlId=${this.props.urlId}` : `/${findTerms.join('/')}`
       Router.push(
         {
@@ -73,6 +91,8 @@ class DiscoveryList extends Component {
   }
 
   onSelectChildTermDetail = (term) => {
+    this.props.term.setCurrentUserData(undefined)
+    this.props.term.setCurrentShareTerm(undefined)
     this.props.term.setCurrentTerms([].concat(term.term_name))
     this.props.term.resetPagination()
     this.props.term.getTermDiscover(term.term_id)
@@ -86,6 +106,15 @@ class DiscoveryList extends Component {
       href,
       { shallow: true }
     )
+  }
+
+  onSelectShareTerm = (userData, shareTerm) => {
+    this.props.term.setCurrentUserData(userData)
+    this.props.term.setCurrentShareTerm(shareTerm)
+  }
+
+  onSelectUser = (userData) => {
+    this.props.term.setCurrentUserData(userData)
   }
 
   onBack = (term) => {
@@ -172,6 +201,7 @@ class DiscoveryList extends Component {
   onSplitChange = (width) => {
     if (width) {
       this.props.ui.resizeSplitter(width)
+      this.forceUpdate()
     }
   }
 
@@ -214,12 +244,75 @@ class DiscoveryList extends Component {
     }
   }
 
-  renderTermList = (ingoreTerms, discoveryTermId, terms, urlId) => {
+  renderTermList = (ingoreTerms, discoveryTermId, terms, urlId, shareUrlId) => {
     if (this.props.term.isProcessingDiscoverTerm) {
       return <Loading isLoading />
     }
     const items = []
+    const { discoveries } = this.props.term
+    const { mine, received, topics } = toJS(this.props.store.userHistory)
+    logger.info('wumbqa', { terms, shareUrlId })
     if (terms.length) {
+      _.forEach(received, (receivedIten, index) => {
+        _.forEach(receivedIten.shares, (shareItem, index) => {
+          _.forEach(shareItem.urls, (item, index) => {
+            if (shareItem.type === 'topic') {
+              if (shareUrlId !== item.url_id) {
+                items.push(
+                  <DiscoveryItem
+                    key={`${item.url_id}-${item.href}-${index}`}
+                    main_term_img={receivedIten.avatar}
+                    main_term_name={receivedIten.fullname}
+                    sub_term_img={'/static/images/no-image.png'}
+                    sub_term_name={shareItem.topic_name}
+                    userData={receivedIten}
+                    shareTerm={shareItem}
+                    onSelectShareTerm={this.onSelectShareTerm}
+                    onSelectUser={this.onSelectUser}
+                    onSelect={this.onSelect}
+                    url={item.href}
+                    desc={item.href}
+                    {...item}
+                  />
+                )
+              }
+            } else {
+              if (shareUrlId !== item.url_id) {
+                items.push(
+                  <DiscoveryItem
+                    key={`${item.url_id}-${item.href}-${index}`}
+                    main_term_img={receivedIten.avatar}
+                    main_term_name={receivedIten.fullname}
+                    userData={receivedIten}
+                    onSelectUser={this.onSelectUser}
+                    onSelect={this.onSelect}
+                    url={item.href}
+                    desc={item.href}
+                    {...item}
+                  />
+                )
+              }
+            }
+          })
+        })
+      })
+      _.forEach(mine.urls, (item, index) => {
+        if (shareUrlId !== item.url_id) {
+          items.push(
+            <DiscoveryItem
+              key={`${item.url_id}-${item.href}-${index}`}
+              main_term_img={mine.avatar}
+              main_term_name={mine.fullname}
+              userData={mine}
+              onSelectUser={this.onSelectUser}
+              url={item.href}
+              desc={item.href}
+              onSelect={this.onSelect}
+              {...item}
+            />
+          )
+        }
+      })
       const topics = _.find(terms, item => item.termId === discoveryTermId)
       if (topics && topics.discoveries && topics.discoveries.length) {
         _.forEach(topics.discoveries, (item) => {
@@ -251,7 +344,61 @@ class DiscoveryList extends Component {
         return items
       }
     }
-    const { discoveries } = this.props.term
+    logger.info('wumbqa', { mine, received, topics })
+    _.forEach(received, (receivedIten, index) => {
+      _.forEach(receivedIten.shares, (shareItem, index) => {
+        _.forEach(shareItem.urls, (item, index) => {
+          if (shareItem.type === 'topic') {
+            items.push(
+              <DiscoveryItem
+                key={`${item.url_id}-${item.href}-${index}`}
+                main_term_img={receivedIten.avatar}
+                main_term_name={receivedIten.fullname}
+                sub_term_img={'/static/images/no-image.png'}
+                sub_term_name={shareItem.topic_name}
+                userData={receivedIten}
+                shareTerm={shareItem}
+                onSelectShareTerm={this.props.onSelectShareTerm}
+                onSelectUser={this.props.onSelectUser}
+                onSelect={this.props.onSelect}
+                url={item.href}
+                desc={item.href}
+                {...item}
+              />
+            )
+          } else {
+            items.push(
+              <DiscoveryItem
+                key={`${item.url_id}-${item.href}-${index}`}
+                main_term_img={receivedIten.avatar}
+                main_term_name={receivedIten.fullname}
+                userData={receivedIten}
+                onSelectUser={this.props.onSelectUser}
+                onSelect={this.props.onSelect}
+                url={item.href}
+                desc={item.href}
+                {...item}
+              />
+            )
+          }
+        })
+      })
+    })
+    _.forEach(mine.urls, (item, index) => {
+      items.push(
+        <DiscoveryItem
+          key={`${item.url_id}-${item.href}-${index}`}
+          main_term_img={mine.avatar}
+          main_term_name={mine.fullname}
+          userData={mine}
+          onSelectUser={this.props.onSelectUser}
+          url={item.href}
+          desc={item.href}
+          onSelect={this.props.onSelect}
+          {...item}
+        />
+      )
+    })
     _.forEach(discoveries, (item, index) => {
       /* eslint-disable camelcase */
       if (item.main_term_id) {
@@ -284,7 +431,7 @@ class DiscoveryList extends Component {
   }
 
   renderDetail = () => {
-    const { isSplitView, spliterWidth, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const { isSplitView, spliterWidth, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url_id: shareUrlId, url, title, utc, hit_utc, userData, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const { terms, findTerms, termsInfo } = toJS(this.props.term)
     const ingoreTerms = []
     _.forEach(findTerms, item => {
@@ -327,9 +474,11 @@ class DiscoveryList extends Component {
                 termIds={termIds}
                 url={url}
                 discoveryUrlId={discoveryUrlId}
-                utc={utc}
+                utc={utc || hit_utc}
+                userData={userData}
                 onSelectTerm={this.onSelectChildTermDetail}
                 width={'100%'}
+                type={shareUrlId ? 'share' : 'discovery'}
               />
             </Sticky>
             <div className='split-view'>
@@ -337,7 +486,7 @@ class DiscoveryList extends Component {
                 onBack={this.onBack}
                 onSelectChildTerm={this.onSelectChildTerm}
               />
-              {this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)}
+              {this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)}
             </div>
           </SplitPane>
           <div className='close_button' onClick={this.closePreview} style={{left: (spliterWidth || window.innerWidth / 2) - 15}} />
@@ -345,7 +494,7 @@ class DiscoveryList extends Component {
       )
     }
     if (discoveryTermId > 0) {
-      return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId)
+      return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)
     }
     return (
       <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
@@ -371,6 +520,8 @@ class DiscoveryList extends Component {
           getCurrentTerm={this.getCurrentTerm}
           onSelect={this.onSelect}
           onSelectChildTerm={this.onSelectChildTerm}
+          onSelectShareTerm={this.onSelectShareTerm}
+          onSelectUser={this.onSelectUser}
           />
       </div>
     )

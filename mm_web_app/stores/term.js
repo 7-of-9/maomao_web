@@ -16,6 +16,8 @@ class TermStore {
   @observable isProcessingRootDiscover = false
   @observable.shallow discoveries = []
   @observable.shallow findTerms = []
+  @observable.shallow userData = {}
+  @observable.shallow shareTerm = {}
   @observable.shallow terms = []
   @observable.ref termsCache = {}
   @observable followedTopics = {}
@@ -123,6 +125,16 @@ class TermStore {
   @action setCurrentTerms (findTerms) {
     logger.info('setCurrentTerms', findTerms)
     this.findTerms = findTerms
+  }
+
+  @action setCurrentUserData (userData) {
+    logger.info('setCurrentUserData', userData)
+    this.userData = userData
+  }
+
+  @action setCurrentShareTerm (shareTerm) {
+    logger.info('setCurrentShareTerm', shareTerm)
+    this.shareTerm = shareTerm
   }
 
   @action preloadTerm (termId) {

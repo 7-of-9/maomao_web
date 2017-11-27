@@ -630,7 +630,6 @@ the home page
       .discovery-list {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
         align-items: baseline;
         align-content: center;
         padding-top: 16px;
@@ -777,6 +776,7 @@ the home page
             position: absolute;
             top: 15px;
             border-radius: 8px;
+            word-break: break-word;
           }
         }
         &.active {

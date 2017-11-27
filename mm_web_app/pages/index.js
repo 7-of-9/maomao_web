@@ -41,8 +41,10 @@ export default class IndexPage extends React.Component {
       termsInfo = termsResult.termsInfo
     }
     let urlId = query && query.urlId ? Number(query.urlId) : -1
+    let shareUrlId = query && query.shareUrlId ? Number(query.shareUrlId) : -1
+    store.getUserHistory()
     const term = initTermStore(isServer, findTerms, termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId }
+    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId }
   }
 
   constructor (props) {
@@ -88,10 +90,15 @@ export default class IndexPage extends React.Component {
     if (this.props.urlId) {
       this.setState({ urlId: this.props.urlId })
     }
+    if (this.props.shareUrlId) {
+      this.setState({ shareUrlId: this.props.shareUrlId })
+    }
     if (this.store.isLogin && this.store.user) {
       this.setState({ profileUrl: `/${this.store.user.nav_id}` })
     }
     this.term.getTopicTree()
+    this.term.getFollowedTopics()
+    this.store.getUserHistory()
   }
 
   componentDidMount () {
@@ -116,12 +123,15 @@ export default class IndexPage extends React.Component {
         }
       }
     }
-    if (Number(this.state.urlId) > 0) {
-      const { urlId } = this.state
-      if (urlId) {
-        // preview current item
-        this.uiStore.toggleSplitView(true)
+    if (Number(this.state.urlId) > 0 || Number(this.state.shareUrlId) > 0) {
+      const { urlId, shareUrlId } = this.state
+      this.uiStore.toggleSplitView(true)
+      if (urlId > 0) {
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {
+          this.uiStore.selectDiscoveryItem(discoveryItem)
+        })
+      } else if (shareUrlId > 0) {
+        this.store.getSelectSharedItem(shareUrlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })
       }
@@ -134,7 +144,7 @@ export default class IndexPage extends React.Component {
     // back button on browser logic
     const { query } = nextProps.url
     // fetch data based on the new query
-    const { findTerms, profileUrl, urlId } = query
+    const { findTerms, profileUrl, urlId, shareUrlId } = query
     if (profileUrl) {
       if (profileUrl !== this.state.profileUrl) {
         this.setState({ profileUrl })
@@ -169,12 +179,19 @@ export default class IndexPage extends React.Component {
     } else if (!profileUrl && !urlId) {
       this.term.setCurrentTerms([])
     }
-    if (urlId !== this.state.urlId) {
-      this.setState({ urlId })
-      if (Number(urlId) > 0) {
-        // preview current item
+    logger.info('wumbq', this.store.userHistory)
+    if (urlId !== this.state.urlId || shareUrlId !== this.state.shareUrlId) {
+      this.setState({ urlId, shareUrlId })
+      logger.info('wumbo', { urlId, shareUrlId })
+      if (Number(urlId) > 0 || Number(shareUrlId) > 0) {
         this.uiStore.toggleSplitView(true)
-        this.term.getSelectDiscoverItem(urlId, discoveryItem => {
+        if (urlId > 0) {
+          this.term.getSelectDiscoverItem(urlId, discoveryItem => {
+            this.uiStore.selectDiscoveryItem(discoveryItem)
+          })
+        }
+      } else if (shareUrlId > 0) {
+        this.store.getSelectSharedItem(shareUrlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })
       } else {
@@ -184,24 +201,24 @@ export default class IndexPage extends React.Component {
   }
 
   isDiscoverMode = () => {
-    return (this.term.findTerms && this.term.findTerms.length > 0) || this.state.urlId > 0 || this.state.profileUrl.length > 0 || this.store.isLogin
+    return (this.term.findTerms && this.term.findTerms.length > 0) || this.state.urlId > 0 || this.state.shareUrlId > 0 || this.state.profileUrl.length > 0 || this.store.isLogin
   }
 
   render () {
     if (_.isNumber(this.props.statusCode)) {
       return <Error statusCode={this.props.statusCode} />
     }
-    const { profileUrl, urlId } = this.state
+    const { profileUrl, urlId, shareUrlId } = this.state
     return (
       <Provider store={this.store} term={this.term} ui={this.uiStore}>
         {
           this.isDiscoverMode()
             ? <div className='discover'>
               <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-              <Discover profileUrl={profileUrl} urlId={Number(urlId)} />
+              <Discover profileUrl={profileUrl} urlId={Number(urlId)} shareUrlId={Number(shareUrlId)} />
             </div>
             : <div className='home'>
-              <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
+              <style dangerouslySetInnerHTML={{ __html: stylesheet }} shareUrlId={Number(shareUrlId)} />
               <Home />
             </div>
         }

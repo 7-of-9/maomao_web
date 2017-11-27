@@ -9,13 +9,14 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import Modal from 'react-modal'
+import _ from 'lodash'
 import { toJS } from 'mobx'
 import InlinePreview from '../../components/InlinePreview'
 import DiscoveryNavigation from '../../containers/DiscoveryNavigation'
 import DiscoveryShare from './DiscoveryShare'
 import logger from '../../utils/logger'
 import { checkGoogleAuth, fetchContacts } from '../../utils/google'
-import { shareThisDiscovery } from '../../utils/share'
+import { shareThisDiscovery, shareThisSite } from '../../utils/share'
 import fbScrapeShareUrl from '../../utils/fb'
 import openUrl from '../../utils/popup'
 
@@ -33,8 +34,10 @@ class DiscoveryDetail extends Component {
     url: PropTypes.string.isRequired,
     discoveryUrlId: PropTypes.number.isRequired,
     utc: PropTypes.string.isRequired,
+    userData: PropTypes.object,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    onSelectTerm: PropTypes.func.isRequired
+    onSelectTerm: PropTypes.func.isRequired,
+    type: PropTypes.string.isRequired
   }
 
   static defaultProps = {
@@ -44,7 +47,8 @@ class DiscoveryDetail extends Component {
     url: '',
     utc: '',
     width: '100%',
-    onSelectTerm: (term) => { }
+    onSelectTerm: (term) => { },
+    type: ''
   }
 
   state = {
@@ -64,19 +68,42 @@ class DiscoveryDetail extends Component {
   }
 
   openShare = () => {
-    this.props.ui.addNotification('wumbo')
-    const { discoveryUrlId } = this.props
+    const { discoveryUrlId, type } = this.props
     this.props.store.checkGoogleContacts()
-    const { userId, userHash } = this.props.store
-    shareThisDiscovery(userId, userHash, discoveryUrlId).then(result => {
-      const { share_code: code } = result.data
-      this.setState({
-        shareCode: code
-      })
-      fbScrapeShareUrl(`${SITE_URL}/${code}`)
-      this.props.store.saveShareCode('discovery', { ...result.data, disc_url_id: discoveryUrlId })
-    })
-
+    const { userId, userHash, codes: { sites, discoveries } } = this.props.store
+    if (type === 'share') {
+      const findUrlCode = _.find(toJS(sites), item => item && item.url_id === discoveryUrlId)
+      if (findUrlCode) {
+        this.setState({
+          shareCode: findUrlCode.share_code
+        })
+      } else {
+        shareThisSite(userId, userHash, discoveryUrlId).then(result => {
+          const { share_code: code } = result.data
+          this.setState({
+            shareCode: code
+          })
+          fbScrapeShareUrl(`${SITE_URL}/${code}`)
+          this.props.store.saveShareCode('site', { ...result.data, url_id: discoveryUrlId })
+        })
+      }
+    } else {
+      const findUrlCode = _.find(toJS(discoveries), item => item && item.disc_url_id === discoveryUrlId)
+      if (findUrlCode) {
+        this.setState({
+          shareCode: findUrlCode.share_code
+        })
+      } else {
+        shareThisDiscovery(userId, userHash, discoveryUrlId).then(result => {
+          const { share_code: code } = result.data
+          this.setState({
+            shareCode: code
+          })
+          fbScrapeShareUrl(`${SITE_URL}/${code}`)
+          this.props.store.saveShareCode('discovery', { ...result.data, disc_url_id: discoveryUrlId })
+        })
+      }
+    }
     this.setState({
       shareOption: discoveryUrlId.toString(),
       currentStep: 2
@@ -149,7 +176,7 @@ class DiscoveryDetail extends Component {
 
   render () {
     /* eslint-disable camelcase */
-    const { items, title, url, utc, termIds, width } = this.props
+    const { items, title, url, utc, termIds, width, userData } = this.props
     const { shareCode } = this.state
     const isReady = termIds.length === items.length
     const { showShareModal } = this.props.ui
@@ -184,6 +211,7 @@ class DiscoveryDetail extends Component {
             textOverflow: 'ellipsis',
             overflow: 'hidden'
           }}>{url}</a>
+          {userData && [<span>{userData.fullname}({userData.email})</span>, <br />]}
           <span>{date}</span><a className='btn btn-share' onClick={this.openShare}><i className='fa fa-share-alt' /></a>
         </div>
         {
