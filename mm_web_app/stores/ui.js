@@ -1,5 +1,6 @@
 import { observable, action, computed, toJS } from 'mobx'
 import _ from 'lodash'
+import Router from 'next/router'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
 
@@ -44,6 +45,7 @@ export class UIStore {
   shareTopics = []
   shareUrlId = -1
   userId = -1
+  redirectObject = undefined
   title = 'Sign In'
 
   @computed get isRootView () {
@@ -317,6 +319,30 @@ export class UIStore {
 
   @action keepTermHover () {
     this.termHoverVisible = true
+  }
+
+  @action setRedirectObject(url, path, options) {
+    this.isRedirectToUrl = true
+    this.redirectObject = { url, path, options }
+    console.log(this.redirectObject)
+  }
+
+  @action execRedirectObject() {
+    if (this.isRedirectToUrl) {
+      this.isRedirectToUrl = false
+      const { url, path, options } = this.redirectObject
+      const uuid = guid()
+      this.notifications.push({
+        message: 'You will redirect to shared page.',
+        key: uuid,
+        action: 'Dismiss',
+        onClick: (deactivate) => {
+          this.removeNotification(deactivate.key)
+        }
+      })
+      Router.push(url, path, options)
+      this.redirectObject = undefined
+    }
   }
 }
 

@@ -788,6 +788,26 @@ a.btn-unfollow,
   }
 }
 
+.btn-share-item {
+  @include border-radius(3px);
+  font-size: 0.8em;
+  background: #51c04e;
+  border: 1px solid #51c04e;
+  color: #fff;
+  margin-left: 16px;
+  img {
+    margin-top: 5px;
+    max-width: 85px;
+    vertical-align: top;
+  }
+  &:hover,
+  &:focus {
+    color: #fff;
+    background: #5ddb5a;
+    border: 1px solid #5ddb5a;
+  }
+}
+
 .share-now {
   @include clearfix();
   text-align: center;

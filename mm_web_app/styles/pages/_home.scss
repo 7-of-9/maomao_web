@@ -632,10 +632,23 @@ the home page
         flex-wrap: wrap;
         align-items: baseline;
         align-content: center;
-        padding-top: 16px;
         &::after {
           content: "";
           clear: both;
+        }
+        .discovery-detail {
+          padding: 5px 10px;
+          .shared-text {
+            font-size: 0.8em;
+            color: #333
+          }
+          h4 {
+            font-weight: 900;
+          }
+          .date-text {
+            font-size: 0.8em;
+            color: #333
+          }
         }
         .splitter-view {
           min-height: 100vh;
@@ -644,10 +657,6 @@ the home page
           -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
           -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
           box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
-          .discovery-detail {
-            background: #ccc;
-            padding: 5px 10px;
-          }
         }
         .close_button {
           z-index: 9999;

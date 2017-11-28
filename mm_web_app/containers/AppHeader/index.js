@@ -64,6 +64,7 @@ class AppHeader extends React.Component {
       const { email, name: displayName } = user
       if (this.props.store.shareInfo) {
         this.props.store.acceptInviteCode()
+        this.props.ui.execRedirectObject()
       }
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -193,7 +194,9 @@ class AppHeader extends React.Component {
         credentials: 'same-origin',
         body: JSON.stringify(user)
       }).then(() => {
-        if (this.props.ui.isRedirectToUrl) {
+        if (this.props.ui.isRedirectToUrl && this.props.ui.redirectObject) {
+          this.props.ui.execRedirectObject()
+        } else {
           Router.push({ pathname: '/', query: { profileUrl: url } }, url)
           this.props.ui.redirectToSpecialUrl(false)
         }

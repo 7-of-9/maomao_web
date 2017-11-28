@@ -30,20 +30,22 @@ const Item = styled.li`
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-  font-size: 11px !important;
+  font-size: 13px !important;
+  font-weight: 500;
 `
 
-const Remove = styled.a`
+const Icon = styled.a`
   &:hover {
     background: #dedede;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     cursor: pointer;
+    color: #a6a6a6;
   }
 `
 
 /* eslint-disable no-param-reassign */
 const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
-  <Wrapper onClick={onClick} className='share-contact'>
+  <Wrapper onClick={isEdit ? onRemove : onClick} className='share-contact'>
     <Image className='share-contact-img'>
       <img
         onError={(ev) => { ev.target.src = '/static/images/no-image.png' }}
@@ -54,13 +56,15 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
       />
     </Image>
     <Info className='share-info'>
-      {name && name.length > 0 &&
-      <Item>{name}</Item>
-      }
-      <Item>{email}</Item>
-      {
-        isEdit && <Remove className='account-remove' onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src='/static/images/minus.png' alt='Remove' /></Remove>
-      }
+      <Item>
+        {email}
+        {
+          isEdit && <Icon className='account-remove'><i class='fa fa-times-circle' aria-hidden='true' style={{ width: '20px', height: '20px', float: 'right', fontSize: 20, marginLeft: 8 }} /></Icon>
+        }
+        {
+          isEdit || <Icon className='account-add'><i class='fa fa-plus-circle' aria-hidden='true' style={{ width: '20px', height: '20px', float: 'right', fontSize: 20, marginLeft: 8 }} /></Icon>
+        }
+      </Item>
     </Info>
   </Wrapper>
 

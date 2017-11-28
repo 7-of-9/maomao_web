@@ -15,7 +15,7 @@ $search-icons: url('/static/images/icons-search.png');
 
 .share-steps {
   @include clearfix();
-  margin-top: 50px;
+  margin-top: 16px;
   .rc-steps-item {
     width: 33.33%;
     float: left;
@@ -166,7 +166,7 @@ $search-icons: url('/static/images/icons-search.png');
 }
 
 .share-title {
-  margin: 40px 0 20px;
+  margin: 16px 0 16px;
   color: #808080;
   font-size: 20px;
   font-weight: normal;
@@ -274,7 +274,7 @@ $search-icons: url('/static/images/icons-search.png');
   .share-social-title {
     margin: 0 0 20px;
     font-size: 17px;
-    color: #014cd6;
+    color: #666666;
   }
 }
 
@@ -512,15 +512,15 @@ $search-icons: url('/static/images/icons-search.png');
 
 .share-contact {
   @include transition(all 0.2s ease-in-out);
-  @include border-radius(0);
+  @include border-radius(20px);
   @include box-shadow(none);
   position: relative;
   margin: 10px 8px !important;
   float: left;
   height: 40px;
-  width: 176px;
+  width: auto;
   cursor: pointer;
-  background-color: #fff;
+  background-color: #eee;
   .share-contact-img {
     text-align: left;
     width: 45px;
@@ -529,14 +529,16 @@ $search-icons: url('/static/images/icons-search.png');
       vertical-align: top;
       width: 40px;
       height: 40px;
+      border-radius: 50%;
+      border: 1px solid #eee;
     }
   }
   .share-info {
     position: static;
-    padding: 5px 5px 5px 0;
+    padding: 10px 5px 5px 0;
     margin: 0;
     float: right;
-    width: 120px;
+    width: auto;
     list-style: none;
     height: 40px;
     li {
@@ -548,9 +550,6 @@ $search-icons: url('/static/images/icons-search.png');
     }
   }
   .account-remove {
-    position: absolute;
-    left: -10px;
-    top: -10px;
     border-radius: 50%;
   }
   &:hover,
@@ -590,7 +589,6 @@ $search-icons: url('/static/images/icons-search.png');
   }
   .react-autosuggest__input {
     @include border-radius(4px);
-    font-family: 'Roboto';
     letter-spacing: normal;
     text-transform: none;
     display: block;
@@ -614,7 +612,6 @@ $search-icons: url('/static/images/icons-search.png');
   }
   .react-autosuggest__input::-webkit-input-placeholder {
     color: #999;
-    font-family: 'Roboto';
     letter-spacing: normal;
     font-weight: normal;
     text-transform: none;
@@ -663,7 +660,7 @@ $search-icons: url('/static/images/icons-search.png');
     }
   }
   .suggestion-content .highlight {
-    color: #ee0000;
+    color: #AED1E6;
     font-weight: bold;
   }
   .react-autosuggest__suggestion--focused .highlight {
@@ -700,7 +697,6 @@ $search-icons: url('/static/images/icons-search.png');
       top: 51px;
       border: 1px solid #aaa;
       background-color: #fff;
-      font-family: 'Roboto';
       font-weight: 300;
       font-size: 16px;
       z-index: 2;

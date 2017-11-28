@@ -61,10 +61,7 @@ const enhance = compose(
           props.sendEmail(item.name, item.email, topic, url)
         })
       } else {
-        props.notify({
-          title: 'Please choose your friends to send invitations!',
-          autoHide: 3000
-        })
+        props.notify('Please choose your friends to send invitations!')
       }
     }
   }),
@@ -74,7 +71,7 @@ const enhance = compose(
 function ShareTopic ({
   type, topics, contacts, shareCode, shareOption, currentStep,
   handleChange, shareUrl, sendMsgUrl, changeShareType, notify,
-  sendEmails, closeShare, accessGoogleContacts }) {
+  sendEmails, closeShare, accessGoogleContacts, title }) {
   logger.info('ShareTopic type, topics, contacts, code, shareOption, currentStep', type, topics, contacts, shareCode, shareOption, currentStep)
   const steps = [
     { title: 'Choose the way to sharing with friends', description: 'Use Facebook, Gmail or get direct link.' },
@@ -89,13 +86,14 @@ function ShareTopic ({
   ))
   return (
     <div style={style.container}>
+      <img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' style={{ height: 42, marginTop: 16 }} />
       <Steps className='share-steps' current={currentStep - 1} direction='vertical' size='small'>
         {steps}
       </Steps>
       <h3 className='share-title'>
-          Share
-              <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
-        {type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
+        Share
+        <br /><em style={style.topic}> {title} </em>
+        <br />{type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
       </h3>
       {currentStep && currentStep === 2 &&
       <StepTwo

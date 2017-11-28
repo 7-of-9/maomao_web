@@ -189,8 +189,7 @@ the modal section
     margin: 0 auto;
     padding: 16px !important;
     border-color: #e1e2e6;
-    background: rgb(242, 242, 242) !important;
-    overflow-y: auto !important;
+    overflow-y: hidden !important;
     width: 100%;
     min-width: 400px;
     max-height: calc(100% - 50px);

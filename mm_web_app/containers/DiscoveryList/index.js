@@ -38,6 +38,7 @@ class DiscoveryList extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    logger.warn('DiscoveryList componentWillReceiveProps')
   }
 
   onSelect = (item) => {
@@ -201,7 +202,6 @@ class DiscoveryList extends Component {
   onSplitChange = (width) => {
     if (width) {
       this.props.ui.resizeSplitter(width)
-      this.forceUpdate()
     }
   }
 
@@ -251,7 +251,6 @@ class DiscoveryList extends Component {
     const items = []
     const { discoveries } = this.props.term
     const { mine, received, topics } = toJS(this.props.store.userHistory)
-    logger.info('wumbqa', { terms, shareUrlId })
     if (terms.length) {
       _.forEach(received, (receivedIten, index) => {
         _.forEach(receivedIten.shares, (shareItem, index) => {
@@ -549,6 +548,7 @@ class DiscoveryList extends Component {
   }
 
   componentWillUpdate () {
+    logger.warn('DiscoveryList componentWillUpdate')
     this.cleanClassName()
   }
 

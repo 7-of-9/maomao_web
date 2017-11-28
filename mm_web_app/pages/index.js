@@ -179,7 +179,6 @@ export default class IndexPage extends React.Component {
     } else if (!profileUrl && !urlId) {
       this.term.setCurrentTerms([])
     }
-    logger.info('wumbq', this.store.userHistory)
     if (urlId !== this.state.urlId || shareUrlId !== this.state.shareUrlId) {
       this.setState({ urlId, shareUrlId })
       logger.info('wumbo', { urlId, shareUrlId })

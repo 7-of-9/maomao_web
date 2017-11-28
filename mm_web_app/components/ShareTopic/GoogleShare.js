@@ -136,13 +136,38 @@ const enhance = compose(
       } else {
         props.changeValue(newValue)
       }
+    },
+    onBlur: props => (event, test) => {
+      logger.info('onSubmit value', props.value)
+      const emails = _.map(props.selectedContacts, item => item.email)
+      const sources = _.filter(props.contacts, item => _.indexOf(emails, item.email) === -1)
+      const selected = getSuggestions(sources, props.value)
+      logger.info('onSubmit selected', selected)
+      const result = [].concat(props.selectedContacts, (selected && selected[0]) || [])
+      logger.info('onSubmit result', result)
+      const isEmail = validate.single(props.value, { presence: true, email: true })
+      const isExist = _.find(props.selectedContacts, item => item.email === props.value)
+      logger.info('onSubmit props.value, isEmail', props.value, isEmail)
+      if (selected.length === 0 && !isEmail && !isExist) {
+        // validate email
+        result.push({
+          key: guid(),
+          name: props.value,
+          email: props.value,
+          image: ''
+        })
+      }
+      logger.info('result', result)
+      props.handleChange(result)
+      props.changeSelectedContacts(result)
+      props.changeValue('')
     }
   }),
   onlyUpdateForKeys(['value', 'contacts', 'suggestions', 'selectedContacts'])
 )
 
 const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addContact,
-  removeContact, onChange, suggestions, onSuggestionsFetchRequested, onSubmit,
+  removeContact, onChange, onBlur, suggestions, onSuggestionsFetchRequested, onSubmit,
   onSuggestionsClearRequested }) =>
   (<div>
     <div style={{ display: 'inline-block', width: '100%' }}>
@@ -173,9 +198,10 @@ const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addConta
           renderSuggestion={renderSuggestion}
           highlightFirstSuggestion
           inputProps={{
-            placeholder: 'To: type name to search...',
+            placeholder: 'To: type name to search and enter...',
             value,
-            onChange
+            onChange,
+            onBlur
           }}
         />
       </form>

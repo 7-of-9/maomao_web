@@ -153,25 +153,26 @@ class DiscoveryDetail extends Component {
 
   sendInvitations = (name, email, topic, url) => {
     const { name: fullName, email: fromEmail } = this.props.store.user
-    logger.info('sendInvitations', fullName, fromEmail, name, email, topic, url)
-    this.props.ui.addNotification('Sending invitations...')
-     /* global fetch */
-    fetch('/api/email', {
-      method: 'POST',
-    // eslint-disable-next-line no-undef
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-      credentials: 'same-origin',
-      body: JSON.stringify({ fromEmail, fullName, name, email, topic, url })
-    }).then(() => {
-      this.props.ui.addNotification(`Sent invitation to: ${email}`)
-      this.props.ui.closeShareModal()
-    })
-    .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
+    if (email) {
+      logger.info('sendInvitations', fullName, fromEmail, name, email, topic, url)
+      this.props.ui.addNotification('Sending invitations...')
+       /* global fetch */
+      fetch('/api/email', {
+        method: 'POST',
+      // eslint-disable-next-line no-undef
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        credentials: 'same-origin',
+        body: JSON.stringify({ fromEmail, fullName, name, email, topic, url })
+      }).then(() => {
+        this.props.ui.addNotification(`Sent invitation to: ${email}`)
+        this.props.ui.closeShareModal()
+      })
+      .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
+    }
   }
 
   addNotification = (msg) => {
     this.props.ui.addNotification(msg)
-    this.props.ui.closeShareModal()
   }
 
   render () {
@@ -189,7 +190,6 @@ class DiscoveryDetail extends Component {
           portalClassName='ShareModal'
           contentLabel={`Share ${title}`}
         >
-          <h2>Share {title}</h2>
           <DiscoveryShare
             type={this.state.type}
             shareOption={this.state.shareOption}
@@ -201,18 +201,26 @@ class DiscoveryDetail extends Component {
             accessGoogleContacts={this.fetchGoogleContacts}
             contacts={toJS(this.props.store.contacts)}
             notify={this.addNotification}
+            title={title}
           />
         </Modal>
+        {userData && <div style={{ padding: '5px 10px', background: '#eee' }}>
+          <img src={userData.avatar} style={{ height: 27, borderRadius: '50%', marginRight: 8 }} />
+          <span className='shared-text'>{userData.fullname} ({userData.email}) shared:</span>
+        </div>}
         <div className='discovery-detail'>
           <h4><a onClick={this.handleClick}>{title}</a></h4>
           <a href={url} style={{
             display: 'block',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            fontSize: '0.8em'
           }}>{url}</a>
-          {userData && [<span>{userData.fullname}({userData.email})</span>, <br />]}
-          <span>{date}</span><a className='btn btn-share' onClick={this.openShare}><i className='fa fa-share-alt' /></a>
+          <div style={{ padding: '4px 0' }}>
+            <span className='date-text'>{date}</span>
+            <a className='btn btn-share-item' onClick={this.openShare}>Share <i className='fa fa-share-alt' /></a>
+          </div>
         </div>
         {
           items.length > 0 &&

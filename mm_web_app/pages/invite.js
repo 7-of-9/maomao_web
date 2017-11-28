@@ -72,12 +72,20 @@ export default class Invite extends React.Component {
         })
     }
 
+    const { url_id: shareUrlId, topic_id: topicId, fullname, topic_title: topicTitle, user_id: userId } = this.inviteStore.shareInfo
+    if (shareUrlId) {
+      this.uiStore.setRedirectObject({ pathname: '/', query: { shareUrlId } }, `/?shareUrlId=${shareUrlId}`, { shallow: true })
+    } else if (fullname) {
+      if (topicId) {
+        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userId, topicTitle, topicId } }, `/${fullname}-${userId}/${topicTitle}`, { shallow: true })
+      } else {
+        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userId } }, `/${fullname}-${userId}`, { shallow: true })
+      }
+    }
+
     if (this.store.isLogin) {
       this.inviteStore.acceptInviteCode()
-      this.uiStore.redirectToSpecialUrl(true)
-      Router.push({ pathname: '/' }, '/', { shallow: true })
-      this.uiStore.addNotification('You will redirect to your profile.')
-      this.uiStore.redirectToSpecialUrl(false)
+      this.uiStore.execRedirectObject()
     }
   }
 
