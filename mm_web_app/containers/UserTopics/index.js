@@ -14,7 +14,8 @@ import logger from '../../utils/logger'
 const TopicTree = dynamic(
 import('./TopicTree'),
   {
-    loading: () => (<Loading isLoading />)
+    loading: () => (<Loading isLoading />),
+    ssr: false
   }
 )
 

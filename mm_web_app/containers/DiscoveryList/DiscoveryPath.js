@@ -7,7 +7,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import { inject } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
@@ -24,6 +24,7 @@ const Carousel = dynamic(
 @inject('term')
 @inject('store')
 @inject('ui')
+@observer
 class DiscoveryPath extends Component {
   static propTypes = {
     onBack: PropTypes.func.isRequired,
@@ -61,7 +62,7 @@ class DiscoveryPath extends Component {
   renderDiscoveryPath = () => {
     const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
-    const { findTerms, termsInfo: { terms } } = toJS(this.props.term)
+    const { findTerms, termsInfo: { terms }, userData, shareTerm } = toJS(this.props.term)
     const items = []
     const topics = []
     const carouselItems = []
@@ -94,6 +95,55 @@ class DiscoveryPath extends Component {
         )
       }
     })
+    if (userData.user_id) {
+      const { fullname, user_id: userId, avatar } = userData
+      items.push(
+        <div
+          className='topic'
+          key={`back-to-${fullname}-${userId}`}
+        >
+          <span
+            onClick={() => this.props.onBack({userData})}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${avatar || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: 'pointer'
+            }}
+            className='current-topic-name tags' rel='tag'>
+            <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+            {fullname}
+          </span>
+        </div>
+      )
+      if (shareTerm.topic_name) {
+        const { topic_name: topicName } = shareTerm
+        items.push(
+          <div
+            className='topic'
+            key={`back-to-${fullname}-${userId}-${topicName}`}
+          >
+            <span
+              onClick={() => this.props.onBack({userData, shareTerm})}
+              style={{
+                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(/static/images/no-image.png)`,
+                backgroundSize: 'cover',
+                cursor: 'pointer'
+              }}
+              className='current-topic-name tags' rel='tag'>
+              <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+              {topicName}
+            </span>
+          </div>
+        )
+      }
+      return (
+        <div className={'navigation-pane bounceInLeft animated'} style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
+          <div className='breadcrum'>
+            {items}
+          </div>
+        </div>
+      )
+    }
 
     if (items.length === 0) {
       return <div />
@@ -101,7 +151,7 @@ class DiscoveryPath extends Component {
 
     if (!currentTerm) {
       return (
-        <div className={'navigation-pane bounceInLeft animated'}>
+        <div className={'navigation-pane bounceInLeft animated'} style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
           <div className='breadcrum'>
             {items}
             <div style={{ width: 50, height: 50 }}><Loading isLoading /></div>
@@ -166,7 +216,7 @@ class DiscoveryPath extends Component {
         autoWidth: true
       }
       return (
-        <div className={'navigation-pane bounceInLeft animated'}>
+        <div className={'navigation-pane bounceInLeft animated'} style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
           <div className='breadcrum'>
             {items}
           </div>
@@ -181,7 +231,7 @@ class DiscoveryPath extends Component {
       )
     } else {
       return (
-        <div className={'navigation-pane bounceInLeft animated'}>
+        <div className={'navigation-pane bounceInLeft animated'} style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
           <div className='breadcrum'>
             {items}
           </div>

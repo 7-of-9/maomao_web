@@ -272,6 +272,17 @@ export class HomeStore extends CoreStore {
       })
   }
 
+  @action getUserHistoryCallback (callback) {
+    const userHistoryResult = getUserHistory(this.userId, this.userHash)
+    when(
+      () => userHistoryResult.state !== 'pending',
+      () => {
+        if (callback) {
+          callback(toJS(userHistoryResult.value.data))
+        }
+      })
+  }
+
   @action getUserHistory () {
     logger.info('getUserHistory')
     if (!this.isProcessingHistory) {

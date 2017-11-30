@@ -20,6 +20,8 @@ export default class Topics extends React.Component {
     const uiStore = initUIStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])
     const term = initTermStore(isServer, [], { terms: [] })
+    term.getTopicTree()
+    term.getFollowedTopics()
     return { isServer, ...store, ...uiStore, ...discovery, ...term }
   }
 

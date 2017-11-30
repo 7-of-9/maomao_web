@@ -563,9 +563,8 @@ img {
 .split-view {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   align-items: baseline;
-  align-content: center;
+  margin: 0 auto;
   .container-masonry {
     z-index: 1;
     .grid-row {

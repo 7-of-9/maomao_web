@@ -20,6 +20,7 @@ export default class Share extends React.Component {
     const uiStore = initUIStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])
     const term = initTermStore(isServer, [], { terms: [] })
+    store.getUserHistory()
     return { isServer, ...store, ...uiStore, ...discovery, ...term }
   }
 
@@ -36,9 +37,9 @@ export default class Share extends React.Component {
   componentWillMount () {
     const { userId, userHash } = this.store
     this.term.setApiToken(userId, userHash)
+    this.store.getUserHistory()
     this.term.getTopicTree()
     this.term.getFollowedTopics()
-    this.store.getUserHistory()
   }
 
   componentDidMount () {

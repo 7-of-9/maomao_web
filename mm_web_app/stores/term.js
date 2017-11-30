@@ -206,6 +206,8 @@ class TermStore {
           this.isProcessingRootDiscover = false
         }
       )
+    } else if (isExist) {
+      this.discoveries = isExist.discoveries
     }
   }
 

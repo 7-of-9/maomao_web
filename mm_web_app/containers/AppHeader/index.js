@@ -401,6 +401,40 @@ class AppHeader extends React.Component {
                   <i className='fa fa-sign-out' />
                   <span className='nav-text'>Sign Out</span>
                 </a>
+                {
+                  user && user.name &&
+                  <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
+                    <Link
+                      as={`/${user.nav_id}`}
+                      prefetch
+                      href={{
+                        pathname: '/',
+                        query: { profileUrl: `/${user.nav_id}` }
+                      }}>
+                      <strong><i className='fa fa-magic' /> Your discover</strong>
+                    </Link>
+                  </a>
+                }
+                <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
+                  <Link
+                    as={`/topics`}
+                    prefetch
+                    href={{
+                      pathname: '/topics'
+                    }}>
+                    <strong><i className='fa fa-list-ul' /> Topic Following</strong>
+                  </Link>
+                </a>
+                <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
+                  <Link
+                    as={`/share`}
+                    prefetch
+                    href={{
+                      pathname: '/share'
+                    }}>
+                    <strong><i className='fa fa-share-alt' /> Your Share</strong>
+                  </Link>
+                </a>
                 <ul className='dropdown-menu pull-right'>
                   {
                     user && user.name &&

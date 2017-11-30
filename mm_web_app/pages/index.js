@@ -42,9 +42,11 @@ export default class IndexPage extends React.Component {
     }
     let urlId = query && query.urlId ? Number(query.urlId) : -1
     let shareUrlId = query && query.shareUrlId ? Number(query.shareUrlId) : -1
+    let userShareId = query && query.userShareId ? Number(query.userShareId) : -1
+    let topicShareName = query && query.topicShareName ? query.topicShareName : ''
     store.getUserHistory()
     const term = initTermStore(isServer, findTerms, termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId }
+    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId, userShareId, topicShareName }
   }
 
   constructor (props) {
@@ -87,15 +89,15 @@ export default class IndexPage extends React.Component {
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
     }
-    if (this.props.urlId) {
-      this.setState({ urlId: this.props.urlId })
-    }
-    if (this.props.shareUrlId) {
-      this.setState({ shareUrlId: this.props.shareUrlId })
-    }
     if (this.store.isLogin && this.store.user) {
       this.setState({ profileUrl: `/${this.store.user.nav_id}` })
     }
+    this.setState({
+      urlId: this.props.urlId,
+      shareUrlId: this.props.shareUrlId,
+      userShareId: this.props.userShareId,
+      topicShareName: this.props.topicShareName
+    })
     this.term.getTopicTree()
     this.term.getFollowedTopics()
     this.store.getUserHistory()
@@ -138,23 +140,41 @@ export default class IndexPage extends React.Component {
     } else {
       this.uiStore.toggleSplitView(false)
     }
+    const { userShareId, topicShareName } = this.state
+    if (userShareId || topicShareName) {
+      this.store.getUserHistoryCallback((userHistoryResult) => {
+        _.forEach(userHistoryResult.received, (receivedIten, index) => {
+          if (receivedIten.user_id === userShareId) {
+            this.term.setCurrentUserData(receivedIten)
+            _.forEach(receivedIten.shares, (shareItem, index) => {
+              if (shareItem.type === 'topic' && shareItem.topic_name === topicShareName) {
+                this.term.setCurrentShareTerm(shareItem)
+              }
+            })
+          }
+        })
+      })
+    } else {
+      this.term.setCurrentUserData({})
+      this.term.setCurrentShareTerm({})
+    }
   }
 
   componentWillReceiveProps (nextProps) {
     // back button on browser logic
     const { query } = nextProps.url
     // fetch data based on the new query
-    const { findTerms, profileUrl, urlId, shareUrlId } = query
+    const { findTerms, profileUrl, urlId, shareUrlId, userShareId, topicShareName } = query
     if (profileUrl) {
       if (profileUrl !== this.state.profileUrl) {
         this.setState({ profileUrl })
       }
       this.term.setCurrentTerms([])
       this.uiStore.backToRootDiscovery()
-    } else if (urlId && !findTerms) {
+    } else if ((urlId || shareUrlId) && !findTerms) {
       this.term.setCurrentTerms([])
       this.uiStore.selectDiscoveryTerm(-1)
-      this.term.getRootDiscover(1)
+      this.term.getRootDiscover(0)
     } else if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature
       if (_.isString(findTerms)) {
@@ -176,31 +196,58 @@ export default class IndexPage extends React.Component {
           this.term.getTermDiscover(currentTerm.term_id)
         }
       }
-    } else if (!profileUrl && !urlId) {
+    } else if (!profileUrl && !(urlId || shareUrlId)) {
       this.term.setCurrentTerms([])
     }
-    if (urlId !== this.state.urlId || shareUrlId !== this.state.shareUrlId) {
-      this.setState({ urlId, shareUrlId })
-      logger.info('wumbo', { urlId, shareUrlId })
-      if (Number(urlId) > 0 || Number(shareUrlId) > 0) {
+    if (urlId && urlId !== this.state.urlId) {
+      this.setState({ urlId })
+      if (Number(urlId) > 0) {
+        // preview current item
         this.uiStore.toggleSplitView(true)
-        if (urlId > 0) {
-          this.term.getSelectDiscoverItem(urlId, discoveryItem => {
-            this.uiStore.selectDiscoveryItem(discoveryItem)
-          })
-        }
-      } else if (shareUrlId > 0) {
+        this.term.getSelectDiscoverItem(urlId, discoveryItem => {
+          this.uiStore.selectDiscoveryItem(discoveryItem)
+        })
+      } else {
+        this.uiStore.toggleSplitView(false)
+      }
+    } else if (!urlId) {
+      this.setState({ urlId: -1 })
+    }
+    if (shareUrlId && shareUrlId !== this.state.shareUrlId) {
+      this.setState({ shareUrlId })
+      if (Number(shareUrlId) > 0) {
+        // preview current item
+        this.uiStore.toggleSplitView(true)
         this.store.getSelectSharedItem(shareUrlId, discoveryItem => {
           this.uiStore.selectDiscoveryItem(discoveryItem)
         })
       } else {
         this.uiStore.toggleSplitView(false)
       }
+    } else if (!shareUrlId) {
+      this.setState({ shareUrlId: -1 })
+    }
+    if (userShareId || topicShareName) {
+      this.store.getUserHistoryCallback((userHistoryResult) => {
+        _.forEach(userHistoryResult.received, (receivedIten, index) => {
+          if (receivedIten.user_id === userShareId) {
+            this.term.setCurrentUserData(receivedIten)
+            _.forEach(receivedIten.shares, (shareItem, index) => {
+              if (shareItem.type === 'topic' && shareItem.topic_name === topicShareName) {
+                this.term.setCurrentShareTerm(shareItem)
+              }
+            })
+          }
+        })
+      })
+    } else {
+      this.term.setCurrentUserData({})
+      this.term.setCurrentShareTerm({})
     }
   }
 
   isDiscoverMode = () => {
-    return (this.term.findTerms && this.term.findTerms.length > 0) || this.state.urlId > 0 || this.state.shareUrlId > 0 || this.state.profileUrl.length > 0 || this.store.isLogin
+    return (this.term.findTerms && this.term.findTerms.length > 0) || this.term.userData.user_id || this.state.urlId > 0 || this.state.shareUrlId > 0 || this.state.profileUrl.length > 0 || this.store.isLogin
   }
 
   render () {
@@ -217,7 +264,7 @@ export default class IndexPage extends React.Component {
               <Discover profileUrl={profileUrl} urlId={Number(urlId)} shareUrlId={Number(shareUrlId)} />
             </div>
             : <div className='home'>
-              <style dangerouslySetInnerHTML={{ __html: stylesheet }} shareUrlId={Number(shareUrlId)} />
+              <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
               <Home />
             </div>
         }

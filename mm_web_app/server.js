@@ -78,8 +78,8 @@ app.prepare().then(() => {
       app.render(req, res, '/hiring', {type: 'vp'})
     } else if (_.includes(pages, pathname) || _.indexOf(pathname, '_next') !== -1 ||
      _.indexOf(pathname, 'favicon') !== -1 || _.indexOf(pathname, 'static') !== -1 ||
-     _.indexOf(pathname, '.') !== -1 || _.indexOf(pathname, '%20') !== -1 ||
-     _.indexOf(pathname, '|') !== -1 || _.indexOf(pathname, '-') !== -1 || pathname === '/'
+     _.indexOf(pathname, '.') !== -1 ||
+     _.indexOf(pathname, '|') !== -1 || pathname === '/'
     ) {
       return handle(req, res, parsedUrl)
     } else {
@@ -112,7 +112,15 @@ app.prepare().then(() => {
       } else {
         // maybe that is multi terms
         const findTerms = pathname.split('/').filter(item => item.length > 0).map(item => decodeURI(item))
-        return app.render(req, res, '/', Object.assign(query, { findTerms }))
+        if (findTerms[0] === 'user-stream') {
+          const userData = findTerms[1].split('-')
+          return app.render(req, res, '/', Object.assign(query, {
+            userShareId: userData[1],
+            topicShareName: findTerms[2]
+          }))
+        } else {
+          return app.render(req, res, '/', Object.assign(query, { findTerms }))
+        }
       }
     }
   })

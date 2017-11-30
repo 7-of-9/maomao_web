@@ -1,7 +1,6 @@
 import React from 'react'
 import { Provider, observer } from 'mobx-react'
 import _ from 'lodash'
-import Router from 'next/router'
 import { initStore } from '../stores/home'
 import { initStore as initInviteStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
@@ -72,14 +71,14 @@ export default class Invite extends React.Component {
         })
     }
 
-    const { url_id: shareUrlId, topic_id: topicId, fullname, topic_title: topicTitle, user_id: userId } = this.inviteStore.shareInfo
+    const { url_id: shareUrlId, fullname, topic_title: topicTitle, source_user_id: userId } = this.inviteStore.shareInfo
     if (shareUrlId) {
       this.uiStore.setRedirectObject({ pathname: '/', query: { shareUrlId } }, `/?shareUrlId=${shareUrlId}`, { shallow: true })
     } else if (fullname) {
-      if (topicId) {
-        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userId, topicTitle, topicId } }, `/${fullname}-${userId}/${topicTitle}`, { shallow: true })
+      if (topicTitle) {
+        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId, topicShareName: topicTitle } }, `/user-stream/${fullname}-${userId}/${topicTitle}`, { shallow: true })
       } else {
-        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userId } }, `/${fullname}-${userId}`, { shallow: true })
+        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId } }, `/user-stream/${fullname}-${userId}`, { shallow: true })
       }
     }
 

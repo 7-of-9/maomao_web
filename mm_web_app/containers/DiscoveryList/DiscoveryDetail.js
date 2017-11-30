@@ -181,7 +181,8 @@ class DiscoveryDetail extends Component {
     const { shareCode } = this.state
     const isReady = termIds.length === items.length
     const { showShareModal } = this.props.ui
-    const date = moment.utc(utc).local().format('LLLL')
+    const date = utc ? moment.utc(utc).local().format('LLLL') : ''
+    const fullscreen = window.innerWidth < 690
     return (
       <div>
         <Modal
@@ -205,11 +206,13 @@ class DiscoveryDetail extends Component {
           />
         </Modal>
         {userData && <div style={{ padding: '5px 10px', background: '#eee' }}>
-          <img src={userData.avatar} style={{ height: 27, borderRadius: '50%', marginRight: 8 }} />
-          <span className='shared-text'>{userData.fullname} ({userData.email}) shared:</span>
+          <span className='shared-text'>
+            <img src={userData.avatar} style={{ height: 27, borderRadius: '50%', marginRight: 8 }} />
+            {userData.fullname} ({userData.email}) shared:
+          </span>
         </div>}
         <div className='discovery-detail'>
-          <h4><a onClick={this.handleClick}>{title}</a></h4>
+          {fullscreen || <h4><a onClick={this.handleClick}>{title}</a></h4>}
           <a href={url} style={{
             display: 'block',
             whiteSpace: 'nowrap',

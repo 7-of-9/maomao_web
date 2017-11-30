@@ -321,13 +321,14 @@ export class UIStore {
     this.termHoverVisible = true
   }
 
-  @action setRedirectObject(url, path, options) {
+  @action setRedirectObject (url, path, options) {
+    logger.info('setRedirectObject', url, path, options)
     this.isRedirectToUrl = true
     this.redirectObject = { url, path, options }
     console.log(this.redirectObject)
   }
 
-  @action execRedirectObject() {
+  @action execRedirectObject () {
     if (this.isRedirectToUrl) {
       this.isRedirectToUrl = false
       const { url, path, options } = this.redirectObject
