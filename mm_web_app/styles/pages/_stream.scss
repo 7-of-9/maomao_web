@@ -550,12 +550,17 @@ img {
     z-index: 1000;
     width: 100%;
     position: fixed;
-    background: url("/static/images/balls.svg") no-repeat center gray;
     iframe {
       z-index: 1;
       background: #fff;
       height: 100vh;
     }
+  }
+  .grid-item--loading {
+    background: url("/static/images/balls.svg") no-repeat center rgba(128, 128, 128, 0.53);
+    z-index: 1000;
+    position: absolute;
+    width: 100%;
   }
 }
 

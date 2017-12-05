@@ -38,7 +38,8 @@ export default class DiscoveryItem extends Component {
     userData: PropTypes.object,
     shareTerm: PropTypes.object,
     onSelectShareTerm: PropTypes.func,
-    onSelectUser: PropTypes.func
+    onSelectUser: PropTypes.func,
+    selected: PropTypes.bool
   }
 
   static defaultProps = {
@@ -56,7 +57,8 @@ export default class DiscoveryItem extends Component {
     sub_term_img: '',
     search_num: 0,
     ingoreTerms: [],
-    onSelect: (item) => { }
+    onSelect: (item) => { },
+    selected: false
   }
 
   handleClick = (evt) => {
@@ -229,12 +231,12 @@ export default class DiscoveryItem extends Component {
 
   render () {
     /* eslint-disable camelcase */
-    const { disc_url_id, site_tld, site_img, title, desc, img } = this.props
+    const { disc_url_id, site_tld, site_img, title, desc, img, selected } = this.props
     const images = [{ name: site_tld, img: site_img }]
     return (
       <div
         key={disc_url_id}
-        className='grid-item shuffle-item'
+        className={`grid-item shuffle-item ${selected ? 'grid-item-selected' : ''}`}
         onClick={this.handleClick}
         onMouseEnter={this.preloadUrl}
       >

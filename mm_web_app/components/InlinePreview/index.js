@@ -52,7 +52,7 @@ export default class InlinePreview extends Component {
     const proxyUrl = `${PROXY_URL}?url=${url}`
     return (
       <div
-        style={{width: width || '100%', height: height || '100%'}}
+        style={{width: width || '100%', height: height || '100%', background: '#000'}}
         >
         <iframe
           className='iframe-view'
@@ -66,6 +66,7 @@ export default class InlinePreview extends Component {
           allowFullScreen
           allowTransparency
           src={proxyUrl}
+          onLoad={this.onLoad}
         />
       </div>
     )
@@ -75,11 +76,12 @@ export default class InlinePreview extends Component {
     this.setState({
       isReady: false
     })
-    setTimeout(() => {
-      this.setState({
-        isReady: true
-      })
-    }, 200)
+  }
+
+  onLoad = () => {
+    this.setState({
+      isReady: true
+    })
   }
 
   componentWillMount () {
@@ -96,15 +98,13 @@ export default class InlinePreview extends Component {
     const { url, width, height } = this.props
     const isVideoPlayer = isVideo(url)
     const { isReady } = this.state
-    if (!isReady) {
-      return (<div className='grid-item--full'>
-        <div
-          style={{width: width || '100%', height: height || '100%'}}
-         />
-      </div>)
-    }
     return (
       <div className='grid-item--full'>
+        { isReady || <div className='grid-item--loading'>
+          <div
+            style={{width: width || '100%', height: height || '100%'}}
+          />
+        </div>}
         {
           isVideoPlayer &&
           this.renderPlayer()

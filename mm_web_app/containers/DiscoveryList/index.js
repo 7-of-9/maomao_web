@@ -42,7 +42,6 @@ class DiscoveryList extends Component {
   }
 
   onSelect = (item) => {
-    console.log('wumbo')
     this.props.ui.selectDiscoveryItem(item)
     this.props.ui.toggleSplitView(true)
     if (item.main_term) {
@@ -344,25 +343,24 @@ class DiscoveryList extends Component {
             _.forEach(receivedIten.shares, (shareItem, index) => {
               if (shareItem.topic_name === shareTerm.topic_name && shareItem.type === 'topic') {
                 _.forEach(shareItem.urls, (item, index) => {
-                  if (shareUrlId !== item.url_id) {
-                    items.push(
-                      <DiscoveryItem
-                        key={`${item.url_id}-${item.href}-${index}`}
-                        main_term_img={receivedIten.avatar}
-                        main_term_name={receivedIten.fullname}
-                        sub_term_img={'/static/images/no-image.png'}
-                        sub_term_name={shareItem.topic_name}
-                        userData={receivedIten}
-                        shareTerm={shareItem}
-                        onSelectShareTerm={this.onSelectShareTerm}
-                        onSelectUser={this.onSelectUser}
-                        onSelect={this.onSelect}
-                        url={item.href}
-                        desc={item.href}
-                        {...item}
-                      />
-                    )
-                  }
+                  items.push(
+                    <DiscoveryItem
+                      key={`${item.url_id}-${item.href}-${index}`}
+                      main_term_img={receivedIten.avatar}
+                      main_term_name={receivedIten.fullname}
+                      sub_term_img={'/static/images/no-image.png'}
+                      sub_term_name={shareItem.topic_name}
+                      userData={receivedIten}
+                      shareTerm={shareItem}
+                      onSelectShareTerm={this.onSelectShareTerm}
+                      onSelectUser={this.onSelectUser}
+                      onSelect={this.onSelect}
+                      url={item.href}
+                      desc={item.href}
+                      selected={shareUrlId === item.url_id}
+                      {...item}
+                    />
+                  )
                 })
               }
             })
@@ -372,21 +370,20 @@ class DiscoveryList extends Component {
       }
       if (mine.user_id === userData.user_id) {
         _.forEach(mine.urls, (item, index) => {
-          if (shareUrlId !== item.url_id) {
-            items.push(
-              <DiscoveryItem
-                key={`${item.url_id}-${item.href}-${index}`}
-                main_term_img={mine.avatar}
-                main_term_name={mine.fullname}
-                userData={mine}
-                onSelectUser={this.onSelectUser}
-                url={item.href}
-                desc={item.href}
-                onSelect={this.onSelect}
-                {...item}
-              />
+          items.push(
+            <DiscoveryItem
+              key={`${item.url_id}-${item.href}-${index}`}
+              main_term_img={mine.avatar}
+              main_term_name={mine.fullname}
+              userData={mine}
+              onSelectUser={this.onSelectUser}
+              url={item.href}
+              desc={item.href}
+              onSelect={this.onSelect}
+              selected={shareUrlId === item.url_id}
+              {...item}
+            />
             )
-          }
         })
       } else {
         _.forEach(received, (receivedIten, index) => {
@@ -394,41 +391,39 @@ class DiscoveryList extends Component {
             _.forEach(receivedIten.shares, (shareItem, index) => {
               _.forEach(shareItem.urls, (item, index) => {
                 if (shareItem.type === 'topic') {
-                  if (shareUrlId !== item.url_id) {
-                    items.push(
-                      <DiscoveryItem
-                        key={`${item.url_id}-${item.href}-${index}`}
-                        main_term_img={receivedIten.avatar}
-                        main_term_name={receivedIten.fullname}
-                        sub_term_img={'/static/images/no-image.png'}
-                        sub_term_name={shareItem.topic_name}
-                        userData={receivedIten}
-                        shareTerm={shareItem}
-                        onSelectShareTerm={this.onSelectShareTerm}
-                        onSelectUser={this.onSelectUser}
-                        onSelect={this.onSelect}
-                        url={item.href}
-                        desc={item.href}
-                        {...item}
-                      />
-                    )
-                  }
+                  items.push(
+                    <DiscoveryItem
+                      key={`${item.url_id}-${item.href}-${index}`}
+                      main_term_img={receivedIten.avatar}
+                      main_term_name={receivedIten.fullname}
+                      sub_term_img={'/static/images/no-image.png'}
+                      sub_term_name={shareItem.topic_name}
+                      userData={receivedIten}
+                      shareTerm={shareItem}
+                      onSelectShareTerm={this.onSelectShareTerm}
+                      onSelectUser={this.onSelectUser}
+                      onSelect={this.onSelect}
+                      url={item.href}
+                      desc={item.href}
+                      selected={shareUrlId === item.url_id}
+                      {...item}
+                    />
+                  )
                 } else {
-                  if (shareUrlId !== item.url_id) {
-                    items.push(
-                      <DiscoveryItem
-                        key={`${item.url_id}-${item.href}-${index}`}
-                        main_term_img={receivedIten.avatar}
-                        main_term_name={receivedIten.fullname}
-                        userData={receivedIten}
-                        onSelectUser={this.onSelectUser}
-                        onSelect={this.onSelect}
-                        url={item.href}
-                        desc={item.href}
-                        {...item}
-                      />
-                    )
-                  }
+                  items.push(
+                    <DiscoveryItem
+                      key={`${item.url_id}-${item.href}-${index}`}
+                      main_term_img={receivedIten.avatar}
+                      main_term_name={receivedIten.fullname}
+                      userData={receivedIten}
+                      onSelectUser={this.onSelectUser}
+                      onSelect={this.onSelect}
+                      url={item.href}
+                      desc={item.href}
+                      selected={shareUrlId === item.url_id}
+                      {...item}
+                    />
+                  )
                 }
               })
             })
@@ -442,7 +437,7 @@ class DiscoveryList extends Component {
         _.forEach(receivedIten.shares, (shareItem, index) => {
           _.forEach(shareItem.urls, (item, index) => {
             if (shareItem.type === 'topic') {
-              if (shareUrlId !== item.url_id && findTerms.indexOf(shareItem.topic_name) > 0) {
+              if (findTerms.indexOf(shareItem.topic_name) > 0) {
                 items.push(
                   <DiscoveryItem
                     key={`${item.url_id}-${item.href}-${index}`}
@@ -457,6 +452,7 @@ class DiscoveryList extends Component {
                     onSelect={this.onSelect}
                     url={item.href}
                     desc={item.href}
+                    selected={shareUrlId === item.url_id}
                     {...item}
                   />
                 )
@@ -469,101 +465,8 @@ class DiscoveryList extends Component {
       if (topics && topics.discoveries && topics.discoveries.length) {
         _.forEach(topics.discoveries, (item) => {
           /* eslint-disable camelcase */
-          if (urlId !== item.disc_url_id) {
-            const term = this.getCurrentTerm(item.main_term_id)
-            const subTerm = this.getCurrentTerm(item.sub_term_id)
-            if (term && subTerm) {
-              const { img: main_term_img, term_name: main_term_name } = term
-              const { img: sub_term_img, term_name: sub_term_name } = subTerm
-              items.push(
-                <DiscoveryItem
-                  key={`${item.disc_url_id}-${item.url}`}
-                  ingoreTerms={ingoreTerms}
-                  main_term_img={main_term_img}
-                  main_term_name={main_term_name}
-                  main_term={term}
-                  sub_term={subTerm}
-                  sub_term_img={sub_term_img}
-                  sub_term_name={sub_term_name}
-                  onSelect={this.onSelect}
-                  onSelectTerm={this.onSelectChildTerm}
-                  {...item}
-                />
-              )
-            }
-          }
-        })
-        return items
-      }
-    }
-    if (!findTerms.length) {
-      _.forEach(received, (receivedIten, index) => {
-        _.forEach(receivedIten.shares, (shareItem, index) => {
-          _.forEach(shareItem.urls, (item, index) => {
-            if (shareItem.type === 'topic') {
-              if (shareUrlId !== item.url_id) {
-                items.push(
-                  <DiscoveryItem
-                    key={`${item.url_id}-${item.href}-${index}`}
-                    main_term_img={receivedIten.avatar}
-                    main_term_name={receivedIten.fullname}
-                    sub_term_img={'/static/images/no-image.png'}
-                    sub_term_name={shareItem.topic_name}
-                    userData={receivedIten}
-                    shareTerm={shareItem}
-                    onSelectShareTerm={this.onSelectShareTerm}
-                    onSelectUser={this.onSelectUser}
-                    onSelect={this.onSelect}
-                    url={item.href}
-                    desc={item.href}
-                    {...item}
-                  />
-                )
-              }
-            } else {
-              if (shareUrlId !== item.url_id) {
-                items.push(
-                  <DiscoveryItem
-                    key={`${item.url_id}-${item.href}-${index}`}
-                    main_term_img={receivedIten.avatar}
-                    main_term_name={receivedIten.fullname}
-                    userData={receivedIten}
-                    onSelectUser={this.onSelectUser}
-                    onSelect={this.onSelect}
-                    url={item.href}
-                    desc={item.href}
-                    {...item}
-                  />
-                )
-              }
-            }
-          })
-        })
-      })
-      _.forEach(mine.urls, (item, index) => {
-        if (shareUrlId !== item.url_id) {
-          items.push(
-            <DiscoveryItem
-              key={`${item.url_id}-${item.href}-${index}`}
-              main_term_img={mine.avatar}
-              main_term_name={mine.fullname}
-              userData={mine}
-              onSelectUser={this.onSelectUser}
-              url={item.href}
-              desc={item.href}
-              onSelect={this.onSelect}
-              {...item}
-            />
-          )
-        }
-      })
-    }
-    _.forEach(discoveries, (item, index) => {
-      /* eslint-disable camelcase */
-      if (item.main_term_id) {
-        const term = this.getCurrentTerm(item.main_term_id)
-        const subTerm = this.getCurrentTerm(item.sub_term_id)
-        if (urlId !== item.disc_url_id) {
+          const term = this.getCurrentTerm(item.main_term_id)
+          const subTerm = this.getCurrentTerm(item.sub_term_id)
           if (term && subTerm) {
             const { img: main_term_img, term_name: main_term_name } = term
             const { img: sub_term_img, term_name: sub_term_name } = subTerm
@@ -579,10 +482,98 @@ class DiscoveryList extends Component {
                 sub_term_name={sub_term_name}
                 onSelect={this.onSelect}
                 onSelectTerm={this.onSelectChildTerm}
+                selected={urlId === item.disc_url_id}
                 {...item}
               />
             )
           }
+        })
+        return items
+      }
+    }
+    if (!findTerms.length) {
+      _.forEach(received, (receivedIten, index) => {
+        _.forEach(receivedIten.shares, (shareItem, index) => {
+          _.forEach(shareItem.urls, (item, index) => {
+            if (shareItem.type === 'topic') {
+              items.push(
+                <DiscoveryItem
+                  key={`${item.url_id}-${item.href}-${index}`}
+                  main_term_img={receivedIten.avatar}
+                  main_term_name={receivedIten.fullname}
+                  sub_term_img={'/static/images/no-image.png'}
+                  sub_term_name={shareItem.topic_name}
+                  userData={receivedIten}
+                  shareTerm={shareItem}
+                  onSelectShareTerm={this.onSelectShareTerm}
+                  onSelectUser={this.onSelectUser}
+                  onSelect={this.onSelect}
+                  url={item.href}
+                  desc={item.href}
+                  selected={shareUrlId === item.url_id}
+                  {...item}
+                />
+              )
+            } else {
+              items.push(
+                <DiscoveryItem
+                  key={`${item.url_id}-${item.href}-${index}`}
+                  main_term_img={receivedIten.avatar}
+                  main_term_name={receivedIten.fullname}
+                  userData={receivedIten}
+                  onSelectUser={this.onSelectUser}
+                  onSelect={this.onSelect}
+                  url={item.href}
+                  desc={item.href}
+                  selected={shareUrlId === item.url_id}
+                  {...item}
+                />
+              )
+            }
+          })
+        })
+      })
+      _.forEach(mine.urls, (item, index) => {
+        items.push(
+          <DiscoveryItem
+            key={`${item.url_id}-${item.href}-${index}`}
+            main_term_img={mine.avatar}
+            main_term_name={mine.fullname}
+            userData={mine}
+            onSelectUser={this.onSelectUser}
+            url={item.href}
+            desc={item.href}
+            onSelect={this.onSelect}
+            selected={shareUrlId === item.url_id}
+            {...item}
+          />
+        )
+      })
+    }
+    _.forEach(discoveries, (item, index) => {
+      /* eslint-disable camelcase */
+      if (item.main_term_id) {
+        const term = this.getCurrentTerm(item.main_term_id)
+        const subTerm = this.getCurrentTerm(item.sub_term_id)
+        if (term && subTerm) {
+          const { img: main_term_img, term_name: main_term_name } = term
+          const { img: sub_term_img, term_name: sub_term_name } = subTerm
+          items.push(
+            <DiscoveryItem
+              key={`${item.disc_url_id}-${item.url}`}
+              ingoreTerms={ingoreTerms}
+              main_term_img={main_term_img}
+              main_term_name={main_term_name}
+              main_term={term}
+              sub_term={subTerm}
+              sub_term_img={sub_term_img}
+              sub_term_name={sub_term_name}
+              onSelect={this.onSelect}
+              onSelectTerm={this.onSelectChildTerm}
+              selected={urlId === item.disc_url_id}
+              {...item}
+            />
+          )
         }
       }
     })

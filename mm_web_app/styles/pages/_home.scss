@@ -620,12 +620,16 @@ the home page
     margin-top: 0;
     .grid-row {
       .grid-item--full {
-        background: url("/static/images/balls.svg") no-repeat center gray;
         iframe {
           z-index: 1;
           min-height: 90vh;
           height: 100%;
         }
+      }
+      .grid-item--loading {
+        background: url("/static/images/balls.svg") no-repeat center rgba(128, 128, 128, 0.53);
+        position: absolute;
+        width: 100%;
       }
       .discovery-list {
         display: flex;
@@ -676,7 +680,7 @@ the home page
           .grid-item--full {
             z-index: 998;
             position: fixed;
-            background: url("/static/images/balls.svg") no-repeat center gray;
+            background: url("/static/images/balls.svg") no-repeat center rgba(128, 128, 128, 0.13);
             .close_button {
               display: none;
             }
@@ -686,6 +690,12 @@ the home page
               min-height: 65vh;
               height: 100%;
             }
+          }
+          .grid-item--loading {
+            background: url("/static/images/balls.svg") no-repeat center rgba(128, 128, 128, 0.53);
+            z-index: 998;
+            position: absolute;
+            width: 100%;
           }
           .on-resize {
             background: #CCE0E7;
@@ -724,7 +734,7 @@ the home page
           align-items: baseline;
           .grid-item {
             width: 250px;
-            height: 360px;
+            height: 370px;
             z-index: 100;
             .tags {
               line-height: 15px !important;
@@ -734,6 +744,9 @@ the home page
               width: 30px !important;
               height: 30px !important;
             }
+          }
+          .grid-item-selected {
+            border: 1px solid rgba(0, 0, 0, 0.15);
           }
         }
       }
@@ -794,9 +807,8 @@ the home page
           display: none;
         }
         .discovery-title-wrap {
-          padding: 10px 0;
-          background: rgb(48, 48, 48); /* fallback color */
-          background: rgba(255, 255, 255, 0.7);
+          padding: 10px 5px;
+          margin-bottom: 8px;
         }
         .discovery-title {
           color:#444;
