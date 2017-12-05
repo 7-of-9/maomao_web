@@ -29,7 +29,7 @@ export default class InlinePreview extends Component {
   }
 
   renderPlayer = () => {
-    const { url, width, height } = this.props
+    const { url, width } = this.props
     if (!url) {
       return <div />
     }
@@ -38,7 +38,7 @@ export default class InlinePreview extends Component {
       playsinline
       playing
       width={width || '100%'}
-      controls={true}
+      controls
       onReady={this.onLoad}
       />)
   }

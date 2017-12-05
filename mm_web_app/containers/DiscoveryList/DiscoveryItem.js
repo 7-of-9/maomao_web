@@ -9,6 +9,7 @@ import { observer, inject } from 'mobx-react'
 import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import ReactPlayer from 'react-player'
 import { tagColor, isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
 
@@ -59,6 +60,10 @@ export default class DiscoveryItem extends Component {
     ingoreTerms: [],
     onSelect: (item) => { },
     selected: false
+  }
+
+  state = {
+    playing: false
   }
 
   handleClick = (evt) => {
@@ -229,10 +234,43 @@ export default class DiscoveryItem extends Component {
     }
   }
 
+  renderPlayer = () => {
+    const { url, width } = this.props
+    if (!url) {
+      return <div />
+    }
+    return ([
+      <ReactPlayer
+        key='player'
+        url={url}
+        playsinline
+        width={width || '100%'}
+        height={260}
+        controls
+        onReady={this.onLoad}
+        muted
+        playing={this.state.playing}
+      />,
+      <div
+        key='overlay'
+        style={{
+          height: 260,
+          position: 'absolute',
+          width: '100%',
+          background: 'transparent',
+          top: 70
+        }}
+        onMouseEnter={() => this.setState({ playing: true })}
+        onMouseLeave={() => this.setState({ playing: false })}
+      />
+    ])
+  }
+
   render () {
     /* eslint-disable camelcase */
-    const { disc_url_id, site_tld, site_img, title, desc, img, selected } = this.props
+    const { disc_url_id, site_tld, site_img, title, desc, img, selected, url } = this.props
     const images = [{ name: site_tld, img: site_img }]
+    const isVideoPlayer = isVideo(url)
     return (
       <div
         key={disc_url_id}
@@ -258,7 +296,7 @@ export default class DiscoveryItem extends Component {
           <p className='discovery-title'>{title}</p>
         </div>
         <div className='discovery-description'>
-          {desc}
+          {isVideoPlayer ? this.renderPlayer() : desc}
         </div>
         <div className='caption'>
           {this.renderTerms()}
