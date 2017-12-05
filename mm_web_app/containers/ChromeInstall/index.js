@@ -78,14 +78,6 @@ class ChromeInstall extends React.PureComponent {
             >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && !!shareInfo &&
-              <button
-                className='btn btn-unlock'
-                onClick={this.onOpenExtensionModal} >
-                {joinMsg}
-                </button>
-              }
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
               (isMobile || !isChrome || (isChrome && isInstall)) &&
               <div className='block-button'>

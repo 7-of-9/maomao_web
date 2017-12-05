@@ -4,7 +4,7 @@ import ToggleDisplay from 'react-toggle-display'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import GoogleShare from './GoogleShare'
 
-const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const SITE_URL = 'http://www.maomao.rocks'
 const style = {
   button: {
     float: 'right',

@@ -8,7 +8,7 @@ import StepTwo from './StepTwo'
 import StepThree from './StepThree'
 import logger from '../../utils/logger'
 
-const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const SITE_URL = 'https://www.maomao.rocks'
 const style = {
   container: {
     backgroundColor: '#fff',

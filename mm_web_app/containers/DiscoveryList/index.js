@@ -42,6 +42,7 @@ class DiscoveryList extends Component {
   }
 
   onSelect = (item) => {
+    console.log('wumbo')
     this.props.ui.selectDiscoveryItem(item)
     this.props.ui.toggleSplitView(true)
     if (item.main_term) {
@@ -129,7 +130,6 @@ class DiscoveryList extends Component {
   }
 
   onSelectUser = (userData) => {
-    console.log(this.props.shareUrlId)
     this.props.term.setCurrentUserData(userData)
     const href = this.props.shareUrlId > 0 ? `/user-stream/${userData.fullname}-${userData.user_id}?shareUrlId=${this.props.shareUrlId}` : `/user-stream/${userData.fullname}-${userData.user_id}`
     Router.push(
@@ -149,7 +149,6 @@ class DiscoveryList extends Component {
     const { shareUrlId, urlId } = this.props
     const position = _.findIndex(this.props.term.findTerms, item => isSameStringOnUrl(item, term.term_name))
     const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
-    console.log({ a: 'aaa', terms, shareUrlId, urlId })
     if (terms.length) {
       const href = urlId > 0 ? `/${terms.join('/')}?urlId=${urlId}` : shareUrlId > 0 ? `/${terms.join('/')}?shareUrlId=${shareUrlId}` : `/${terms.join('/')}`
       Router.push(
@@ -337,7 +336,6 @@ class DiscoveryList extends Component {
     let items = []
     const { discoveries, findTerms, userData, shareTerm } = toJS(this.props.term)
     const { mine, received } = toJS(this.props.store.userHistory)
-    logger.info('boku ne', mine, received, discoveries, findTerms, userData, shareTerm)
     if (userData.user_id) {
       items = []
       if (shareTerm.topic_name) {
@@ -384,7 +382,7 @@ class DiscoveryList extends Component {
                 onSelectUser={this.onSelectUser}
                 url={item.href}
                 desc={item.href}
-                onSelect={this.props.onSelect}
+                onSelect={this.onSelect}
                 {...item}
               />
             )
@@ -553,7 +551,7 @@ class DiscoveryList extends Component {
               onSelectUser={this.onSelectUser}
               url={item.href}
               desc={item.href}
-              onSelect={this.props.onSelect}
+              onSelect={this.onSelect}
               {...item}
             />
           )

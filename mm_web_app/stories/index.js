@@ -155,7 +155,7 @@ storiesOf('SelectedPanel', module)
 storiesOf('BlockElement', module)
   .add('default props', () => (
     <BlockElement
-      image='http://maomaoweb.azurewebsites.net/static/images/maomao.png'
+      image='http://www.maomao.rocks/static/images/maomao.png'
       name='maomao'
       type='Google'
       description='p2p sharing network'

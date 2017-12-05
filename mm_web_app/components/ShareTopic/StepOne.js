@@ -4,7 +4,7 @@ import { compose } from 'recompose'
 import ShareOptions from './ShareOptions'
 import fbScrapeShareUrl from '../../utils/fb'
 
-const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const SITE_URL = 'https://www.maomao.rocks'
 const selectUrl = (code, shareOption) => code[shareOption]
 
 const StepOne = compose(({

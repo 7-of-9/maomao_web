@@ -15,7 +15,7 @@ import { shareAll, shareThisSite, shareTheTopic } from '../../utils/share'
 import fbScrapeShareUrl from '../../utils/fb'
 
 import openUrl from '../../utils/popup'
-const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const SITE_URL = 'https://www.maomao.rocks'
 const FB_APP_ID = '386694335037120'
 
 const parseShareCode = (codes, urlId, shareTopics) => {
