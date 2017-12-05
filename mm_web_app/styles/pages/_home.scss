@@ -622,8 +622,7 @@ the home page
       .grid-item--full {
         iframe {
           z-index: 1;
-          min-height: 90vh;
-          height: 100%;
+          height: calc(100vh - 180px);
         }
       }
       .grid-item--loading {
@@ -687,8 +686,7 @@ the home page
             iframe {
               z-index: 1;
               background: #fff;
-              min-height: 65vh;
-              height: 100%;
+              height: calc(100vh - 180px);
             }
           }
           .grid-item--loading {

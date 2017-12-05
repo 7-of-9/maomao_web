@@ -38,8 +38,8 @@ export default class InlinePreview extends Component {
       playsinline
       playing
       width={width || '100%'}
-      height={height || '100%'}
-      controls
+      controls={true}
+      onReady={this.onLoad}
       />)
   }
 
