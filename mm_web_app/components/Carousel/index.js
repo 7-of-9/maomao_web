@@ -21,7 +21,7 @@ class Carousel extends React.Component {
   }
 
   render () {
-    const { className, settings } = this.props
+    const { className, settings, style, ...props } = this.props
     const defaultSettings = {
       navContainerClass: 'carousel-nav owl-nav',
       stageOuterClass: 'carousel-outer owl-stage-outer',
@@ -34,12 +34,13 @@ class Carousel extends React.Component {
       ]
     }
     return (
-      <div className={className}>
+      <div className={className} style={style}>
         <Subscribe target={eventEmitter} eventName='carousel' listener={this.onCarousel} />
         <OwlCarousel
           className='owl-theme'
           ref={(el) => { this.slider = el }}
           {... settings ? Object.assign({}, defaultSettings, settings) : defaultSettings}
+          {... props}
           >
           { this.props.children }
         </OwlCarousel>

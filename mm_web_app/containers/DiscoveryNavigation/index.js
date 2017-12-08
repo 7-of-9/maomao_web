@@ -49,32 +49,7 @@ class DiscoveryNavigation extends Component {
     logger.info('DiscoveryNavigation componentWillReact')
   }
 
-  handleHoverTerm = (evt, term) => {
-    const { followedTopics } = toJS(this.props.term)
-    const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
-    if (term.term_name === '...' && this.props.term.termsCache[term.term_id]) {
-      term = toJS(this.props.term.termsCache[term.term_id])
-    }
-    const termHover = {
-      top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
-      left: evt.target.getBoundingClientRect().left,
-      term,
-      followed,
-      height: evt.target.offsetHeight
-    }
-    this.props.ui.showTermHover(termHover)
-  }
-
-  handleLeaveHoverTerm = (term) => {
-    setTimeout(() => {
-      if (!this.props.ui.termHoverVisible && term.term_id === toJS(this.props.ui.termHover.term).term_id) {
-        this.props.ui.hideTermHover()
-      }
-    }, 10)
-  }
-
   renderNavigationItems (selectedItems) {
-    logger.info('selectedItems', selectedItems)
     const validTerms = _.filter(selectedItems, item => item.term_name !== '...')
     if (validTerms && validTerms.length) {
       return _.map(validTerms, (term) => (
@@ -87,11 +62,8 @@ class DiscoveryNavigation extends Component {
             cursor: 'pointer'
           }}
           onClick={() => {
-            this.props.ui.hideTermHover()
             this.selectTerm(term)
           }}
-          onMouseEnter={(evt) => this.handleHoverTerm(evt, term)}
-          onMouseLeave={() => this.handleLeaveHoverTerm(term)}
         >
           <p className='blur-bg'>
             <span className='text-topic'>{term.term_name}</span>

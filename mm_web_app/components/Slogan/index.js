@@ -38,7 +38,7 @@ class Slogan extends Component {
     return (
       <div onClick={(evt) => this.redirectToSpecialUrl(evt, this.props.redirectUrl)}>
         <Header>
-          <img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' />
+          <img className='logo-image' src='/static/images/logo-blue-42.png' alt='maomao' />
         </Header>
       </div>
     )

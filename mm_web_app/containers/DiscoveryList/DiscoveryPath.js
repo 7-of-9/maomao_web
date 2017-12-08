@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
+import DiscoveryTerm from './DiscoveryTerm'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 
@@ -35,30 +36,6 @@ class DiscoveryPath extends Component {
     onSelectChildTerm: () => {}
   }
 
-  handleHoverTerm = (evt, term) => {
-    const { followedTopics } = toJS(this.props.term)
-    const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
-    if (term.term_name === '...' && this.props.term.termsCache[term.term_id]) {
-      term = toJS(this.props.term.termsCache[term.term_id])
-    }
-    const termHover = {
-      top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
-      left: evt.target.getBoundingClientRect().left,
-      term,
-      followed,
-      height: evt.target.offsetHeight
-    }
-    this.props.ui.showTermHover(termHover)
-  }
-
-  handleLeaveHoverTerm = (term) => {
-    setTimeout(() => {
-      if (!this.props.ui.termHoverVisible && term.term_id === toJS(this.props.ui.termHover.term).term_id) {
-        this.props.ui.hideTermHover()
-      }
-    }, 10)
-  }
-
   renderDiscoveryPath = () => {
     const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
@@ -74,12 +51,9 @@ class DiscoveryPath extends Component {
           <div
             className='topic'
             key={`back-to-${title}-${termId}`}
-            onMouseEnter={(evt) => this.handleHoverTerm(evt, term)}
-            onMouseLeave={() => this.handleLeaveHoverTerm(term)}
           >
             <span
               onClick={() => {
-                this.props.ui.hideTermHover()
                 this.props.onBack(term)
               }}
               style={{
@@ -184,12 +158,9 @@ class DiscoveryPath extends Component {
             <div
               className='topic'
               key={`navigate-to-${title}-${termId}`}
-              onMouseEnter={(evt) => this.handleHoverTerm(evt, term)}
-              onMouseLeave={() => this.handleLeaveHoverTerm(term)}
             >
               <span
                 onClick={() => {
-                  this.props.ui.hideTermHover()
                   this.props.onSelectChildTerm(term)
                 }}
                 style={{

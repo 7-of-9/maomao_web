@@ -471,19 +471,32 @@ img {
 
 
 /* ---- grid-item ---- */
-
 .grid-row {
   @include clearfix();
   position: relative;
   margin: 0;
   width: 100%;
+  .discover {
+    margin: 16px auto;
+    @media (max-width: 499px) {
+      width: 250px;
+    }
+    @for $i from 2 through 5 {
+      @media (max-width: 250 * ($i + 1) - 1px) and (min-width: 250px * $i) {
+        width: 250px * $i;
+      }
+    }
+    @media (min-width: 1500px) {
+      width: 1500px;
+    }
+  }
   .grid-sizer, .grid-item {
     @include border-radius(8px);
     height: 370px;
+    width: 250px;
     position: relative;
     margin-bottom: 10px;
     padding: 15px;
-    width: 20%;
     float: left;
     &::before {
       @include transform(scale(0.96));
@@ -502,18 +515,6 @@ img {
       animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
       background: rgba(0, 0, 0, 0.15);
     }
-    @media (max-width: 1290px) {
-      width: 25%;
-    }
-    @media (max-width: 890px) {
-      width: 33.33%;
-    }
-    @media (max-width: 750px) {
-      width: 50%;
-    }
-    @media (max-width: 550px) {
-      width: 100%;
-    }
   }
 }
 
@@ -525,7 +526,7 @@ img {
   iframe {
     z-index: 1;
     background: #fff;
-    height: 100vh;
+    height: 100%;
   }
 }
 
@@ -553,7 +554,7 @@ img {
     iframe {
       z-index: 1;
       background: #fff;
-      height: 100vh;
+      height: 100%;
     }
   }
   .grid-item--loading {

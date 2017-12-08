@@ -14,13 +14,18 @@ import Sticky from 'react-sticky-el'
 import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import SplitPane from 'react-split-pane'
+import dynamic from 'next/dynamic'
 import DiscoveryPath from './DiscoveryPath'
-import DiscoveryRoot from './DiscoveryRoot'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
+
+const DiscoveryRoot = dynamic(import('./DiscoveryRoot'), {
+  ssr: false,
+  loading: () => <span />
+})
 
 @inject('term')
 @inject('store')
@@ -262,12 +267,6 @@ class DiscoveryList extends Component {
     }
   }
 
-  loadMore = () => {
-    if (this.props.ui.isRootView) {
-      this.props.term.loadMore()
-    }
-  }
-
   onDragStarted = (width) => {
     const overlay = document.querySelector('#overlay')
     if (overlay) {
@@ -366,7 +365,7 @@ class DiscoveryList extends Component {
             })
           }
         })
-        return items
+        return <div className='discover'>{items}</div>
       }
       if (mine.user_id === userData.user_id) {
         _.forEach(mine.urls, (item, index) => {
@@ -430,7 +429,7 @@ class DiscoveryList extends Component {
           }
         })
       }
-      return items
+      return <div className='discover'>{items}</div>
     }
     if (findTerms.length) {
       _.forEach(received, (receivedIten, index) => {
@@ -488,7 +487,7 @@ class DiscoveryList extends Component {
             )
           }
         })
-        return items
+        return <div className='discover'>{items}</div>
       }
     }
     if (!findTerms.length) {
@@ -577,7 +576,8 @@ class DiscoveryList extends Component {
         }
       }
     })
-    return items
+    return <div className='discover'>{items}</div>
+
   }
 
   renderDetail = () => {
@@ -602,15 +602,16 @@ class DiscoveryList extends Component {
         }
       })
     }
-    if (isSplitView && discoveryUrlId !== -1) {
-      const fullscreen = window.innerWidth < 690
+    const fullscreen = window.innerWidth < 690
+    if (isSplitView && discoveryUrlId !== -1 && !fullscreen) {
+      const rightWidth = (window.innerWidth - spliterWidth || window.innerWidth / 2) - (window.innerWidth - spliterWidth || window.innerWidth / 2) % 250
       return (
         <div className='discovery-list' style={{ width: '100%', height: '100vh' }}>
           <SplitPane
             split='vertical'
             minSize={330}
-            maxSize={fullscreen ? window.innerWidth : window.innerWidth - 330}
-            defaultSize={fullscreen ? window.innerWidth : window.innerWidth / 2}
+            maxSize={window.innerWidth - 330}
+            defaultSize={window.innerWidth / 2}
             style={{ position: 'relative', overflow: 'visible' }}
             onDragStarted={this.onDragStarted}
             onDragFinished={this.onDragFinished}
@@ -637,8 +638,9 @@ class DiscoveryList extends Component {
                 onBack={this.onBack}
                 onSelectChildTerm={this.onSelectChildTerm}
               />
-              <div className='split-view' style={{ width: fullscreen ? '100%' : (window.innerWidth - spliterWidth || window.innerWidth / 2) - (window.innerWidth - spliterWidth || window.innerWidth / 2) % 250 }}>
-                {this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)}
+              <div className='split-view' style={{ width: rightWidth }}>
+                { (discoveryTermId > 0 || shareUserData.user_id) && this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)}
+                { (discoveryTermId > 0 || shareUserData.user_id) || this.renderRootList(urlId, shareUrlId, window.innerWidth - spliterWidth)}
               </div>
             </div>
           </SplitPane>
@@ -646,27 +648,29 @@ class DiscoveryList extends Component {
         </div>
       )
     }
-    if (discoveryTermId > 0 || shareUserData || shareUserData.user_id) {
+    if (discoveryTermId > 0 || shareUserData.user_id) {
       return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)
     }
     return (
-      <div className='discovery-list' style={{ width: '100%', minHeight: window.innerHeight }}>
+      <div className='discovery-list'>
         <DiscoveryDetail
           items={items}
           title={title}
           termIds={termIds}
           url={url}
           discoveryUrlId={discoveryUrlId}
-          utc={utc}
+          utc={utc || hit_utc}
+          userData={userData}
+          onSelectTerm={this.onSelectChildTermDetail}
           width={'100%'}
-          closePreview={this.closePreview}
-          onSelectTerm={this.onSelectChildTerm}
-       />
+          type={shareUrlId ? 'share' : 'discovery'}
+        />
+        <div className='close_button' onClick={this.closePreview} style={{left: fullscreen ? '90%' : (spliterWidth || window.innerWidth / 2) - 15}} />
       </div>
     )
   }
 
-  renderRootList = () => {
+  renderRootList = (urlId, shareUrlId, rightWidth) => {
     return (
       <div className='discovery-list'>
         <DiscoveryRoot
@@ -675,6 +679,9 @@ class DiscoveryList extends Component {
           onSelectChildTerm={this.onSelectChildTerm}
           onSelectShareTerm={this.onSelectShareTerm}
           onSelectUser={this.onSelectUser}
+          urlId={urlId}
+          shareUrlId={shareUrlId}
+          rightWidth={rightWidth}
           />
       </div>
     )
@@ -738,22 +745,11 @@ class DiscoveryList extends Component {
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={this.props.ui.animateClassName}>
-
               { (!this.props.ui.isRootView || userData.user_id)
                 ? this.renderDetail()
-                : [
-                  <InfiniteScroll
-                    key='infinite-scroll-container'
-                    pageStart={0}
-                    loadMore={this.loadMore}
-                    hasMore={this.props.term.hasLoadMore}
-                    loader={<Loading isLoading />}
-                     >
-                    <div className='discover-root'>
-                      { this.renderRootList() }
-                    </div>
-                  </InfiniteScroll>,
-                  <Loading key='loading-for-main-scroll-container' isLoading={this.props.ui.isRootView && this.props.term.isLoading} />]
+                : <div className='discover'>
+                  {this.renderRootList()}
+                </div>
               }
             </div>
           </div>

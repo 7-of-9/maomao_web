@@ -10,6 +10,7 @@ import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import ReactPlayer from 'react-player'
+import DiscoveryTerm from './DiscoveryTerm'
 import { tagColor, isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
 
@@ -63,7 +64,8 @@ export default class DiscoveryItem extends Component {
   }
 
   state = {
-    playing: false
+    playing: false,
+    termHover: false
   }
 
   handleClick = (evt) => {
@@ -99,80 +101,36 @@ export default class DiscoveryItem extends Component {
     }
   }
 
-  handleHoverTerm = (evt, term) => {
-    const { followedTopics } = toJS(this.props.term)
-    const followed = followedTopics.topics ? !!followedTopics.topics.find(x => x.term_id === term.term_id) : false
-    if (term.term_name === '...' && this.props.term.termsCache[term.term_id]) {
-      term = toJS(this.props.term.termsCache[term.term_id])
-    }
-    const termHover = {
-      top: evt.target.getBoundingClientRect().top + evt.target.offsetHeight,
-      left: evt.target.getBoundingClientRect().left,
-      term,
-      followed,
-      height: evt.target.offsetHeight
-    }
-    this.props.ui.showTermHover(termHover)
-  }
-
-  handleLeaveHoverTerm = (term) => {
-    setTimeout(() => {
-      if (!this.props.ui.termHoverVisible && term.term_id === toJS(this.props.ui.termHover.term).term_id) {
-        this.props.ui.hideTermHover()
-      }
-    }, 10)
-  }
-
   renderTerms = () => {
     /* eslint-disable camelcase */
     const { main_term_name, sub_term_name, main_term_id, sub_term_id, ingoreTerms, main_term, sub_term, main_term_img, sub_term_img } = this.props
     let customStyle = { height: '52px', right: '20px', top: '0', position: 'relative' }
     return (
       <div className='mix-tag' style={customStyle}>
-        <div
-          className='mix-tag-topic'
-          onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
+        <DiscoveryTerm
+          onClickEvt={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
             this.selectMainTerm(evt)
-            this.props.ui.hideTermHover()
           } : _.noop}
-        >
-          <span
-            className={`tags ${tagColor(main_term_name)}`}
-            rel='tag'
-            onMouseEnter={(evt) => main_term ? this.handleHoverTerm(evt, main_term) : _.noop}
-            onMouseLeave={() => main_term ? this.handleLeaveHoverTerm(main_term) : _.noop}
-            style={{
-              background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
-              backgroundSize: 'cover',
-              cursor: _.indexOf(ingoreTerms, main_term_id) === -1 ? 'pointer' : 'default'
-            }}
-          >
-            {main_term_name}
-          </span>
-        </div>
+          termObj={main_term}
+          termName={main_term_name}
+          ingoreTerms={ingoreTerms}
+          termImg={main_term_img}
+          termId={main_term_id}
+          termClass='mix-tag-topic'
+        />
         {
           sub_term_name && sub_term_name !== main_term_name &&
-          <div
-            className='mix-tag-topic'
-            onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? (evt) => {
+          <DiscoveryTerm
+            onClickEvt={_.indexOf(ingoreTerms, sub_term_id) === -1 ? (evt) => {
               this.selectSubTerm(evt)
-              this.props.ui.hideTermHover()
             } : _.noop}
-          >
-            <span
-              className={`tags ${tagColor(sub_term_name)}`}
-              rel='tag'
-              onMouseEnter={(evt) => sub_term ? this.handleHoverTerm(evt, sub_term) : _.noop}
-              onMouseLeave={() => sub_term ? this.handleLeaveHoverTerm(sub_term) : _.noop}
-              style={{
-                background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover',
-                cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
-              }}
-            >
-              {sub_term_name}
-            </span>
-          </div>
+            termObj={sub_term}
+            termName={sub_term_name}
+            ingoreTerms={ingoreTerms}
+            termImg={sub_term_img}
+            termId={sub_term_id}
+            termClass='mix-tag-topic'
+          />
         }
       </div>
     )
@@ -269,16 +227,16 @@ export default class DiscoveryItem extends Component {
   render () {
     /* eslint-disable camelcase */
     const { disc_url_id, site_tld, site_img, title, desc, img, selected, url } = this.props
+    const { termHover } = this.state
     const images = [{ name: site_tld, img: site_img }]
     const isVideoPlayer = isVideo(url)
     return (
       <div
         key={disc_url_id}
         className={`grid-item shuffle-item ${selected ? 'grid-item-selected' : ''}`}
-        onClick={this.handleClick}
         onMouseEnter={this.preloadUrl}
       >
-        <div className='thumbnail-box' >
+        <div className='thumbnail-box' onClick={this.handleClick}>
           <div
             className='thumbnail'
           >
@@ -292,10 +250,10 @@ export default class DiscoveryItem extends Component {
             {this.renderThumnails(images)}
           </div>
         </div>
-        <div className='discovery-title-wrap'>
+        <div className='discovery-title-wrap' onClick={this.handleClick}>
           <p className='discovery-title'>{title}</p>
         </div>
-        <div className='discovery-description'>
+        <div className='discovery-description' onClick={this.handleClick}>
           {isVideoPlayer ? this.renderPlayer() : desc}
         </div>
         <div className='caption'>

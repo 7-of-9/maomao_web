@@ -184,7 +184,7 @@ class DiscoveryDetail extends Component {
     const date = utc ? moment.utc(utc).local().format('LLLL') : ''
     const fullscreen = window.innerWidth < 690
     return (
-      <div>
+      <div style={{ width: fullscreen ? '100vw' : '100%' }}>
         <Modal
           isOpen={showShareModal}
           onRequestClose={this.onClose}
@@ -205,10 +205,10 @@ class DiscoveryDetail extends Component {
             title={title}
           />
         </Modal>
-        {userData && <div style={{ padding: '5px 10px', background: '#eee' }}>
+        {userData && <div style={{ padding: '5px 10px', background: '#eee', whiteSpace: 'nowrap', overflow: 'hidden' }}>
           <span className='shared-text'>
             <img src={userData.avatar} style={{ height: 27, borderRadius: '50%', marginRight: 8 }} />
-            {userData.fullname} ({userData.email}) shared:
+            {userData.fullname} shared:
           </span>
         </div>}
         <div className='discovery-detail'>
@@ -238,7 +238,7 @@ class DiscoveryDetail extends Component {
         }
         <InlinePreview
           width={width}
-          height={'100vh'}
+          height={fullscreen ? 'calc(100vh - 107px)' : 'calc(100vh - 180px)'}
           url={url}
           allowScript
         />

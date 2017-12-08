@@ -39,7 +39,7 @@ export class UIStore {
   @observable discoveryTermId = -1
   @observable isSplitView = false
   @observable spliterWidth = '100%'
-  @observable termHover = undefined
+  termHover = undefined
   termHoverVisible = false
   selectedDiscoveryItem = {}
   shareTopics = []
@@ -304,7 +304,7 @@ export class UIStore {
     this.title = 'Sign In'
   }
 
-  @action showTermHover (term) {
+  @action showTermHover (term, callback) {
     this.termHover = term
   }
 
@@ -325,7 +325,6 @@ export class UIStore {
     logger.info('setRedirectObject', url, path, options)
     this.isRedirectToUrl = true
     this.redirectObject = { url, path, options }
-    console.log(this.redirectObject)
   }
 
   @action execRedirectObject () {

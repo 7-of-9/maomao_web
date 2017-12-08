@@ -101,12 +101,6 @@ class AppHeader extends React.Component {
     })
   }
 
-  isOldHomePage = () => {
-    /* global URL */
-    const { pathname } = new URL(window.location.href)
-    return pathname === '/old'
-  }
-
   onLogout = (evt) => {
     evt.preventDefault()
     firebase.auth().signOut().then(() => {
@@ -329,28 +323,6 @@ class AppHeader extends React.Component {
     }
   }
 
-  handleHideTermHover = () => {
-    this.props.ui.hideTermHover()
-  }
-
-  handleKeepTermHover = () => {
-    this.props.ui.keepTermHover()
-  }
-
-  changeFollow = (termId, followed, title) => {
-    if (followed) {
-      this.props.term.unfollowTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} unfollowed`)
-        this.props.ui.setFollowedTermHover(!followed)
-      })
-    } else {
-      this.props.term.followTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} followed`)
-        this.props.ui.setFollowedTermHover(!followed)
-      })
-    }
-  }
-
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
     const { showSignInModal, title, termHover } = this.props.ui
@@ -380,15 +352,6 @@ class AppHeader extends React.Component {
             (!isMobile && isLogin && isChrome && !isInstalledOnChromeDesktop) &&
             <NavItem>
               <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
-            </NavItem>
-          }
-          {
-            isLogin && this.isOldHomePage() &&
-            <NavItem>
-              <a onClick={this.openShareManagement}>
-                <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
-                <span className='nav-text'>Share Management</span>
-              </a>
             </NavItem>
           }
           <NavItem>
@@ -521,114 +484,14 @@ class AppHeader extends React.Component {
             </div>
             <div className='modal-body'>
               <div className='install-description'>
-                <h3><img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' /> lets you share topics with friends</h3>
+                <h3><img className='logo-image' src='/static/images/logo-blue-27.png' alt='maomao' /> lets you share topics with friends</h3>
                 <br />
-                <p><img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
-                <button className='btn btn-install' type='button' onClick={this.inlineInstall}>Ok! Give me <img className='logo-image' src='/static/images/logo-blue.png' alt='maomao' /></button>
+                <p><img className='logo-image' src='/static/images/logo-blue-27.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
+                <button className='btn btn-install' type='button' onClick={this.inlineInstall}>Ok! Give me <img className='logo-image' src='/static/images/logo-blue-27.png' alt='maomao' /></button>
               </div>
             </div>
           </div>
         </Modal>
-        <div
-          style={{
-            display: termHover ? 'block' : 'none',
-            top: termHover ? termHover.top + 10 : 0,
-            left: termHover ? termHover.left + 200 > window.innerWidth ? termHover.left - 120 : termHover.left : 0,
-            position: 'fixed',
-            zIndex: 10031,
-            animation: 'fadeIn 0.5s'
-          }}
-          onMouseLeave={this.handleHideTermHover}
-          onMouseEnter={this.handleKeepTermHover}
-        >
-          { termHover &&
-            <div
-              style={{
-                border: 0,
-                borderRadius: 4,
-                width: 200,
-                height: 150,
-                background: `linear-gradient(rgba(68, 68, 68, 0.4),rgba(68, 68, 68, 0.4)), url(${termHover.term.img || '/static/images/no-image.png'})`,
-                backgroundColor: '#fff',
-                backgroundSize: 'cover',
-                boxShadow: '0 0 1px 1px rgba(0,0,0,0.25)'
-              }}
-            >
-              <div
-                style={{
-                  bottom: 'auto',
-                  top: -10,
-                  width: '100%',
-                  height: 10,
-                  position: 'absolute',
-                  overflow: 'hidden'
-                }}
-              >
-                <div
-                  style={{
-                    top: 10,
-                    left: termHover.left + 200 > window.innerWidth ? 'auto' : 30,
-                    right: termHover.left + 200 > window.innerWidth ? 30 : 'auto',
-                    position: 'absolute',
-                    height: 10,
-                    width: 10,
-                    backgroundColor: 'rgb(210, 210, 210)',
-                    transform: 'translateY(-7px) rotate(45deg)',
-                    pointerEvents: 'none'
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: 'inline-block',
-                  height: 35,
-                  margin: '0 0 -4px 0',
-                  position: 'absolute',
-                  right: 0,
-                  verticalAlign: 'bottom'
-                }}
-              >
-                <div
-                  style={{
-                    right: 20,
-                    top: 15,
-                    position: 'relative'
-                  }}
-                >
-                  <button
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                      border: termHover.followed ? '1px solid #f21d1d' : '1px solid #1da1f2',
-                      color: termHover.followed ? '#f21d1d' : '#1da1f2',
-                      borderRadius: 100,
-                      boxShadow: 'none',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      whiteSpace: 'nowrap',
-                      minWidth: 89,
-                      textAlign: 'center'
-                    }}
-                    onClick={() => this.changeFollow(termHover.term.term_id, termHover.followed, termHover.term.term_name)}
-                  >
-                    {termHover.followed ? 'unfollow' : 'follow'}
-                  </button>
-                </div>
-              </div>
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 8,
-                  left: 8,
-                  color: '#Fff',
-                  fontSize: '1.5em',
-                  fontWeight: 'bold'
-                }}
-              >
-                {termHover.term.term_name}
-              </div>
-            </div>
-          }
-        </div>
       </div>
     )
   }
