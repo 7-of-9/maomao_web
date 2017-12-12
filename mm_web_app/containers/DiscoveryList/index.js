@@ -12,7 +12,6 @@ import { toJS } from 'mobx'
 import _ from 'lodash'
 import Sticky from 'react-sticky-el'
 import ReactResizeDetector from 'react-resize-detector'
-import InfiniteScroll from 'react-infinite-scroller'
 import SplitPane from 'react-split-pane'
 import dynamic from 'next/dynamic'
 import DiscoveryPath from './DiscoveryPath'
@@ -577,7 +576,6 @@ class DiscoveryList extends Component {
       }
     })
     return <div className='discover'>{items}</div>
-
   }
 
   renderDetail = () => {

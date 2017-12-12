@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { observer, inject } from 'mobx-react'
+import { inject } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import styled from 'styled-components'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryListCarousel from './DiscoveryListCarousel'
 import Loading from '../../components/Loading'
-import Carousel from '../../components/Carousel'
 import logger from '../../utils/logger'
 
 const H3 = styled.h3`
@@ -44,14 +43,14 @@ class DiscoveryRoot extends Component {
   componentDidMount () {
     const chunkSize = this.props.rightWidth / 125 || Math.floor(window.innerWidth / 250) * 2
     this.setState({ chunkSize: chunkSize > 12 ? 12 : chunkSize })
-    window.addEventListener("resize", this.updateDimensions);
+    window.addEventListener('resize', this.updateDimensions)
   }
 
   componentWillUnmount () {
-    window.removeEventListener("resize", this.updateDimensions);
+    window.removeEventListener('resize', this.updateDimensions)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     logger.warn('DiscoveryRoot componentWillReceiveProps', nextProps)
     const chunkSize = Math.floor((nextProps.rightWidth || window.innerWidth) / 250) * 2
     if (nextProps.rightWidth && chunkSize !== this.state.chunkSize) {
@@ -72,7 +71,7 @@ class DiscoveryRoot extends Component {
   }
 
   updateDimensions = () => {
-    const chunkSize =  Math.floor((this.props.rightWidth || window.innerWidth) / 250) * 2
+    const chunkSize = Math.floor((this.props.rightWidth || window.innerWidth) / 250) * 2
     if (chunkSize !== this.state.chunkSize) {
       this.setState({ chunkSize: chunkSize > 12 ? 12 : chunkSize })
     }
@@ -89,7 +88,7 @@ class DiscoveryRoot extends Component {
     const itemsMine = []
     const itemsFriend = []
     const { discoveries } = this.props.term
-    const { urlId, shareUrlId} = this.props
+    const { urlId, shareUrlId } = this.props
     const { mine, received } = toJS(this.props.store.userHistory)
     _.forEach(received, (receivedIten, index) => {
       _.forEach(receivedIten.shares, (shareItem, index) => {
@@ -175,30 +174,22 @@ class DiscoveryRoot extends Component {
       }
     })
 
-    const { chunkSize, page } = this.state
+    const { chunkSize } = this.state
     const itemDiscoveriesChunk = [].concat.apply([],
-      itemDiscoveries.map(function(elem,i) {
-          return i%chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemDiscoveries.slice(i,i+chunkSize)]} </div>
+      itemDiscoveries.map(function (elem, i) {
+        return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemDiscoveries.slice(i, i + chunkSize)]} </div>
       })
     )
     const itemsFriendChunk = [].concat.apply([],
-      itemsFriend.map(function(elem,i) {
-        return i%chunkSize ? [] :  <div style={{ width: chunkSize * 250 / 2 }}> {[itemsFriend.slice(i,i+chunkSize)]} </div>
+      itemsFriend.map(function (elem, i) {
+        return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemsFriend.slice(i, i + chunkSize)]} </div>
       })
     )
     const itemsMineChunk = [].concat.apply([],
-      itemsMine.map(function(elem,i) {
-        return i%chunkSize ? [] :  <div style={{ width: chunkSize * 250 / 2 }}> {[itemsMine.slice(i,i+chunkSize)]} </div>
+      itemsMine.map(function (elem, i) {
+        return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemsMine.slice(i, i + chunkSize)]} </div>
       })
     )
-    const settings = {
-      navContainerClass: 'carousel-nav owl-nav owl-nav-discover',
-      stageOuterClass: 'carousel-outer owl-stage-outer',
-      stageClass: 'carousel-stage owl-stage',
-      nav: true,
-      dots: false,
-      autoWidth: true
-    }
     return <div>
       <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>Discoveries</H3>

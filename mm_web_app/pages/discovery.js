@@ -37,19 +37,6 @@ export default class DiscoveryPage extends React.Component {
     this.uiStore.openDiscoveryMode(props.terms)
   }
 
-  componentDidMount () {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then(registration => {
-          logger.log('service worker registration successful')
-        })
-        .catch(err => {
-          logger.info('service worker registration failed', err.message)
-        })
-    }
-  }
-
   render () {
     logger.info('Discovey render')
     return (

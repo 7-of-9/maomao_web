@@ -7,7 +7,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
 import dynamic from 'next/dynamic'
 import _ from 'lodash'
 import Loading from '../../components/Loading'

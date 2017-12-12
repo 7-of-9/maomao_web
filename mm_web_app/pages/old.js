@@ -41,19 +41,6 @@ export default class OldHomePage extends React.Component {
     this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
   }
 
-  componentDidMount () {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then(registration => {
-          logger.log('service worker registration successful')
-        })
-        .catch(err => {
-          logger.info('service worker registration failed', err.message)
-        })
-    }
-  }
-
   render () {
     logger.info('OldHomePage render', this.store)
     return (

@@ -6,12 +6,11 @@
 
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import ReactPlayer from 'react-player'
 import DiscoveryTerm from './DiscoveryTerm'
-import { tagColor, isVideo } from '../../utils/helper'
+import { isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -108,7 +107,7 @@ export default class DiscoveryItem extends Component {
     return (
       <div className='mix-tag' style={customStyle}>
         <DiscoveryTerm
-          onClickEvt={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
+          onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
             this.selectMainTerm(evt)
           } : _.noop}
           termObj={main_term}
@@ -121,7 +120,7 @@ export default class DiscoveryItem extends Component {
         {
           sub_term_name && sub_term_name !== main_term_name &&
           <DiscoveryTerm
-            onClickEvt={_.indexOf(ingoreTerms, sub_term_id) === -1 ? (evt) => {
+            onClick={_.indexOf(ingoreTerms, sub_term_id) === -1 ? (evt) => {
               this.selectSubTerm(evt)
             } : _.noop}
             termObj={sub_term}
@@ -227,7 +226,6 @@ export default class DiscoveryItem extends Component {
   render () {
     /* eslint-disable camelcase */
     const { disc_url_id, site_tld, site_img, title, desc, img, selected, url } = this.props
-    const { termHover } = this.state
     const images = [{ name: site_tld, img: site_img }]
     const isVideoPlayer = isVideo(url)
     return (

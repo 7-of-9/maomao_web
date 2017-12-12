@@ -24,6 +24,7 @@ const preview = require('./api/preview')
 const contacts = require('./api/contacts')
 const twitter = require('./api/twitter')
 const dummy = require('./api/dummy')
+const notification = require('./api/notification')
 
 log.setLevel(dev ? 'info' : 'error')
 mobxReact.useStaticRendering(true)
@@ -50,6 +51,7 @@ app.prepare().then(() => {
   server.use('/api/preview', preview)
   server.use('/api/twitter', twitter)
   server.use('/api/dummy', dummy)
+  server.use('/api/notification', notification)
 
   const pages = [
     '/old',
@@ -69,6 +71,8 @@ app.prepare().then(() => {
     if (pathname === '/service-worker.js') {
       const filePath = join(__dirname, dirBuild, pathname)
       app.serveStatic(req, res, filePath)
+    } else if (pathname === '/firebase-messaging-sw.js') {
+      app.serveStatic(req, res, 'static/firebase-messaging-sw.js')
     } else if (pathname === encodeURI(req.session.discoverRootUrl)) {
       log.warn('found special route url', req.session.discoverRootUrl)
       app.render(req, res, '/', Object.assign({}, query, { profileUrl: req.session.discoverRootUrl, currentUser: req.session.currentUser }))

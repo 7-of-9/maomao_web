@@ -101,7 +101,7 @@
     "build": "next build",
     "start": "node server.js",
     "lint": "standard",
-    "lint:fix": "standard -fix",
+    "lint:fix": "standard --fix",
     "deploy:prod": "npm run build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master",
     "deploy:dev": "npm run build && git add --all && git commit --no-verify -m 'update azure dev site' && git push -f azure-dev master",
     "storybook": "start-storybook -s . -p 6006",

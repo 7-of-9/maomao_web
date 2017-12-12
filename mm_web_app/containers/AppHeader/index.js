@@ -112,7 +112,7 @@ class AppHeader extends React.Component {
       })
       this.addNotification('You have successfully signed out.')
       this.props.ui.clean()
-      window.location.href = '/' // go to home page
+      this.deleteToken(() => { window.location.href = '/' })
     }).catch((error) => {
       logger.warn('found error on logout', error)
     })
@@ -168,8 +168,8 @@ class AppHeader extends React.Component {
     this.props.ui.addNotification(error)
   }
 
-  addNotification = (msg) => {
-    this.props.ui.addNotification(msg)
+  addNotification = (msg, title) => {
+    this.props.ui.addNotification(msg, title)
   }
 
   removeNotification = (uuid) => {
@@ -196,6 +196,65 @@ class AppHeader extends React.Component {
         }
       })
     }
+  }
+
+  requestPermission = () => {
+    firebase.messaging().requestPermission()
+      .then(() => {
+        firebase.messaging().getToken()
+        .then((currentToken) => {
+          if (currentToken) {
+            this.sendTokenToServer(currentToken)
+            this.props.ui.updateUIForPushEnabled(currentToken)
+          } else {
+            this.setTokenSentToServer(false)
+          }
+        })
+        .catch((err) => {
+          logger.warn('An error occurred while retrieving token.', err)
+          this.props.ui.updateUIForPushPermissionRequired()
+          this.setTokenSentToServer(false)
+        })
+      })
+      .catch((err) => {
+        logger.warn('Unable to get permission to notify.', err)
+      })
+  }
+
+  sendTokenToServer = (currentToken) => {
+    if (!this.isTokenSentToServer()) {
+      this.setTokenSentToServer(currentToken)
+    }
+  }
+
+  isTokenSentToServer = () => {
+    return window.localStorage.getItem('sentToServer') === 1 && window.localStorage.getItem('pushToken')
+  }
+
+  setTokenSentToServer = (currentToken) => {
+    window.localStorage.setItem('sentToServer', currentToken ? 1 : 0)
+    window.localStorage.setItem('pushToken', currentToken)
+  }
+
+  deleteToken = (callback) => {
+    firebase.messaging().getToken()
+      .then((currentToken) => {
+        firebase.messaging().deleteToken(currentToken)
+        .then(() => {
+          this.setTokenSentToServer(false)
+          this.props.ui.updateUIForPushPermissionRequired()
+          this.addNotification('You wont get notified with new discoveries again', 'Notification unsubscribed')
+          if (callback) {
+            callback()
+          }
+        })
+        .catch((err) => {
+          logger.warn('Unable to delete token. ', err)
+        })
+      })
+      .catch((err) => {
+        logger.warn('Error retrieving Instance ID token. ', err)
+      })
   }
 
   /* global fetch */
@@ -300,7 +359,6 @@ class AppHeader extends React.Component {
         }
       })
     }
-
     this.props.store.checkInstall()
     let counter = 0
     this.timer = setInterval(() => {
@@ -315,6 +373,14 @@ class AppHeader extends React.Component {
         clearInterval(this.timer)
       }
     }, 2 * 1000) // check mm extension has installed on every 2s
+    firebase.messaging().onMessage((payload) => {
+      const notificationData = JSON.parse(payload.data.notification) || {}
+      if (notificationData.tag === 'notification') {
+        this.addNotification(notificationData.body, notificationData.title)
+      } else if (notificationData.tag === 'user-notification' && this.props.store.isLogin) {
+        this.addNotification(notificationData.body, notificationData.title)
+      }
+    })
   }
 
   componentWillUnmount () {
@@ -325,7 +391,8 @@ class AppHeader extends React.Component {
 
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
-    const { showSignInModal, title, termHover } = this.props.ui
+    const { showSignInModal, title, notificationEnable } = this.props.ui
+    const isNotificationEnable = notificationEnable || ((typeof (window) !== 'undefined') && window.localStorage.getItem('sentToServer') === 1)
     const { hidden } = this.props
     return (
       <div>
@@ -366,44 +433,56 @@ class AppHeader extends React.Component {
                 </a>
                 {
                   user && user.name &&
-                  <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
-                    <Link
-                      as={`/${user.nav_id}`}
-                      prefetch
-                      href={{
-                        pathname: '/',
-                        query: { profileUrl: `/${user.nav_id}` }
-                      }}>
-                      <strong><i className='fa fa-magic' /> Your discover</strong>
-                    </Link>
-                  </a>
+                    [<a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
+                      <Link
+                        as={`/${user.nav_id}`}
+                        prefetch
+                        href={{
+                          pathname: '/',
+                          query: { profileUrl: `/${user.nav_id}` }
+                        }}>
+                        <strong><i className='fa fa-magic' /> Your discover</strong>
+                      </Link>
+                    </a>,
+                      <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
+                        <Link
+                          as={`/topics`}
+                          prefetch
+                          href={{
+                            pathname: '/topics'
+                          }}>
+                          <strong><i className='fa fa-list-ul' /> Topic Following</strong>
+                        </Link>
+                      </a>,
+                      <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
+                        <Link
+                          as={`/share`}
+                          prefetch
+                          href={{
+                            pathname: '/share'
+                          }}>
+                          <strong><i className='fa fa-share-alt' /> Your Share</strong>
+                        </Link>
+                      </a>,
+                      <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}} onClick={isNotificationEnable ? this.deleteToken : this.requestPermission}>
+                        <strong><i className={isNotificationEnable ? 'fa fa-bell-slash' : 'fa fa-bell'} /> {isNotificationEnable ? 'Disable Notification' : 'Enable Notification'}</strong>
+                      </a>]
                 }
-                <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
-                  <Link
-                    as={`/topics`}
-                    prefetch
-                    href={{
-                      pathname: '/topics'
-                    }}>
-                    <strong><i className='fa fa-list-ul' /> Topic Following</strong>
-                  </Link>
-                </a>
-                <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}}>
-                  <Link
-                    as={`/share`}
-                    prefetch
-                    href={{
-                      pathname: '/share'
-                    }}>
-                    <strong><i className='fa fa-share-alt' /> Your Share</strong>
-                  </Link>
-                </a>
                 <ul className='dropdown-menu pull-right'>
                   {
                     user && user.name &&
                     <div className='account-dropdown__identity account-dropdown__segment'>
                     Signed in as <strong>({user.name} ({user.email}))</strong>
                     </div>
+                  }
+                  {
+                    user && user.name &&
+                    <li style={{color: '#333', backgroundColor: '#fff'}}>
+                      <a onClick={isNotificationEnable ? this.deleteToken : this.requestPermission}>
+                        <i className={isNotificationEnable ? 'fa fa-bell-slash' : 'fa fa-bell'} />
+                        <strong> {isNotificationEnable ? 'Disable Notification' : 'Enable Notification'}</strong>
+                      </a>
+                    </li>
                   }
                   {
                     user && user.name &&

@@ -1,6 +1,7 @@
 import { observable, action, computed, toJS } from 'mobx'
 import _ from 'lodash'
 import Router from 'next/router'
+import { getWelcome } from '../services/notification'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
 
@@ -39,6 +40,8 @@ export class UIStore {
   @observable discoveryTermId = -1
   @observable isSplitView = false
   @observable spliterWidth = '100%'
+  notificationEnable = false
+  notificationToken = ''
   termHover = undefined
   termHoverVisible = false
   selectedDiscoveryItem = {}
@@ -200,12 +203,17 @@ export class UIStore {
     this.notifications = []
   }
 
-  @action addNotification (msg) {
+  @action addNotification (msg, title) {
     const uuid = guid()
     this.notifications.push({
+      title,
       message: msg,
       key: uuid,
       action: 'Dismiss',
+      titleStyle: {
+        display: 'block',
+        paddingBottom: 8
+      },
       onClick: (deactivate) => {
         this.removeNotification(deactivate.key)
       }
@@ -343,6 +351,17 @@ export class UIStore {
       Router.push(url, path, options)
       this.redirectObject = undefined
     }
+  }
+
+  @action updateUIForPushEnabled (token) {
+    this.notificationEnable = true
+    this.notificationToken = token
+    getWelcome(token)
+  }
+
+  @action updateUIForPushPermissionRequired () {
+    this.notificationEnable = false
+    this.notificationToken = ''
   }
 }
 

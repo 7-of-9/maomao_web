@@ -1,12 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
-import _ from 'lodash'
-import DiscoveryItem from './DiscoveryItem'
-import Loading from '../../components/Loading'
+import { inject } from 'mobx-react'
 import Carousel from '../../components/Carousel'
-import logger from '../../utils/logger'
 
 @inject('term')
 class DiscoveryListCarousel extends Component {
@@ -29,8 +24,7 @@ class DiscoveryListCarousel extends Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    if (this.state.page !== nextState.page && this.props.items === nextProps.items ) {
-      console.log('lala')
+    if (this.state.page !== nextState.page && this.props.items === nextProps.items) {
       return false
     }
     return true
@@ -40,7 +34,7 @@ class DiscoveryListCarousel extends Component {
     if (evt.property.name === 'position') {
       this.setState({ page: evt.property.value })
       const { discoveries } = this.props.term
-      if (Math.floor(discoveries.length / this.props.chunkSize) <= evt.property.value && this.props.disc) {
+      if (Math.floor(discoveries.length / this.props.chunkSize) - 1 <= evt.property.value && this.props.disc) {
         this.loadMore()
       }
     }
@@ -62,14 +56,16 @@ class DiscoveryListCarousel extends Component {
       nav: true,
       dots: false,
       autoWidth: true,
-      startPosition: page
+      startPosition: page,
+      lazyLoad: true,
+      lazyContent: true
     }
     return <Carousel
       settings={settings}
       className='carousel-wrapper' style={{ width: chunkSize * 250 / 2, padding: 0 }}
       onChange={this.handlePage}
     >
-      {items.length ? items : <div/> }
+      {items.length ? items : <div /> }
     </Carousel>
   }
 }

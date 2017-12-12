@@ -6,12 +6,9 @@
 
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import ReactPlayer from 'react-player'
-import { tagColor, isVideo } from '../../utils/helper'
-import logger from '../../utils/logger'
+import { tagColor } from '../../utils/helper'
 
 @inject('term')
 @inject('ui')
@@ -28,10 +25,6 @@ export default class DiscoveryTerm extends Component {
   }
 
   static defaultProps = {
-  }
-
-  state = {
-    termHover: false
   }
 
   noImage = (evt) => {
@@ -59,15 +52,14 @@ export default class DiscoveryTerm extends Component {
 
   render () {
     /* eslint-disable camelcase */
-    const { termObj, onClick, termName, ingoreTerms, termImg, termId, termClass } = this.props
-    const { termHover } = this.state
+    const { onClick, termName, ingoreTerms, termImg, termId, termClass } = this.props
     return (
       <div>
         <div
-            className={termClass}
-            onClick={this.props.onClickEvt}
-            key='term'
-          >
+          className={termClass}
+          onClick={onClick}
+          key='term'
+        >
           <span
             className={`current-topic-name tags ${tagColor(termName)}`}
             rel='tag'

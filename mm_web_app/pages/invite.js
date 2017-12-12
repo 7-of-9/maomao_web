@@ -60,16 +60,6 @@ export default class Invite extends React.Component {
 
   componentDidMount () {
     logger.info('Invite componentDidMount', this)
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then(registration => {
-          logger.log('service worker registration successful')
-        })
-        .catch(err => {
-          logger.info('service worker registration failed', err.message)
-        })
-    }
 
     const { url_id: shareUrlId, fullname, topic_title: topicTitle, source_user_id: userId } = this.inviteStore.shareInfo
     if (shareUrlId) {

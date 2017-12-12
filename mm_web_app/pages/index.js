@@ -104,16 +104,6 @@ export default class IndexPage extends React.Component {
   }
 
   componentDidMount () {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then(registration => {
-          logger.info('service worker registration successful')
-        })
-        .catch(err => {
-          logger.warn('service worker registration failed', err.message)
-        })
-    }
     const { findTerms, termsInfo } = this.term
     if (this.props.statusCode === false) {
       if (termsInfo.terms && termsInfo.terms.length) {

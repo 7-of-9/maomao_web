@@ -45,5 +45,6 @@
      "density": "4.0"
     }
   ],
-  "splash_pages": null
+  "splash_pages": null,
+  "gcm_sender_id": "103953800507"
 }

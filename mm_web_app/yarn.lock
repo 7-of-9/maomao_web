@@ -31,6 +31,12 @@
   dependencies:
     "@firebase/util" "^0.1.1"
 
+"@firebase/messaging@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@firebase/messaging/-/messaging-0.1.5.tgz#11ca0e9215ea54839cc80947eeec548cd21ac251"
+  dependencies:
+    "@firebase/util" "0.1.4"
+
 "@firebase/polyfill@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@firebase/polyfill/-/polyfill-0.1.1.tgz#fd31789b58357f619245aac1f76b982c07398a6f"
@@ -40,6 +46,10 @@
 "@firebase/storage@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@firebase/storage/-/storage-0.1.1.tgz#5604405d59010f34f90ecc4bbb0b19b7afd05e82"
+
+"@firebase/util@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-0.1.4.tgz#80d7f6039ff6cb94215ddd44d3cb09f6d32902ea"
 
 "@firebase/util@^0.1.1":
   version "0.1.1"

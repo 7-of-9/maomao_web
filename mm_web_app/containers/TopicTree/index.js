@@ -143,7 +143,7 @@ class TopicTree extends Component {
         {this.backButton()}
         <div className='main-inner'>
           <div className='container-masonry'>
-            <div ref={(el) => { this.animateEl = el }} className={animateClassName} style={{ paddingBottom: 64 }}>
+            <div ref={(el) => { this.animateEl = el }} className={`${animateClassName} discover`} style={{ paddingBottom: 64 }}>
               {items}
             </div>
           </div>

@@ -10,7 +10,6 @@ import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
-import DiscoveryTerm from './DiscoveryTerm'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 
