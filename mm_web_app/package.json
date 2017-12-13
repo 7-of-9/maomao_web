@@ -82,7 +82,8 @@
     "sw-precache-webpack-plugin": "^0.11.4",
     "twitter-node-client": "^0.0.6",
     "validate.js": "0.12.0",
-    "webpack": "3.10.0"
+    "webpack": "3.10.0",
+    "webpack-bundle-analyzer": "^2.9.1"
   },
   "standard": {
     "parser": "babel-eslint",
@@ -143,8 +144,7 @@
     "react-addons-test-utils": "^15.6.1",
     "react-test-renderer": "^16.0.0",
     "sass-loader": "^6.0.6",
-    "standard": "^10.0.3",
-    "webpack-bundle-analyzer": "^2.9.1"
+    "standard": "^10.0.3"
   },
   "jest": {
     "verbose": true,
