@@ -50,18 +50,6 @@ class TopicTree extends Component {
     }
   }
 
-  onChange = (isSelect, termId, title, img) => {
-    if (!isSelect) {
-      this.props.term.unfollowTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} unfollowed`)
-      })
-    } else {
-      this.props.term.followTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} followed`)
-      })
-    }
-  }
-
   cleanClassName = () => {
     /* global $ */
     if (this.animateEl && typeof $ !== 'undefined') {
@@ -83,7 +71,7 @@ class TopicTree extends Component {
   changeFollow = (termId, followed, title, node, path) => {
     if (followed) {
       this.props.term.unfollowTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} unfollowed`)
+        this.props.notificationStore.addNotification(`${title} unfollowed`, 'Topics')
         this.setState(state => ({
           treeData: changeNodeAtPath({
             treeData: state.treeData,
@@ -95,7 +83,7 @@ class TopicTree extends Component {
       })
     } else {
       this.props.term.followTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} followed`)
+        this.props.notificationStore.addNotification(`${title} followed`, 'Topics')
         this.setState(state => ({
           treeData: changeNodeAtPath({
             treeData: state.treeData,
