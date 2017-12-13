@@ -10,24 +10,24 @@ import { Subscribe } from 'react-subscribe'
 import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
 
-function NextArrow(props) {
-  const {className, style, onClick} = props
+function NextArrow (props) {
+  const {className, onClick} = props
   return (
     <div
       className={className}
       onClick={onClick}
-    ></div>
-  );
+     />
+  )
 }
 
-function PrevArrow(props) {
-  const {className, style, onClick} = props
+function PrevArrow (props) {
+  const {className, onClick} = props
   return (
     <div
       className={className}
       onClick={onClick}
-    ></div>
-  );
+     />
+  )
 }
 
 class Carousel extends React.Component {

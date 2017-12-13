@@ -1,4 +1,4 @@
-import { observable, action, computed, toJS } from 'mobx'
+import { observable, action } from 'mobx'
 import _ from 'lodash'
 import Router from 'next/router'
 import { getWelcome } from '../services/notification'
@@ -44,7 +44,6 @@ export class NotificationStore {
     })
   }
 
-
   @action setRedirectObject (url, path, options) {
     logger.info('setRedirectObject', url, path, options)
     this.isRedirectToUrl = true
@@ -68,14 +67,14 @@ export class NotificationStore {
       this.redirectObject = false
     }
   }
-  
+
   @action updateUIForPushEnabled (token) {
     this.notificationEnable = true
     this.notificationToken = token
     getWelcome(token)
   }
-  
-  @action updateUIForToken(token) {
+
+  @action updateUIForToken (token) {
     this.notificationEnable = true
     this.notificationToken = token
   }

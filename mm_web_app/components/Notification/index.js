@@ -36,7 +36,7 @@ class Notification extends React.Component {
       left: 'auto',
       top: 'auto',
       bottom: `${2 + index * 6}rem`
-    };
+    }
   }
 
   render () {

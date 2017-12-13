@@ -1,8 +1,5 @@
 import { observable, action, computed, toJS } from 'mobx'
 import _ from 'lodash'
-import Router from 'next/router'
-import { getWelcome } from '../services/notification'
-import { guid } from '../utils/hash'
 import logger from '../utils/logger'
 
 let store = null

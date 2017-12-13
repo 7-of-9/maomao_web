@@ -39,7 +39,7 @@ class DiscoveryNavigation extends Component {
     isReady: false,
     onSelectTerm: (term) => {}
   }
-  
+
   changeFollow = (termId, followed, title) => {
     if (followed) {
       this.props.term.unfollowTopicUser(termId, () => {

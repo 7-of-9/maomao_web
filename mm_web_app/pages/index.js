@@ -206,7 +206,7 @@ export default class IndexPage extends React.Component {
     } else if (!urlId) {
       this.setState({ urlId: -1 })
     }
-    if (shareUrlId && shareUrlId !== this.state.shareUrlId && ( !urlId || urlId <= 0)) {
+    if (shareUrlId && shareUrlId !== this.state.shareUrlId && (!urlId || urlId <= 0)) {
       this.setState({ shareUrlId })
       if (Number(shareUrlId) > 0) {
         // preview current item
