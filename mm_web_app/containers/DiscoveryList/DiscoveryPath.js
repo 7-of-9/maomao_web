@@ -76,7 +76,7 @@ class DiscoveryPath extends Component {
                 background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
                 backgroundSize: 'cover',
                 cursor: 'pointer',
-                padding: '8px 120px 8px 8px'
+                padding: '8px 80px 8px 8px'
               }}
               className='current-topic-name tags' rel='tag'>
               <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
@@ -203,7 +203,7 @@ class DiscoveryPath extends Component {
                   backgroundSize: 'cover',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
-                  padding: '4px 120px 4px 8px'
+                  padding: '4px 80px 4px 8px'
                 }}
                 className='current-topic-name tags' rel='tag'>
                 {title}

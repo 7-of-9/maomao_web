@@ -7,6 +7,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
+import { toJS } from 'mobx'
 import dynamic from 'next/dynamic'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
@@ -22,6 +23,7 @@ const Carousel = dynamic(
 
 @inject('term')
 @inject('ui')
+@inject('notificationStore')
 @observer
 class DiscoveryNavigation extends Component {
   static propTypes = {
@@ -36,6 +38,18 @@ class DiscoveryNavigation extends Component {
     termIds: [],
     isReady: false,
     onSelectTerm: (term) => {}
+  }
+  
+  changeFollow = (termId, followed, title) => {
+    if (followed) {
+      this.props.term.unfollowTopicUser(termId, () => {
+        this.props.notificationStore.addNotification(`${title} unfollowed`, 'Topics')
+      })
+    } else {
+      this.props.term.followTopicUser(termId, () => {
+        this.props.notificationStore.addNotification(`${title} followed`, 'Topics')
+      })
+    }
   }
 
   selectTerm = (term) => {
@@ -65,7 +79,7 @@ class DiscoveryNavigation extends Component {
               background: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(${term.img || '/static/images/no-image.png'}) `,
               backgroundSize: 'cover',
               cursor: 'pointer',
-              padding: '4px 120px 4px 8px'
+              padding: '4px 80px 4px 8px'
             }}
             onClick={() => {
               this.selectTerm(term)

@@ -192,7 +192,7 @@ export default class IndexPage extends React.Component {
     } else if (!profileUrl && !(urlId || shareUrlId)) {
       this.term.setCurrentTerms([])
     }
-    if (urlId && urlId !== this.state.urlId) {
+    if (urlId && urlId !== this.state.urlId && (!shareUrlId || shareUrlId <= 0)) {
       this.setState({ urlId })
       if (Number(urlId) > 0) {
         // preview current item
@@ -206,7 +206,7 @@ export default class IndexPage extends React.Component {
     } else if (!urlId) {
       this.setState({ urlId: -1 })
     }
-    if (shareUrlId && shareUrlId !== this.state.shareUrlId) {
+    if (shareUrlId && shareUrlId !== this.state.shareUrlId && ( !urlId || urlId <= 0)) {
       this.setState({ shareUrlId })
       if (Number(shareUrlId) > 0) {
         // preview current item

@@ -365,7 +365,7 @@ class DiscoveryList extends Component {
             })
           }
         })
-        return <div className='discover'>{items}</div>
+        return <div className='grid-auto'>{items}</div>
       }
       if (mine.user_id === userData.user_id) {
         _.forEach(mine.urls, (item, index) => {
@@ -429,7 +429,7 @@ class DiscoveryList extends Component {
           }
         })
       }
-      return <div className='discover'>{items}</div>
+      return <div className='grid-auto'>{items}</div>
     }
     if (findTerms.length) {
       _.forEach(received, (receivedIten, index) => {
@@ -487,7 +487,7 @@ class DiscoveryList extends Component {
             )
           }
         })
-        return <div className='discover'>{items}</div>
+        return <div className='grid-auto'>{items}</div>
       }
     }
     if (!findTerms.length) {
@@ -576,7 +576,7 @@ class DiscoveryList extends Component {
         }
       }
     })
-    return <div className='discover'>{items}</div>
+    return <div className='grid-auto'>{items}</div>
   }
 
   renderDetail = () => {

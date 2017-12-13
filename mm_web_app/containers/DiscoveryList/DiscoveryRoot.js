@@ -173,8 +173,8 @@ class DiscoveryRoot extends Component {
         }
       }
     })
-
     const { chunkSize } = this.state
+    console.log(chunkSize, 'aha')
     const itemDiscoveriesChunk = [].concat.apply([],
       itemDiscoveries.map(function (elem, i) {
         return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemDiscoveries.slice(i, i + chunkSize)]} </div>
@@ -190,8 +190,11 @@ class DiscoveryRoot extends Component {
         return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemsMine.slice(i, i + chunkSize)]} </div>
       })
     )
+    if (chunkSize === 0) {
+      return <Loading />
+    }
     return <div>
-      <div style={{ display: 'inline-block', width: '100%' }}>
+      {itemDiscoveriesChunk && itemDiscoveriesChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>Discoveries</H3>
         <DiscoveryListCarousel
           items={itemDiscoveriesChunk}
@@ -199,23 +202,23 @@ class DiscoveryRoot extends Component {
           chunkSize={chunkSize}
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
-      </div>
-      <div style={{ display: 'inline-block', width: '100%' }}>
+      </div>}
+      {itemsFriendChunk && itemsFriendChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>Friend Stream</H3>
         <DiscoveryListCarousel
           items={itemsFriendChunk}
           chunkSize={chunkSize}
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
-      </div>
-      <div style={{ display: 'inline-block', width: '100%' }}>
+      </div>}
+      {itemsMineChunk && itemsMineChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>My Stream</H3>
         <DiscoveryListCarousel
           items={itemsMineChunk}
           chunkSize={chunkSize}
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
-      </div>
+      </div>}
     </div>
   }
 }
