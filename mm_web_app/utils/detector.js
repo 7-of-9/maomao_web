@@ -8,6 +8,5 @@ export function isMobileBrowser (userAgent) {
 }
 
 export function browserName () {
-  console.log('asu kowe', browser)
   return browser && browser.name
 }
