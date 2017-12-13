@@ -41,6 +41,7 @@ const customModalStyles = {
 @inject('store')
 @inject('term')
 @inject('ui')
+@inject('notificationStore')
 @observer
 class AppHeader extends React.Component {
   static propTypes = {
@@ -156,7 +157,7 @@ class AppHeader extends React.Component {
   }
 
   onInstallSucess = () => {
-    this.props.ui.addNotification('Yeah! You have been installed maomao extension successfully.')
+    this.props.notificationStore.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
       this.props.store.checkEnvironment()
       this.props.store.checkInstall()
@@ -165,15 +166,15 @@ class AppHeader extends React.Component {
   }
 
   onInstallFail = (error) => {
-    this.props.ui.addNotification(error)
+    this.props.notificationStore.addNotification(error)
   }
 
   addNotification = (msg, title) => {
-    this.props.ui.addNotification(msg, title)
+    this.props.notificationStore.addNotification(msg, title)
   }
 
   removeNotification = (uuid) => {
-    this.props.ui.removeNotification(uuid)
+    this.props.notificationStore.removeNotification(uuid)
   }
 
   saveProfileUrl = (user) => {
@@ -188,8 +189,8 @@ class AppHeader extends React.Component {
         credentials: 'same-origin',
         body: JSON.stringify(user)
       }).then(() => {
-        if (this.props.ui.isRedirectToUrl && this.props.ui.redirectObject) {
-          this.props.ui.execRedirectObject()
+        if (this.props.notificationStore.isRedirectToUrl && this.props.notificationStore.redirectObject) {
+          this.props.notificationStore.execRedirectObject()
         } else {
           Router.push({ pathname: '/', query: { profileUrl: url } }, url)
           this.props.ui.redirectToSpecialUrl(false)
@@ -205,14 +206,14 @@ class AppHeader extends React.Component {
         .then((currentToken) => {
           if (currentToken) {
             this.sendTokenToServer(currentToken)
-            this.props.ui.updateUIForPushEnabled(currentToken)
+            this.props.notificationStore.updateUIForPushEnabled(currentToken)
           } else {
             this.setTokenSentToServer(false)
           }
         })
         .catch((err) => {
           logger.warn('An error occurred while retrieving token.', err)
-          this.props.ui.updateUIForPushPermissionRequired()
+          this.props.notificationStore.updateUIForPushPermissionRequired()
           this.setTokenSentToServer(false)
         })
       })
@@ -242,7 +243,7 @@ class AppHeader extends React.Component {
         firebase.messaging().deleteToken(currentToken)
         .then(() => {
           this.setTokenSentToServer(false)
-          this.props.ui.updateUIForPushPermissionRequired()
+          this.props.notificationStore.updateUIForPushPermissionRequired()
           this.addNotification('You wont get notified with new discoveries again', 'Notification unsubscribed')
           if (callback) {
             callback()
@@ -391,7 +392,8 @@ class AppHeader extends React.Component {
 
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
-    const { showSignInModal, title, notificationEnable } = this.props.ui
+    const { notificationEnable } = this.props.notificationStore
+    const { showSignInModal, title } = this.props.ui
     const isNotificationEnable = notificationEnable || ((typeof (window) !== 'undefined') && window.localStorage.getItem('sentToServer') === 1)
     const { hidden } = this.props
     return (

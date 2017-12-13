@@ -25,6 +25,7 @@ const FB_APP_ID = '386694335037120'
 
 @inject('store')
 @inject('ui')
+@inject('notificationStore')
 @observer
 class DiscoveryDetail extends Component {
   static propTypes = {
@@ -138,7 +139,7 @@ class DiscoveryDetail extends Component {
       // download data
       const { googleToken, googleUserId } = data
       logger.info('checkGoogleAuth result', googleToken, data)
-      this.props.ui.addNotification('Loading google contacts')
+      this.props.notificationStore.addNotification('Loading google contacts')
       return fetchContacts(googleToken, 1000).then((result) => {
         result.json().then(resp => {
           this.props.store.saveGoogleContacts(resp.contacts, googleToken, googleUserId)
@@ -146,7 +147,7 @@ class DiscoveryDetail extends Component {
       })
     }).catch((error) => {
         // Try to logout and remove cache token
-      this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
+      this.props.notificationStore.addNotification(`Oops! Something went wrong: ${error.message}`)
       logger.warn('found error on fetchGoogleContacts', error)
     })
   }
@@ -155,7 +156,7 @@ class DiscoveryDetail extends Component {
     const { name: fullName, email: fromEmail } = this.props.store.user
     if (email) {
       logger.info('sendInvitations', fullName, fromEmail, name, email, topic, url)
-      this.props.ui.addNotification('Sending invitations...')
+      this.props.notificationStore.addNotification('Sending invitations...')
        /* global fetch */
       fetch('/api/email', {
         method: 'POST',
@@ -164,15 +165,15 @@ class DiscoveryDetail extends Component {
         credentials: 'same-origin',
         body: JSON.stringify({ fromEmail, fullName, name, email, topic, url })
       }).then(() => {
-        this.props.ui.addNotification(`Sent invitation to: ${email}`)
+        this.props.notificationStore.addNotification(`Sent invitation to: ${email}`)
         this.props.ui.closeShareModal()
       })
-      .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
+      .catch(error => this.props.notificationStore.addNotification(`Oops! Something went wrong: ${error.message}`))
     }
   }
 
   addNotification = (msg) => {
-    this.props.ui.addNotification(msg)
+    this.props.notificationStore.addNotification(msg)
   }
 
   render () {

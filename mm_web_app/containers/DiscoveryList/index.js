@@ -61,6 +61,7 @@ class DiscoveryList extends Component {
       )
     } else if (item.userData) {
       const { userData, shareTerm } = toJS(this.props.term)
+      console.log(item)
       const href = `/${userData.fullname ? `user-stream/${userData.fullname}-${userData.user_id}` : ''}${shareTerm.type === 'topic' ? `/${shareTerm.fullname}` : ''}?shareUrlId=${item.url_id}`
       Router.push(
         {

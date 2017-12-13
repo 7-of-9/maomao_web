@@ -12,6 +12,7 @@ import { tagColor } from '../../utils/helper'
 
 @inject('term')
 @inject('ui')
+@inject('notificationStore')
 @observer
 export default class DiscoveryTerm extends Component {
   static propTypes = {
@@ -35,14 +36,14 @@ export default class DiscoveryTerm extends Component {
     evt.preventDefault()
     if (followed) {
       this.props.term.unfollowTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} unfollowed`)
+        this.props.notificationStore.addNotification(`${title} unfollowed`)
         this.props.ui.setFollowedTermHover(!followed)
         this.props.ui.hideTermHover()
         this.setState({ termHover: false })
       })
     } else {
       this.props.term.followTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} followed`)
+        this.props.notificationStore.addNotification(`${title} followed`)
         this.props.ui.setFollowedTermHover(!followed)
         this.props.ui.hideTermHover()
         this.setState({ termHover: false })

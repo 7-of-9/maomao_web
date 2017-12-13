@@ -33,6 +33,7 @@ const hasShareTopic = (friend, shareLists) => {
 
 @inject('store')
 @inject('ui')
+@inject('notificationStore')
 @observer
 class ShareList extends React.Component {
   noImage = (evt) => {
@@ -42,12 +43,12 @@ class ShareList extends React.Component {
   }
   onUnfollowUserShare = (code, sourceUserId, title) => {
     this.props.store.unfollowUserShare(code, sourceUserId, () => {
-      this.props.ui.addNotification(`${title} unfollowed`)
+      this.props.notificationStore.addNotification(`${title} unfollowed`)
     })
   }
   onPauseUserShare = (code, sourceUserId, title) => {
     this.props.store.pauseUserShare(code, sourceUserId, () => {
-      this.props.ui.addNotification(`${title} paused`)
+      this.props.notificationStore.addNotification(`${title} paused`)
     })
   }
   render () {

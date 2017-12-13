@@ -6,6 +6,7 @@ import _ from 'lodash'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
 import { initTermStore } from '../stores/term'
+import { initNotificationStore } from '../stores/notification'
 import { MAOMAO_API_URL } from '../containers/App/constants'
 import Discover from '../containers/Discover'
 import Home from '../containers/Home'
@@ -28,6 +29,7 @@ export default class IndexPage extends React.Component {
     const user = req && req.session ? req.session.currentUser : null
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
+    const notificationStore = initNotificationStore(isServer)
     let termsInfo = { terms: [] }
     let findTerms = []
     let statusCode = !query.profileUrl
@@ -46,13 +48,14 @@ export default class IndexPage extends React.Component {
     let topicShareName = query && query.topicShareName ? query.topicShareName : ''
     store.getUserHistory()
     const term = initTermStore(isServer, findTerms, termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId, userShareId, topicShareName }
+    return { isServer, ...store, ...uiStore, ...term, ...notificationStore, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId, userShareId, topicShareName }
   }
 
   constructor (props) {
     super(props)
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
+    this.notificationStore = initNotificationStore(props.isServer)
     this.store.checkEnvironment()
     this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
   }
@@ -246,7 +249,7 @@ export default class IndexPage extends React.Component {
     }
     const { profileUrl, urlId, shareUrlId } = this.state
     return (
-      <Provider store={this.store} term={this.term} ui={this.uiStore}>
+      <Provider store={this.store} term={this.term} ui={this.uiStore} notificationStore={this.notificationStore}>
         {
           this.isDiscoverMode()
             ? <div className='discover'>

@@ -3,6 +3,7 @@ import { Provider } from 'mobx-react'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
+import { initNotificationStore } from '../stores/notification'
 import { initTermStore } from '../stores/term'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
@@ -19,10 +20,11 @@ export default class Topics extends React.Component {
     const store = initStore(isServer, userAgent, user, true)
     const uiStore = initUIStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])
+    const notificationStore = initNotificationStore(isServer)
     const term = initTermStore(isServer, [], { terms: [] })
     term.getTopicTree()
     term.getFollowedTopics()
-    return { isServer, ...store, ...uiStore, ...discovery, ...term }
+    return { isServer, ...store, ...uiStore, ...discovery, ...term, ...notificationStore }
   }
 
   constructor (props) {
@@ -32,6 +34,7 @@ export default class Topics extends React.Component {
     this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
+    this.notificationStore = initNotificationStore(props.isServer)
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
   }
 
@@ -45,7 +48,7 @@ export default class Topics extends React.Component {
   render () {
     logger.info('Topics render')
     return (
-      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore} term={this.term}>
+      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore} term={this.term} notificationStore={this.notificationStore}>
         <div>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <UserTopics />

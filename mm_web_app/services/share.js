@@ -20,3 +20,7 @@ export function pauseShare (id, hash, code, targetUserId) {
   const apiUrl = `${MAOMAO_API_URL}share/source/toggle?user_id=${id}&hash=${hash}&share_code=${code}&target_user_id=${targetUserId}`
   return fromPromise(axios.get(apiUrl))
 }
+
+export function getShareUrl (id, hash, code) {
+  return fromPromise(axios.get(`${MAOMAO_API_URL}share/url?user_id=${id}&hash=${hash}share_code=${code}`))
+}

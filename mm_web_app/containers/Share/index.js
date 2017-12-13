@@ -39,6 +39,7 @@ const parseShareCode = (codes, urlId, shareTopics) => {
 
 @inject('store')
 @inject('ui')
+@inject('notificationStore')
 @observer
 export default class Share extends React.Component {
   state = {
@@ -122,7 +123,7 @@ export default class Share extends React.Component {
       // download data
       const { googleToken, googleUserId } = data
       logger.info('checkGoogleAuth result', googleToken, data)
-      this.props.ui.addNotification('Loading google contacts')
+      this.props.notificationStore.addNotification('Loading google contacts')
       return fetchContacts(googleToken, 1000).then((result) => {
         result.json().then(resp => {
           this.props.store.saveGoogleContacts(resp.contacts, googleToken, googleUserId)
@@ -130,7 +131,7 @@ export default class Share extends React.Component {
       })
     }).catch((error) => {
         // Try to logout and remove cache token
-      this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
+      this.props.notificationStore.addNotification(`Oops! Something went wrong: ${error.message}`)
       logger.warn('found error on fetchGoogleContacts', error)
     })
   }
@@ -138,7 +139,7 @@ export default class Share extends React.Component {
   sendInvitations = (name, email, topic, url) => {
     const { name: fullName, email: fromEmail } = this.props.store.user
     logger.info('sendInvitations', fullName, fromEmail, name, email, topic, url)
-    this.props.ui.addNotification('Sending invitations...')
+    this.props.notificationStore.addNotification('Sending invitations...')
      /* global fetch */
     fetch('/api/email', {
       method: 'POST',
@@ -146,8 +147,8 @@ export default class Share extends React.Component {
       headers: new Headers({ 'Content-Type': 'application/json' }),
       credentials: 'same-origin',
       body: JSON.stringify({ fromEmail, fullName, name, email, topic, url })
-    }).then(() => this.props.ui.addNotification(`Sent invitation to: ${email}`))
-    .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
+    }).then(() => this.props.notificationStore.addNotification(`Sent invitation to: ${email}`))
+    .catch(error => this.props.notificationStore.addNotification(`Oops! Something went wrong: ${error.message}`))
   }
 
   onBack = (evt) => {
@@ -177,7 +178,7 @@ export default class Share extends React.Component {
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}
               contacts={toJS(this.props.store.contacts)}
-              notify={this.props.ui.addNotification}
+              notify={this.props.notificationStore.addNotification}
             />
           </div>
         </div>

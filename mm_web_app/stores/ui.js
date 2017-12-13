@@ -33,22 +33,17 @@ export class UIStore {
   @observable treeLevel = 1
   /* animation type */
   @observable animationType = 'LTR'
-  /* notification compnent */
-  @observable notifications = []
   /* discover mode */
   @observable discoveryUrlId = -1
   @observable discoveryTermId = -1
   @observable isSplitView = false
   @observable spliterWidth = '100%'
-  notificationEnable = false
-  notificationToken = ''
   termHover = undefined
   termHoverVisible = false
   selectedDiscoveryItem = {}
   shareTopics = []
   shareUrlId = -1
   userId = -1
-  redirectObject = undefined
   title = 'Sign In'
 
   @computed get isRootView () {
@@ -188,38 +183,6 @@ export class UIStore {
     this.showShareModal = false
   }
 
-  @action removeNotification (uuid) {
-    logger.info('removeNotification', uuid, this.notifications)
-    if (this.notifications) {
-      logger.info('removeNotification', uuid, this.notifications)
-      this.notifications = _.filter(this.notifications, (item) => item && item.key !== uuid.key)
-      logger.info('removeNotification', uuid, this.notifications)
-    } else {
-      this.clearNotifications()
-    }
-  }
-
-  @action clearNotifications () {
-    this.notifications = []
-  }
-
-  @action addNotification (msg, title) {
-    const uuid = guid()
-    this.notifications.push({
-      title,
-      message: msg,
-      key: uuid,
-      action: 'Dismiss',
-      titleStyle: {
-        display: 'block',
-        paddingBottom: 8
-      },
-      onClick: (deactivate) => {
-        this.removeNotification(deactivate.key)
-      }
-    })
-  }
-
   @action removeTopic (topic) {
     logger.info('removeTopic topic', topic)
     const filterByTopic = toJS(this.filterByTopic)
@@ -327,41 +290,6 @@ export class UIStore {
 
   @action keepTermHover () {
     this.termHoverVisible = true
-  }
-
-  @action setRedirectObject (url, path, options) {
-    logger.info('setRedirectObject', url, path, options)
-    this.isRedirectToUrl = true
-    this.redirectObject = { url, path, options }
-  }
-
-  @action execRedirectObject () {
-    if (this.isRedirectToUrl) {
-      this.isRedirectToUrl = false
-      const { url, path, options } = this.redirectObject
-      const uuid = guid()
-      this.notifications.push({
-        message: 'You will redirect to shared page.',
-        key: uuid,
-        action: 'Dismiss',
-        onClick: (deactivate) => {
-          this.removeNotification(deactivate.key)
-        }
-      })
-      Router.push(url, path, options)
-      this.redirectObject = undefined
-    }
-  }
-
-  @action updateUIForPushEnabled (token) {
-    this.notificationEnable = true
-    this.notificationToken = token
-    getWelcome(token)
-  }
-
-  @action updateUIForPushPermissionRequired () {
-    this.notificationEnable = false
-    this.notificationToken = ''
   }
 }
 

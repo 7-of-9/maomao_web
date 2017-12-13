@@ -5,6 +5,7 @@ import { initStore } from '../stores/home'
 import { initStore as initInviteStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import { initTermStore } from '../stores/term'
+import { initNotificationStore } from '../stores/notification'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
@@ -22,6 +23,7 @@ export default class Invite extends React.Component {
     const store = initStore(isServer, userAgent, user, false)
     const inviteStore = initInviteStore(isServer, userAgent, user, code, shareInfo)
     const uiStore = initUIStore(isServer)
+    const notificationStore = initNotificationStore(isServer)
     logger.info('Invite', code, shareInfo)
     const bgImageResult = await inviteStore.searchBgImage()
     try {
@@ -37,7 +39,7 @@ export default class Invite extends React.Component {
       inviteStore.bgImage = ''
     }
     const term = initTermStore(isServer, [], { terms: [] })
-    return { isServer, ...store, ...uiStore, ...term, ...inviteStore }
+    return { isServer, ...store, ...uiStore, ...term, ...inviteStore, ...notificationStore }
   }
 
   constructor (props) {
@@ -45,6 +47,7 @@ export default class Invite extends React.Component {
     logger.info('Invite', props)
     this.uiStore = initUIStore(props.isServer)
     this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
+    this.notificationStore = initNotificationStore(props.isServer)
     this.inviteStore = initInviteStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
     this.inviteStore.bgImage = props.bgImage
     this.inviteStore.checkEnvironment()
@@ -63,25 +66,25 @@ export default class Invite extends React.Component {
 
     const { url_id: shareUrlId, fullname, topic_title: topicTitle, source_user_id: userId } = this.inviteStore.shareInfo
     if (shareUrlId) {
-      this.uiStore.setRedirectObject({ pathname: '/', query: { shareUrlId } }, `/?shareUrlId=${shareUrlId}`, { shallow: true })
+      this.notificationStore.setRedirectObject({ pathname: '/', query: { shareUrlId, shareCode: this.inviteStore.shareCode } }, `/?shareUrlId=${shareUrlId}&shareCode=${this.inviteStore.shareCode}`, { shallow: true })
     } else if (fullname) {
       if (topicTitle) {
-        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId, topicShareName: topicTitle } }, `/user-stream/${fullname}-${userId}/${topicTitle}`, { shallow: true })
+        this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId, topicShareName: topicTitle } }, `/user-stream/${fullname}-${userId}/${topicTitle}`, { shallow: true })
       } else {
-        this.uiStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId } }, `/user-stream/${fullname}-${userId}`, { shallow: true })
+        this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId } }, `/user-stream/${fullname}-${userId}`, { shallow: true })
       }
     }
 
     if (this.store.isLogin) {
       this.inviteStore.acceptInviteCode()
-      this.uiStore.execRedirectObject()
+      this.notificationStore.execRedirectObject()
     }
   }
 
   render () {
     logger.info('Invite render')
     return (
-      <Provider store={this.store} term={this.term} ui={this.uiStore} inviteStore={this.inviteStore}>
+      <Provider store={this.store} term={this.term} ui={this.uiStore} inviteStore={this.inviteStore} notificationStore={this.notificationStore}>
         <div className='invite'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Home />

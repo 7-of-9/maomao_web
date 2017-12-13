@@ -12,6 +12,7 @@ import SortableTree, { changeNodeAtPath } from 'react-sortable-tree'
 @inject('store')
 @inject('term')
 @inject('ui')
+@inject('notificationStore')
 @observer
 class TopicTree extends Component {
   constructor (props) {
@@ -52,11 +53,11 @@ class TopicTree extends Component {
   onChange = (isSelect, termId, title, img) => {
     if (!isSelect) {
       this.props.term.unfollowTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} unfollowed`)
+        this.props.notificationStore.addNotification(`${title} unfollowed`)
       })
     } else {
       this.props.term.followTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} followed`)
+        this.props.notificationStore.addNotification(`${title} followed`)
       })
     }
   }
@@ -82,7 +83,7 @@ class TopicTree extends Component {
   changeFollow = (termId, followed, title, node, path) => {
     if (followed) {
       this.props.term.unfollowTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} unfollowed`)
+        this.props.notificationStore.addNotification(`${title} unfollowed`)
         this.setState(state => ({
           treeData: changeNodeAtPath({
             treeData: state.treeData,
@@ -94,7 +95,7 @@ class TopicTree extends Component {
       })
     } else {
       this.props.term.followTopicUser(termId, () => {
-        this.props.ui.addNotification(`${title} followed`)
+        this.props.notificationStore.addNotification(`${title} followed`)
         this.setState(state => ({
           treeData: changeNodeAtPath({
             treeData: state.treeData,

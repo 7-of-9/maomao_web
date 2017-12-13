@@ -175,31 +175,6 @@ $lab-icons: url('/static/images/icons-lab.png');
   position: relative;
   margin-left: 20px;
   overflow: visible;
-  &::before,
-  &::after {
-    content: "";
-    @include border-radius(3px);
-    position: absolute;
-    top: -7px;
-    left: 0;
-    right: 0;
-    bottom: -7px;
-    background-color: #5ddb5a;
-    opacity: 0.3;
-    -webkit-animation: ripple 3.0s ease-out infinite;
-    -moz-animation: ripple 3.0s ease-out infinite;
-    animation: ripple 3.0s ease-out infinite;
-    z-index: -1;
-  }
-  &::after {
-    -webkit-animation-delay: 0.1s;
-    -moz-animation-delay: 0.1s;
-    animation-delay: 0.1s;
-  }
-  &:hover,
-  &:focus {
-    outline: 0;
-  }
 }
 
 .btn-effect {
