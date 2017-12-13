@@ -15,7 +15,7 @@ const hiringJs = () => (
     <div style={{ fontFamily: 'Calibri', fontSize: 'xx-large' }}>
       <b>maomao</b> is coming, and we're hiring...<br />
     </div>
-    <div style={{ fontFamily: '"Courier New"', fontSize: 'large' }}>
+    <div style={{ fontFamily: '"Open Sans"', fontSize: 'large' }}>
       <i />// if (Grok([ ECMAScript, NLP, underscore.js, 3NF ]) {'{'} <br />... {'}'} {'}'}
     </div>
     <br />
@@ -53,7 +53,7 @@ const hiringVp = () => (
     <div style={{ fontFamily: 'Calibri', fontSize: 'xx-large' }}>
       <b>maomao</b> is coming, and we're hiring...<br />
     </div>
-    <div style={{ fontFamily: '"Courier New"', fontSize: 'large' }}>
+    <div style={{ fontFamily: '"Open Sans"', fontSize: 'large' }}>
       <i />// if (Grok([ NLP, taxonomy||ontology, Bayesian inference]) {'{'} <br />... {'}'} {'}'}
     </div>
     <blockquote>

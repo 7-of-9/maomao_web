@@ -54,3 +54,5 @@ web1/web1.csproj.user
 # MM extension
 mm02ce/bin/maomao.zip
 mm02ce/mm02ce.csproj.user
+
+mm_web_app/\.nyc_output/

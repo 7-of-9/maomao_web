@@ -382,7 +382,7 @@ class AppHeader extends React.Component {
         this.addNotification(notificationData.body, notificationData.title)
       }
     })
-    if ((typeof (window) !== 'undefined') && this.isTokenSentToServer) {
+    if ((typeof (window) !== 'undefined') && this.isTokenSentToServer && !this.props.notificationStore.notificationEnable) {
       this.props.notificationStore.updateUIForToken(window.localStorage.getItem('pushToken'))
     }
   }

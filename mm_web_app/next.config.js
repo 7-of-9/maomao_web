@@ -1,6 +1,8 @@
 const path = require('path')
 const glob = require('glob')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const { ANALYZE } = process.env
 
 module.exports = {
   // distDir: 'build',
@@ -32,14 +34,13 @@ module.exports = {
         ]
       }
     )
-
-    // config.plugins = config.plugins.filter((plugin) => {
-    //   if (plugin.constructor.name === 'UglifyJsPlugin') {
-    //     return false
-    //   } else {
-    //     return true
-    //   }
-    // })
+    if (ANALYZE) {
+      config.plugins.push(new BundleAnalyzerPlugin({
+        analyzerMode: 'server',
+        analyzerPort: 8888,
+        openAnalyzer: true
+      }))
+    }
     if (!dev) {
       config.plugins.push(
         new SWPrecacheWebpackPlugin({
