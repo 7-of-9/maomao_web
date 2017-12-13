@@ -11,7 +11,6 @@ export default function previewUrl (url, name, width = '100%', height = '100%', 
       height={height}
       frameBorder='0'
       allowFullScreen
-      allowTransparency
       onLoad={onload()}
       src={proxyUrl}
       />

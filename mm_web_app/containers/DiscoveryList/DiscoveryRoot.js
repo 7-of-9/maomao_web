@@ -41,7 +41,7 @@ class DiscoveryRoot extends Component {
   }
 
   componentDidMount () {
-    const chunkSize = this.props.rightWidth / 125 || Math.floor(window.innerWidth / 250) * 2
+    const chunkSize = Math.floor((this.props.rightWidth || window.innerWidth) / 250) * 2
     this.setState({ chunkSize: chunkSize > 12 ? 12 : chunkSize })
     window.addEventListener('resize', this.updateDimensions)
   }
@@ -51,7 +51,7 @@ class DiscoveryRoot extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    logger.warn('DiscoveryRoot componentWillReceiveProps', nextProps)
+    logger.info('DiscoveryRoot componentWillReceiveProps', nextProps)
     const chunkSize = Math.floor((nextProps.rightWidth || window.innerWidth) / 250) * 2
     if (nextProps.rightWidth && chunkSize !== this.state.chunkSize) {
       this.setState({ chunkSize: chunkSize > 12 ? 12 : chunkSize })
@@ -59,15 +59,7 @@ class DiscoveryRoot extends Component {
   }
 
   componentWillUpdate () {
-    logger.warn('DiscoveryRoot componentWillUpdate')
-  }
-
-  shouldComponentUpdate (nextProps, nextState) {
-    if (this.state.chunkSize === nextState.chunkSize && this.props.rightWidth !== nextProps.rightWidth) {
-      return false
-    }
-    logger.warn('DiscoveryRoot shouldComponentUpdate')
-    return true
+    logger.info('DiscoveryRoot componentWillUpdate')
   }
 
   updateDimensions = () => {
@@ -174,19 +166,20 @@ class DiscoveryRoot extends Component {
       }
     })
     const { chunkSize } = this.state
+    const width = chunkSize * 250 / 2
     const itemDiscoveriesChunk = [].concat.apply([],
       itemDiscoveries.map(function (elem, i) {
-        return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemDiscoveries.slice(i, i + chunkSize)]} </div>
+        return i % chunkSize ? [] : <div style={{ width }} key={`discovery-${i}`}> {[itemDiscoveries.slice(i, i + chunkSize)]} </div>
       })
     )
     const itemsFriendChunk = [].concat.apply([],
       itemsFriend.map(function (elem, i) {
-        return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemsFriend.slice(i, i + chunkSize)]} </div>
+        return i % chunkSize ? [] : <div style={{ width }} key={`friend-${i}`}> {[itemsFriend.slice(i, i + chunkSize)]} </div>
       })
     )
     const itemsMineChunk = [].concat.apply([],
       itemsMine.map(function (elem, i) {
-        return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemsMine.slice(i, i + chunkSize)]} </div>
+        return i % chunkSize ? [] : <div style={{ width }} key={`mine-${i}`}> {[itemsMine.slice(i, i + chunkSize)]} </div>
       })
     )
     if (chunkSize === 0) {
@@ -199,6 +192,7 @@ class DiscoveryRoot extends Component {
           items={itemDiscoveriesChunk}
           disc
           chunkSize={chunkSize}
+          width={width}
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
       </div>}
@@ -207,6 +201,7 @@ class DiscoveryRoot extends Component {
         <DiscoveryListCarousel
           items={itemsFriendChunk}
           chunkSize={chunkSize}
+          width={width}
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
       </div>}
@@ -215,6 +210,7 @@ class DiscoveryRoot extends Component {
         <DiscoveryListCarousel
           items={itemsMineChunk}
           chunkSize={chunkSize}
+          width={width}
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
       </div>}

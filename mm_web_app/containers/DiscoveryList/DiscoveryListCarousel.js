@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { inject } from 'mobx-react'
 import Carousel from '../../components/Carousel'
+import logger from '../../utils/logger'
 
 @inject('term')
 class DiscoveryListCarousel extends Component {
@@ -23,11 +24,21 @@ class DiscoveryListCarousel extends Component {
     page: 0
   }
 
+  componentWillUpdate () {
+    logger.info('DiscoveryListCarousel componentWillUpdate')
+  }
+
   shouldComponentUpdate (nextProps, nextState) {
+    logger.info('DiscoveryListCarousel shouldComponentUpdate', nextProps.chunkSize)
     if (this.state.page !== nextState.page && this.props.items === nextProps.items) {
       return false
     }
+    logger.info('DiscoveryListCarousel shouldComponentUpdate')
     return true
+  }
+
+  componentDidMount () {
+    logger.info('DiscoveryListCarousel componentDidMount', this.props.chunkSize)
   }
 
   handlePage = (index) => {

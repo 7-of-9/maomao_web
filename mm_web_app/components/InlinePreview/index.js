@@ -64,7 +64,6 @@ export default class InlinePreview extends Component {
           height={height}
           frameBorder='0'
           allowFullScreen
-          allowTransparency
           src={proxyUrl}
           onLoad={this.onLoad}
         />

@@ -16,7 +16,7 @@ import { tagColor } from '../../utils/helper'
 @observer
 export default class DiscoveryTerm extends Component {
   static propTypes = {
-    termObj: PropTypes.string,
+    termObj: PropTypes.object,
     onClick: PropTypes.func,
     termName: PropTypes.string,
     ingoreTerms: PropTypes.array,
