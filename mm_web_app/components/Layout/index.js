@@ -77,11 +77,6 @@ function Layout ({ children, title = 'homepage', description = 'discover & share
         <link rel='stylesheet' href='/static/vendors/font-awesome/css/font-awesome.min.css' />
         <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
-        <script src='/static/vendors/js/jquery-3.2.1.slim.min.js' />
-        <script src='/static/vendors/js/tether.min.js' />
-        <script src='/static/vendors/js/bootstrap.min.js' />
-        <script src='/static/vendors/js/snoowrap-v1.min.js' />
-        <script src='/static/vendors/js/addtohomescreen.min.js' />
       </Head>
       <AppHeader hidden={isSplitView} />
       {children}
@@ -96,6 +91,11 @@ function Layout ({ children, title = 'homepage', description = 'discover & share
         </div>
       }
       { /* <DevTools /> */}
+      <script src='/static/vendors/js/jquery-3.2.1.slim.min.js' />
+      <script src='/static/vendors/js/tether.min.js' />
+      <script src='/static/vendors/js/bootstrap.min.js' />
+      <script src='/static/vendors/js/snoowrap-v1.min.js' />
+      <script src='/static/vendors/js/addtohomescreen.min.js' />
     </div>
   )
 }

@@ -91,8 +91,9 @@ export default class Hiring extends React.Component {
     const store = initStore(isServer, userAgent, user, true)
     const uiStore = initUIStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])
+    const notificationStore = initNotificationStore(isServer)
     const term = initTermStore(isServer, [], { terms: [] })
-    return { isServer, type, ...store, ...uiStore, ...discovery, ...term }
+    return { isServer, type, ...store, ...uiStore, ...discovery, ...term, ...notificationStore }
   }
 
   constructor (props) {
@@ -102,6 +103,7 @@ export default class Hiring extends React.Component {
     this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
+    this.notificationStore = initNotificationStore(props.isServer)
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
   }
 
@@ -109,7 +111,7 @@ export default class Hiring extends React.Component {
     const { type } = this.props
     logger.info('Hiring render')
     return (
-      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore} term={this.term}>
+      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore} term={this.term} notificationStore={this.notificationStore}>
         <Layout title={"Maomao is coming, and we're hiring..."}>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           { type === 'js' && hiringJs() }

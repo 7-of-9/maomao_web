@@ -68,11 +68,16 @@ export class NotificationStore {
       this.redirectObject = undefined
     }
   }
-
+  
   @action updateUIForPushEnabled (token) {
     this.notificationEnable = true
     this.notificationToken = token
     getWelcome(token)
+  }
+  
+  @action updateUIForToken(token) {
+    this.notificationEnable = true
+    this.notificationToken = token
   }
 
   @action updateUIForPushPermissionRequired () {

@@ -382,6 +382,9 @@ class AppHeader extends React.Component {
         this.addNotification(notificationData.body, notificationData.title)
       }
     })
+    if ((typeof (window) !== 'undefined') && this.isTokenSentToServer) {
+      this.props.notificationStore.updateUIForToken(window.localStorage.getItem('pushToken'))
+    }
   }
 
   componentWillUnmount () {
@@ -394,7 +397,6 @@ class AppHeader extends React.Component {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
     const { notificationEnable } = this.props.notificationStore
     const { showSignInModal, title } = this.props.ui
-    const isNotificationEnable = notificationEnable || ((typeof (window) !== 'undefined') && window.localStorage.getItem('sentToServer') === 1)
     const { hidden } = this.props
     return (
       <div>
@@ -466,8 +468,8 @@ class AppHeader extends React.Component {
                           <strong><i className='fa fa-share-alt' /> Your Share</strong>
                         </Link>
                       </a>,
-                      <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}} onClick={isNotificationEnable ? this.deleteToken : this.requestPermission}>
-                        <strong><i className={isNotificationEnable ? 'fa fa-bell-slash' : 'fa fa-bell'} /> {isNotificationEnable ? 'Disable Notification' : 'Enable Notification'}</strong>
+                      <a className='link-logout-res' style={{color: '#333', backgroundColor: '#fff'}} onClick={notificationEnable ? this.deleteToken : this.requestPermission}>
+                        <strong><i className={notificationEnable ? 'fa fa-bell-slash' : 'fa fa-bell'} /> {notificationEnable ? 'Disable Notification' : 'Enable Notification'}</strong>
                       </a>]
                 }
                 <ul className='dropdown-menu pull-right'>
@@ -480,9 +482,9 @@ class AppHeader extends React.Component {
                   {
                     user && user.name &&
                     <li style={{color: '#333', backgroundColor: '#fff'}}>
-                      <a onClick={isNotificationEnable ? this.deleteToken : this.requestPermission}>
-                        <i className={isNotificationEnable ? 'fa fa-bell-slash' : 'fa fa-bell'} />
-                        <strong> {isNotificationEnable ? 'Disable Notification' : 'Enable Notification'}</strong>
+                      <a onClick={notificationEnable ? this.deleteToken : this.requestPermission}>
+                        <i className={notificationEnable ? 'fa fa-bell-slash' : 'fa fa-bell'} />
+                        <strong> {notificationEnable ? 'Disable Notification' : 'Enable Notification'}</strong>
                       </a>
                     </li>
                   }
