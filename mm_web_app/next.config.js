@@ -80,6 +80,14 @@ module.exports = {
                   name: 'maomao-image-cache'
                 }
               }
+            },
+            {
+              handler: 'networkFirst',
+              urlPattern: /^https?.*/
+            },
+            {
+              handler: 'networkFirst',
+              urlPattern: /^http?.*/
             }
           ],
           mergeStaticsConfig: true,
