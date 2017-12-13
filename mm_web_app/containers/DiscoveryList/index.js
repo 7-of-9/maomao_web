@@ -746,7 +746,7 @@ class DiscoveryList extends Component {
             <div ref={(el) => { this.animateEl = el }} className={this.props.ui.animateClassName}>
               { (!this.props.ui.isRootView || userData.user_id)
                 ? this.renderDetail()
-                : <div className='discover'>
+                : <div className='grid-auto'>
                   {this.renderRootList()}
                 </div>
               }

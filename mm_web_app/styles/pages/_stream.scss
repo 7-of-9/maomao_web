@@ -476,20 +476,6 @@ img {
   position: relative;
   margin: 0;
   width: 100%;
-  .discover {
-    margin: 16px auto;
-    @media (max-width: 499px) {
-      width: 250px;
-    }
-    @for $i from 2 through 5 {
-      @media (max-width: 250 * ($i + 1) - 1px) and (min-width: 250px * $i) {
-        width: 250px * $i;
-      }
-    }
-    @media (min-width: 1500px) {
-      width: 1500px;
-    }
-  }
   .grid-sizer, .grid-item {
     @include border-radius(8px);
     height: 370px;
@@ -515,6 +501,21 @@ img {
       animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
       background: rgba(0, 0, 0, 0.15);
     }
+  }
+}
+
+.grid-auto {
+  margin: 16px auto;
+  @media (max-width: 499px) {
+    width: 250px;
+  }
+  @for $i from 2 through 5 {
+    @media (max-width: 250 * ($i + 1) - 1px) and (min-width: 250px * $i) {
+      width: 250px * $i;
+    }
+  }
+  @media (min-width: 1500px) {
+    width: 1500px;
   }
 }
 
