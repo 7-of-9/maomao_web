@@ -24,6 +24,7 @@ const Carousel = dynamic(
 @inject('term')
 @inject('store')
 @inject('ui')
+@inject('notificationStore')
 @observer
 class DiscoveryPath extends Component {
   static propTypes = {
@@ -35,10 +36,22 @@ class DiscoveryPath extends Component {
     onSelectChildTerm: () => {}
   }
 
+  changeFollow = (termId, followed, title) => {
+    if (followed) {
+      this.props.term.unfollowTopicUser(termId, () => {
+        this.props.notificationStore.addNotification(`${title} unfollowed`, 'Topics')
+      })
+    } else {
+      this.props.term.followTopicUser(termId, () => {
+        this.props.notificationStore.addNotification(`${title} followed`, 'Topics')
+      })
+    }
+  }
+
   renderDiscoveryPath = () => {
     const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
-    const { findTerms, termsInfo: { terms }, userData, shareTerm } = toJS(this.props.term)
+    const { findTerms, termsInfo: { terms }, userData, shareTerm, followedTopics } = toJS(this.props.term)
     const items = []
     const topics = []
     const carouselItems = []
@@ -46,6 +59,10 @@ class DiscoveryPath extends Component {
       const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
       if (term) {
         const { img, term_name: title, term_id: termId } = term
+        let followed = false
+        if (followedTopics && followedTopics.topics) {
+          followed = !!followedTopics.topics.find(x => x.term_id === termId)
+        }
         items.push(
           <div
             className='topic'
@@ -58,12 +75,27 @@ class DiscoveryPath extends Component {
               style={{
                 background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
                 backgroundSize: 'cover',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                padding: '8px 120px 8px 8px'
               }}
               className='current-topic-name tags' rel='tag'>
               <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
               {title}
             </span>
+            <div className='topic-follow' style={{
+              position: 'absolute',
+              right: -10,
+              bottom: 0
+            }}>
+              <label className='label'>
+                <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name)} />
+                <span className='label__text'>
+                  <span className='label__check'>
+                    <i className='fa fa-check icon' />
+                  </span>
+                </span>
+              </label>
+            </div>
           </div>
         )
       }
@@ -152,6 +184,10 @@ class DiscoveryPath extends Component {
     if (topics.length) {
       _.forEach(_.uniqBy(topics, 'term_id'), term => {
         const { img, term_name: title, term_id: termId } = term
+        let followed = false
+        if (followedTopics && followedTopics.topics) {
+          followed = !!followedTopics.topics.find(x => x.term_id === termId)
+        }
         if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
           carouselItems.push(
             <div
@@ -166,12 +202,26 @@ class DiscoveryPath extends Component {
                   background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
                   backgroundSize: 'cover',
                   cursor: 'pointer',
-                  fontSize: '0.8rem',
-                  padding: '3px 20px'
+                  fontSize: '0.9rem',
+                  padding: '4px 120px 4px 8px'
                 }}
                 className='current-topic-name tags' rel='tag'>
                 {title}
               </span>
+              <div className='topic-follow' style={{
+                position: 'absolute',
+                right: -14,
+                bottom: -4
+              }}>
+                <label className='label'>
+                  <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name)} />
+                  <span className='label__text'>
+                    <span className='label__check'>
+                      <i className='fa fa-check icon' />
+                    </span>
+                  </span>
+                </label>
+              </div>
             </div>)
         }
       })
@@ -179,11 +229,9 @@ class DiscoveryPath extends Component {
 
     if (carouselItems.length > 0) {
       const settings = {
-        navContainerClass: 'carousel-nav owl-nav owl-nav-small',
-        stageOuterClass: 'carousel-outer owl-stage-outer',
-        stageClass: 'carousel-stage owl-stage',
-        dots: false,
-        autoWidth: true
+        variableWidth: true,
+        infinite: false,
+        centerMode: false
       }
       return (
         <div className={'navigation-pane bounceInLeft animated'} style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
@@ -191,8 +239,8 @@ class DiscoveryPath extends Component {
             {items}
           </div>
           {carouselItems.length > 0 &&
-            <div className='breadcrum' style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
-              <Carousel settings={settings} className='carousel-wrapper'>
+            <div className='breadcrum' style={{ maxWidth: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%', width: 'auto' }}>
+              <Carousel settings={settings} className='slick-nav'>
                 {carouselItems}
               </Carousel>
             </div>

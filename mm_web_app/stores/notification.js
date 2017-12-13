@@ -13,7 +13,7 @@ export class NotificationStore {
   @observable notificationEnable = false
   @observable isRedirectToUrl = false
   notificationToken = ''
-  redirectObject = undefined
+  redirectObject = false
 
   @action removeNotification (uNotificationd) {
     if (this.notifications) {
@@ -65,7 +65,7 @@ export class NotificationStore {
         }
       })
       Router.push(url, path, options)
-      this.redirectObject = undefined
+      this.redirectObject = false
     }
   }
   

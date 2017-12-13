@@ -1,5 +1,6 @@
 const path = require('path')
 const glob = require('glob')
+const webpack = require('webpack');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const { ANALYZE } = process.env
@@ -41,6 +42,9 @@ module.exports = {
         openAnalyzer: true
       }))
     }
+    config.plugins.push(
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    )
     if (!dev) {
       config.plugins.push(
         new SWPrecacheWebpackPlugin({

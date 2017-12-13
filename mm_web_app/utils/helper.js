@@ -8,7 +8,7 @@ export function tagColor (name) {
 }
 
 export function dynamicFontSize (text) {
-  if (text.length > 20) return '0.8rem'
+  if (text.length > 20) return '0.9rem'
   if (text.length > 12) return '1rem'
   return '1.5rem'
 }

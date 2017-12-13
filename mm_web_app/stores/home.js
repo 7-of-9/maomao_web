@@ -40,8 +40,8 @@ export class HomeStore extends CoreStore {
     topics: [],
     discoveries: []
   }
-  @observable shareInfo = undefined
-  @observable shareCode = undefined
+  @observable shareInfo = false
+  @observable shareCode = false
   @observable userHistory = { mine: {}, received: [], topics: [] }
   @observable normalizedData = { entities: {}, result: {} }
   user = {}
@@ -467,8 +467,8 @@ export class HomeStore extends CoreStore {
       () => this.acceptInviteResult.state !== 'pending',
       () => {
         this.inviteResult = this.acceptInviteResult.value
-        this.shareCode = undefined
-        this.shareInfo = undefined
+        this.shareCode = false
+        this.shareInfo = false
         if (this.isHome) {
           this.getUserHistory()
         }

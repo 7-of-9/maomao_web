@@ -5,45 +5,62 @@
 */
 
 import React from 'react'
-import OwlCarousel from 'react-owl-carousel'
+import Slider from 'react-slick'
 import { Subscribe } from 'react-subscribe'
 import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
+
+function NextArrow(props) {
+  const {className, style, onClick} = props
+  return (
+    <div
+      className={className}
+      onClick={onClick}
+    ></div>
+  );
+}
+
+function PrevArrow(props) {
+  const {className, style, onClick} = props
+  return (
+    <div
+      className={className}
+      onClick={onClick}
+    ></div>
+  );
+}
 
 class Carousel extends React.Component {
   onCarousel = (isAdd) => {
     logger.info('onCarousel', isAdd, this.slider)
     if (isAdd) {
-      this.slider.next()
+      this.slider.slickNext()
     } else {
-      this.slider.prev()
+      this.slider.slickPrev()
     }
   }
 
   render () {
     const { className, settings, style, ...props } = this.props
     const defaultSettings = {
-      navContainerClass: 'carousel-nav owl-nav',
-      stageOuterClass: 'carousel-outer owl-stage-outer',
-      stageClass: 'carousel-stage owl-stage',
-      nav: true,
-      autoWidth: true,
-      navText: [
-        '<',
-        '>'
-      ]
+      dots: false,
+      infinite: false,
+      speed: 500,
+      arrows: true,
+      autoplay: false,
+      nextArrow: <NextArrow className='slick-next' />,
+      prevArrow: <PrevArrow className='slick-prev' />
     }
     return (
       <div className={className} style={style}>
         <Subscribe target={eventEmitter} eventName='carousel' listener={this.onCarousel} />
-        <OwlCarousel
-          className='owl-theme'
+        <Slider
           ref={(el) => { this.slider = el }}
           {... settings ? Object.assign({}, defaultSettings, settings) : defaultSettings}
           {... props}
           >
           { this.props.children }
-        </OwlCarousel>
+        </Slider>
       </div>
     )
   }

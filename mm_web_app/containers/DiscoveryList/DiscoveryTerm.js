@@ -32,25 +32,6 @@ export default class DiscoveryTerm extends Component {
     evt.target.src = '/static/images/no-image.png'
   }
 
-  changeFollow = (evt, termId, followed, title) => {
-    evt.preventDefault()
-    if (followed) {
-      this.props.term.unfollowTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} unfollowed`)
-        this.props.ui.setFollowedTermHover(!followed)
-        this.props.ui.hideTermHover()
-        this.setState({ termHover: false })
-      })
-    } else {
-      this.props.term.followTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} followed`)
-        this.props.ui.setFollowedTermHover(!followed)
-        this.props.ui.hideTermHover()
-        this.setState({ termHover: false })
-      })
-    }
-  }
-
   render () {
     /* eslint-disable camelcase */
     const { onClick, termName, ingoreTerms, termImg, termId, termClass } = this.props
@@ -67,7 +48,8 @@ export default class DiscoveryTerm extends Component {
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)), url(${termImg || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
-              cursor: _.indexOf(ingoreTerms, termId) === -1 ? 'pointer' : 'default'
+              cursor: _.indexOf(ingoreTerms, termId) === -1 ? 'pointer' : 'default',
+              margin: 2
             }}
           >
             {termName}

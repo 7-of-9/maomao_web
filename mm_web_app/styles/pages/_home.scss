@@ -566,50 +566,19 @@ the home page
     min-width: 100px;
     text-transform: capitalize;
     text-align: center;
+    font-weight: 700;
   }
   .topic {
     display: inline-block;
     position: relative;
   }
   .topic-follow {
-    position: absolute;
-    right: 14.5px;
-    top: 0;
     opacity: 0;
-    animation: all 0.3s;
+    &:hover {
+      opacity: 1;
+    }
   }
   .topic:hover .topic-follow {
-    opacity: 1;
-  }
-  .topic-follow label {
-    cursor: pointer;
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    background: #eee;
-    border:1px solid #ddd;
-  }
-  .topic-follow label:after {
-    opacity: 0.2;
-    content: '';
-    position: absolute;
-    width: 9px;
-    height: 5px;
-    background: transparent;
-    top: 6px;
-    left: 7px;
-    border: 3px solid #333;
-    border-top: none;
-    border-right: none;
-    transform: rotate(-45deg);
-  }
-  .topic-follow label:hover::after {
-    opacity: 0.5;
-  }
-  .topic-follow input[type=checkbox]:checked + label:after {
     opacity: 1;
   }
 }
@@ -736,7 +705,7 @@ the home page
             z-index: 100;
             .tags {
               line-height: 15px !important;
-              font-size: 0.8rem !important;
+              font-size: 0.9rem !important;
             }
             img.thumbnail {
               width: 30px !important;
@@ -816,7 +785,7 @@ the home page
               @include border-radius(6px);
               margin: 0 2.5px;
               padding: 4px 8px;
-              font-size: 0.8rem;
+              font-size: 0.9rem;
               text-align: left;
               min-width: 60px;
               text-transform: capitalize;
@@ -945,121 +914,157 @@ the home page
 
 
 /* hotfix for carousel arrow */
-.carousel-wrapper {
-  padding: 0 10px;
-  .carousel-outer {
-    &.previous {
-      &::before {
-        position: absolute;
-        content: " ";
-        left: 0;
-        top: 0;
-        height: 50px;
-        width: 100px;
-        cursor: pointer;
-        z-index: 1;
-        background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
-      }
-    }
-    &.next {
-      &::after{
-        position: absolute;
-        content: " ";
-        right: 0;
-        top: 0;
-        height: 50px;
-        width: 100px;
-        cursor: pointer;
-        z-index: 1;
-        background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
-      }
-    }
-  }
-  .carousel-nav {
-    .owl-prev {
-      position: absolute;
-      text-align: left;
-      top: -5px;
-      left: -25px;
-      height: 50px;
-      width: 120px;
-      color: #d6d6d6;
-      font-size: 1.5rem;
-      padding: 10px 2px;
-      margin-top: 5px;
+.slick-nav {
+  .slick-prev {
+    position: absolute;
+    z-index: 100;
+    text-align: left;
+    top: 14px;
+    left: -25px;
+    height: 38px;
+    width: 120px;
+    color: #d6d6d6;
+    font-size: 1.5rem;
+    padding: 10px 2px;
+    margin-top: 5px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+    &:hover {
+      color: #232323;
       background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
-      &:hover {
-        color: #232323;
-        background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
-      }
     }
-    .owl-next {
+    &:before {
+      content: '<';
       position: absolute;
-      text-align: right;
-      top: -5px;
-      right: -25px;
-      height: 50px;
-      width: 120px;
-      color: #d6d6d6;
-      font-size: 1.5rem;
-      padding: 10px 2px;
-      margin-top: 5px;
+      left: 35px;
+      color: #2f2f2f;
+      font-weight: 900;
+    }
+  }
+  .slick-next {
+    position: absolute;
+    z-index: 100;
+    text-align: right;
+    top: 14px;
+    right: -25px;
+    height: 38px;
+    width: 120px;
+    color: #d6d6d6;
+    font-size: 1.5rem;
+    padding: 10px 2px;
+    margin-top: 5px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+    &:hover {
+      color: #232323;
       background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
-      &:hover {
-        color: #232323;
-        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
-      }
     }
-    .disabled {
-      display: none;
-    }
-  }
-  .owl-nav-small {
-    .owl-prev {
-      left: -15px;
-      height: 38px;
-      padding: 3px 2px;
-    }
-    .owl-next {
-      right: -15px;
-      height: 38px;
-      padding: 3px 2px;
+    &:before {
+      content: '>';
+      position: absolute;
+      right: 35px;
+      color: #2f2f2f;
+      font-weight: 900;
     }
   }
-  .owl-nav-discover {
-    .owl-prev {
-      width: 50px;
-      height: 50px;
-      background: #167ac6;
-      top: 45%;
-      left: -15px;
-      border-radius: 50%;
-      padding: 7px 16px;
-      box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
-      &:hover {
-        color: #fff;
-        background: #217fc2;
-        box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
-      }
+  .slick-disabled {
+    display: none;
+  }
+}
+.slick-nav-small {
+  .slick-prev {
+    position: absolute;
+    z-index: 100;
+    text-align: left;
+    top: -5px;
+    left: -15px;
+    height: 38px;
+    padding: 3px 2px;
+    width: 120px;
+    color: #d6d6d6;
+    font-size: 1.5rem;
+    margin-top: 5px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+    &:hover {
+      color: #232323;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
     }
-    .owl-next {
-      width: 50px;
-      height: 50px;
-      background: #167ac6;
-      top: 45%;
-      right: -15px;
-      border-radius: 50%;
-      padding: 7px 16px;
-      box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
-      &:hover {
-        color: #fff;
-        background: #217fc2;
-        box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
-      }
+    &:before {
+      content: '<';
     }
   }
-  .owl-nav-discover.disabled {
-    display: block;
+  .slick-next {
+    position: absolute;
+    z-index: 100;
+    text-align: right;
+    top: -5px;
+    right: -15px;
+    height: 38px;
+    width: 120px;
+    color: #d6d6d6;
+    font-size: 1.5rem;
+    padding: 3px 2px;
+    margin-top: 5px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+    &:hover {
+      color: #232323;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+    }
+    &:before {
+      content: '>';
+    }
+  }
+  .slick-disabled {
+    display: none;
+  }
+}
+.slick-nav-discover {
+  .slick-prev {
+    position: absolute;
+    z-index: 100;
+    width: 50px;
+    height: 50px;
+    background: #167ac6;
+    top: 45%;
+    left: -15px;
+    border-radius: 50%;
+    padding: 7px 16px;
+    box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+    &:hover {
+      color: #fff;
+      background: #217fc2;
+      box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    }
+    &:before {
+      content: '<';
+      position: absolute;
+      top: 31%;
+      left: 34%;
+    }
+  }
+  .slick-next {
+    position: absolute;
+    z-index: 100;
+    width: 50px;
+    height: 50px;
+    background: #167ac6;
+    top: 45%;
+    right: -15px;
+    border-radius: 50%;
+    padding: 7px 16px;
+    box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+    &:hover {
+      color: #fff;
+      background: #217fc2;
+      box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    }
+    &:before {
+      content: '>';
+      position: absolute;
+      top: 31%;
+      left: 42%;
+    }
+  }
+  .slick-disabled {
+    display: none;
   }
 }
 
@@ -1130,6 +1135,7 @@ the home page
     height: 38px;
     padding: 3px 20px;
     opacity: 0.8;
+    font-weight: 700;
     .btn-box-remove {
       @include opacity(0.5);
       @include border-radius(50%);
@@ -1149,6 +1155,15 @@ the home page
     &:hover .btn-box-remove,
     &:focus .btn-box-remove{
       color: #222;
+    }
+    .topic-follow {
+      opacity: 0;
+      &:hover {
+        opacity: 1;
+      }
+    }
+    &:hover .topic-follow {
+      opacity: 1;
     }
   }
 }

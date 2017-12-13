@@ -30,13 +30,11 @@ class DiscoveryListCarousel extends Component {
     return true
   }
 
-  handlePage = (evt) => {
-    if (evt.property.name === 'position') {
-      this.setState({ page: evt.property.value })
-      const { discoveries } = this.props.term
-      if (Math.floor(discoveries.length / this.props.chunkSize) - 1 <= evt.property.value && this.props.disc) {
-        this.loadMore()
-      }
+  handlePage = (index) => {
+    this.setState({ page: index })
+    const { discoveries } = this.props.term
+    if (Math.floor(discoveries.length / this.props.chunkSize) - 1 <= index && this.props.disc) {
+      this.loadMore()
     }
   }
 
@@ -50,20 +48,16 @@ class DiscoveryListCarousel extends Component {
     const { items, chunkSize } = this.props
     const { page } = this.state
     const settings = {
-      navContainerClass: 'carousel-nav owl-nav owl-nav-discover',
-      stageOuterClass: 'carousel-outer owl-stage-outer',
-      stageClass: 'carousel-stage owl-stage',
-      nav: true,
-      dots: false,
-      autoWidth: true,
-      startPosition: page,
       lazyLoad: true,
-      lazyContent: true
+      initialSlide: page,
+      slidesToShow: 1,
+      slidesToScroll: 1
     }
     return <Carousel
       settings={settings}
-      className='carousel-wrapper' style={{ width: chunkSize * 250 / 2, padding: 0 }}
-      onChange={this.handlePage}
+      className='slick-nav-discover'
+      style={{ width: chunkSize * 250 / 2, padding: 0 }}
+      afterChange={this.handlePage}
     >
       {items.length ? items : <div /> }
     </Carousel>

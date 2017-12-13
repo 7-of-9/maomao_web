@@ -50,25 +50,47 @@ class DiscoveryNavigation extends Component {
 
   renderNavigationItems (selectedItems) {
     const validTerms = _.filter(selectedItems, item => item.term_name !== '...')
+    const { followedTopics } = toJS(this.props.term)
     if (validTerms && validTerms.length) {
-      return _.map(validTerms, (term) => (
-        <div
-          className='selected-topic'
-          key={`topic-${term.term_id}`}
-          style={{
-            background: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(${term.img || '/static/images/no-image.png'}) `,
-            backgroundSize: 'cover',
-            cursor: 'pointer'
-          }}
-          onClick={() => {
-            this.selectTerm(term)
-          }}
-        >
-          <p className='blur-bg'>
-            <span className='text-topic'>{term.term_name}</span>
-          </p>
-        </div>
-      ))
+      return _.map(validTerms, (term) => {
+        let followed = false
+        if (followedTopics && followedTopics.topics) {
+          followed = !!followedTopics.topics.find(x => x.term_id === term.term_id)
+        }
+        return (
+          <div
+            className='selected-topic'
+            key={`topic-${term.term_id}`}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(${term.img || '/static/images/no-image.png'}) `,
+              backgroundSize: 'cover',
+              cursor: 'pointer',
+              padding: '4px 120px 4px 8px'
+            }}
+            onClick={() => {
+              this.selectTerm(term)
+            }}
+          >
+            <p className='blur-bg'>
+              <span className='text-topic'>{term.term_name}</span>
+            </p>
+            <div className='topic-follow' style={{
+              position: 'absolute',
+              right: -14,
+              bottom: -5
+            }}>
+              <label className='label'>
+                <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name)} />
+                <span className='label__text'>
+                  <span className='label__check'>
+                    <i className='fa fa-check icon' />
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+        )
+      })
     } else {
       return (<div style={{ width: 40, height: 40 }}><Loading isLoading /></div>)
     }
@@ -85,7 +107,12 @@ class DiscoveryNavigation extends Component {
     logger.info('DiscoveryNavigation render', isReady, items, this.props)
     return (
       <Carousel
-        className='carousel-wrapper'
+        settings={{
+          variableWidth: true,
+          infinite: false,
+          centerMode: false
+        }}
+        className='slick-nav-small'
         >
         {
           this.renderNavigationItems(items)

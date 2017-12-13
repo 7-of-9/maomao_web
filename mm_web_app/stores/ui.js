@@ -38,7 +38,7 @@ export class UIStore {
   @observable discoveryTermId = -1
   @observable isSplitView = false
   @observable spliterWidth = '100%'
-  termHover = undefined
+  termHover = false
   termHoverVisible = false
   selectedDiscoveryItem = {}
   shareTopics = []
@@ -241,7 +241,7 @@ export class UIStore {
 
   @action removeDiscoveryItem () {
     this.discoveryUrlId = ''
-    this.selectedDiscoveryItem = undefined
+    this.selectedDiscoveryItem = false
   }
 
   @action selectDiscoveryTerm (termId) {
@@ -284,7 +284,7 @@ export class UIStore {
   }
 
   @action hideTermHover () {
-    this.termHover = undefined
+    this.termHover = false
     this.termHoverVisible = false
   }
 
