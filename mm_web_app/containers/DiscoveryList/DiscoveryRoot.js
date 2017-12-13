@@ -174,7 +174,6 @@ class DiscoveryRoot extends Component {
       }
     })
     const { chunkSize } = this.state
-    console.log(chunkSize, 'aha')
     const itemDiscoveriesChunk = [].concat.apply([],
       itemDiscoveries.map(function (elem, i) {
         return i % chunkSize ? [] : <div style={{ width: chunkSize * 250 / 2 }}> {[itemDiscoveries.slice(i, i + chunkSize)]} </div>
@@ -191,10 +190,10 @@ class DiscoveryRoot extends Component {
       })
     )
     if (chunkSize === 0) {
-      return <Loading />
+      return <Loading isLoading />
     }
     return <div>
-      {itemDiscoveriesChunk && itemDiscoveriesChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
+      {itemDiscoveriesChunk && !!itemDiscoveriesChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>Discoveries</H3>
         <DiscoveryListCarousel
           items={itemDiscoveriesChunk}
@@ -203,7 +202,7 @@ class DiscoveryRoot extends Component {
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
       </div>}
-      {itemsFriendChunk && itemsFriendChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
+      {itemsFriendChunk && !!itemsFriendChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>Friend Stream</H3>
         <DiscoveryListCarousel
           items={itemsFriendChunk}
@@ -211,7 +210,7 @@ class DiscoveryRoot extends Component {
         />
         <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
       </div>}
-      {itemsMineChunk && itemsMineChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
+      {itemsMineChunk && !!itemsMineChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
         <H3>My Stream</H3>
         <DiscoveryListCarousel
           items={itemsMineChunk}
