@@ -72,6 +72,7 @@
     "react-subscribe": "^1.2.3",
     "react-toggle-button": "2.2.0",
     "react-toggle-display": "^2.2.0",
+    "react-visibility-sensor": "^3.11.0",
     "react-youtube": "^7.5.0",
     "recompose": "^0.26.0",
     "request": "^2.83.0",

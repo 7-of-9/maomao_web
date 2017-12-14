@@ -17,13 +17,13 @@ import dynamic from 'next/dynamic'
 import DiscoveryPath from './DiscoveryPath'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
-import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
+import DiscoveryListLoading from '../../components/Loading/DiscoveryListLoading'
 import logger from '../../utils/logger'
 
 const DiscoveryRoot = dynamic(import('./DiscoveryRoot'), {
   ssr: false,
-  loading: () => <span />
+  loading: () => <div className='grid-auto'><DiscoveryListLoading number={20} /></div>
 })
 
 @inject('term')
@@ -329,7 +329,7 @@ class DiscoveryList extends Component {
 
   renderTermList = (ingoreTerms, discoveryTermId, terms, urlId, shareUrlId) => {
     if (this.props.term.isProcessingDiscoverTerm) {
-      return <Loading isLoading />
+      return <div className='grid-auto'><DiscoveryListLoading number={20} /></div>
     }
     let items = []
     const { discoveries, findTerms, userData, shareTerm } = toJS(this.props.term)

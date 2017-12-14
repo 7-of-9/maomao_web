@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { inject } from 'mobx-react'
 import Carousel from '../../components/Carousel'
 import logger from '../../utils/logger'
+import DiscoveryListLoading from '../../components/Loading/DiscoveryListLoading'
 
 @inject('term')
 class DiscoveryListCarousel extends Component {
@@ -29,7 +30,7 @@ class DiscoveryListCarousel extends Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    logger.info('DiscoveryListCarousel shouldComponentUpdate', nextProps.chunkSize)
+    logger.info('DiscoveryListCarousel shouldComponentUpdate', nextProps.chunkSize, nextProps.items, this.props.items)
     if (this.state.page !== nextState.page && this.props.items === nextProps.items) {
       return false
     }
@@ -70,7 +71,7 @@ class DiscoveryListCarousel extends Component {
       style={{ width: chunkSize * 250 / 2, padding: 0 }}
       afterChange={this.handlePage}
     >
-      {items.length ? items : <div /> }
+      {items.length ? items : <DiscoveryListLoading number={chunkSize} /> }
     </Carousel>
   }
 }

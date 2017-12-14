@@ -6,12 +6,14 @@
 
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
+import VisibilitySensor from 'react-visibility-sensor'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import ReactPlayer from 'react-player'
 import DiscoveryTerm from './DiscoveryTerm'
 import { isVideo } from '../../utils/helper'
 import logger from '../../utils/logger'
+import SkelDiscoveryItem from '../../components/Skeleton/SkelDiscoveryItem'
 
 @inject('term')
 @inject('ui')
@@ -229,35 +231,41 @@ export default class DiscoveryItem extends Component {
     const images = [{ name: site_tld, img: site_img }]
     const isVideoPlayer = isVideo(url)
     return (
-      <div
-        key={disc_url_id}
-        className={`grid-item shuffle-item ${selected ? 'grid-item-selected' : ''}`}
-        onMouseEnter={this.preloadUrl}
-      >
-        <div className='thumbnail-box' onClick={this.handleClick}>
-          <div
-            className='thumbnail'
+      <VisibilitySensor partialVisibility>
+        {({isVisible}) =>
+          isVisible ? <div
+            key={disc_url_id}
+            className={`grid-item shuffle-item ${selected ? 'grid-item-selected' : ''}`}
+            onMouseEnter={this.preloadUrl}
           >
-            <div
-              style={{
-                backgroundImage: `url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover'
-              }}
-              className='thumbnail-image'
-            />
-            {this.renderThumnails(images)}
+            <div className='thumbnail-box' onClick={this.handleClick}>
+              <div
+                className='thumbnail'
+              >
+                <div
+                  style={{
+                    backgroundImage: `url(${img || '/static/images/no-image.png'})`,
+                    backgroundSize: 'cover'
+                  }}
+                  className='thumbnail-image'
+                />
+                {this.renderThumnails(images)}
+              </div>
+            </div>
+            <div className='discovery-title-wrap' onClick={this.handleClick}>
+              <p className='discovery-title'>{title}</p>
+            </div>
+            <div className='discovery-description' onClick={this.handleClick}>
+              {isVideoPlayer ? this.renderPlayer() : desc}
+            </div>
+            <div className='caption'>
+              {this.renderTerms()}
+            </div>
           </div>
-        </div>
-        <div className='discovery-title-wrap' onClick={this.handleClick}>
-          <p className='discovery-title'>{title}</p>
-        </div>
-        <div className='discovery-description' onClick={this.handleClick}>
-          {isVideoPlayer ? this.renderPlayer() : desc}
-        </div>
-        <div className='caption'>
-          {this.renderTerms()}
-        </div>
-      </div>
+          : <SkelDiscoveryItem key={disc_url_id} />
+        }
+      </VisibilitySensor>
+
     )
   }
 }

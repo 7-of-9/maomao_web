@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { inject } from 'mobx-react'
+import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import styled from 'styled-components'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryListCarousel from './DiscoveryListCarousel'
-import Loading from '../../components/Loading'
+import DiscoveryListLoading from '../../components/Loading/DiscoveryListLoading'
 import logger from '../../utils/logger'
 
 const H3 = styled.h3`
@@ -16,6 +16,7 @@ const H3 = styled.h3`
 @inject('term')
 @inject('store')
 @inject('ui')
+@observer
 class DiscoveryRoot extends Component {
   static propTypes = {
     getCurrentTerm: PropTypes.func.isRequired,
@@ -185,37 +186,34 @@ class DiscoveryRoot extends Component {
       })
     )
     if (chunkSize === 0) {
-      return <Loading isLoading />
+      return <DiscoveryListLoading number={12} />
     }
     return <div>
-      {itemDiscoveriesChunk && !!itemDiscoveriesChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
-        <H3>Discoveries</H3>
+      <H3>Discoveries</H3>
+      <div style={{ display: 'inline-block', width: '100%' }}>
         <DiscoveryListCarousel
           items={itemDiscoveriesChunk}
           disc
           chunkSize={chunkSize}
           width={width}
         />
-        <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
-      </div>}
-      {itemsFriendChunk && !!itemsFriendChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
-        <H3>Friend Stream</H3>
+      </div>
+      <H3>Friend Stream</H3>
+      <div style={{ display: 'inline-block', width: '100%' }}>
         <DiscoveryListCarousel
           items={itemsFriendChunk}
           chunkSize={chunkSize}
           width={width}
         />
-        <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
-      </div>}
-      {itemsMineChunk && !!itemsMineChunk.length && <div style={{ display: 'inline-block', width: '100%' }}>
-        <H3>My Stream</H3>
+      </div>
+      <H3>My Stream</H3>
+      <div style={{ display: 'inline-block', width: '100%' }}>
         <DiscoveryListCarousel
           items={itemsMineChunk}
           chunkSize={chunkSize}
           width={width}
         />
-        <Loading isLoading={this.props.ui.isRootView && this.props.term.isLoading} />
-      </div>}
+      </div>
     </div>
   }
 }
