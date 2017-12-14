@@ -1,7 +1,7 @@
 import { action, reaction, when, observable } from 'mobx'
 import { HomeStore } from './home'
 import { MAOMAO_SITE_URL } from '../containers/App/constants'
-import { acceptInvite } from '../services/share'
+import { acceptInvite, getShareInfo, getShareUrl } from '../services/share'
 import { fetchImageSearchByTerm } from '../services/crawler'
 
 let store = null
@@ -12,6 +12,8 @@ class InviteStore extends HomeStore {
   @observable acceptInviteResult = {}
   @observable inviteResult = {}
   @observable shareInfo = {}
+  @observable serverShareInfo = {}
+  @observable serverShareUrl = {}
 
   constructor (isServer, userAgent, user, shareCode, shareInfo) {
     super(isServer, userAgent, user, false)
@@ -33,7 +35,7 @@ class InviteStore extends HomeStore {
     }
     return Promise.resolve(`${MAOMAO_SITE_URL}static/images/logo.png`)
   }
-
+  
   @action acceptInviteCode () {
     this.acceptInviteResult = acceptInvite(this.userId, this.userHash, this.shareCode)
     when(
@@ -43,6 +45,26 @@ class InviteStore extends HomeStore {
         if (this.isHome) {
           this.getUserHistory()
         }
+      }
+    )
+  }
+  
+  @action getShareInfo () {
+    this.serverShareInfoResult = getShareInfo(this.shareCode)
+    when(
+      () => this.serverShareInfoResult.state !== 'pending',
+      () => {
+        this.serverShareInfo = this.serverShareInfoResult.value
+      }
+    )
+  }
+  
+  @action getShareUrl () {
+    this.serverShareUrlResult = getShareUrl(this.userId, this.userHash, this.shareCode)
+    when(
+      () => this.serverShareUrlResult.state !== 'pending',
+      () => {
+        this.serverShareUrl = this.serverShareUrlResult.value
       }
     )
   }
