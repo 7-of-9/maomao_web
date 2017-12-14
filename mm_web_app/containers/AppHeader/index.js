@@ -251,10 +251,16 @@ class AppHeader extends React.Component {
         })
         .catch((err) => {
           logger.warn('Unable to delete token. ', err)
+          if (callback) {
+            callback()
+          }
         })
       })
       .catch((err) => {
         logger.warn('Error retrieving Instance ID token. ', err)
+        if (callback) {
+          callback()
+        }
       })
   }
 

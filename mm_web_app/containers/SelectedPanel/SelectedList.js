@@ -34,10 +34,10 @@ class SelectedList extends React.PureComponent {
     return (
       <Carousel
         className='carousel-wrapper slick-nav'
-        settings={{ 
+        settings={{
           variableWidth: true,
           infinite: false,
-          centerMode: false 
+          centerMode: false
         }}
       >
         {
