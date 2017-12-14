@@ -22,5 +22,5 @@ export function pauseShare (id, hash, code, targetUserId) {
 }
 
 export function getShareUrl (id, hash, code) {
-  return fromPromise(axios.get(`${MAOMAO_API_URL}share/url?user_id=${id}&hash=${hash}share_code=${code}`))
+  return fromPromise(axios.get(`${MAOMAO_API_URL}share/url?user_id=${id}&hash=${hash}&share_code=${code}`))
 }
