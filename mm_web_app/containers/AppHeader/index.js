@@ -229,7 +229,7 @@ class AppHeader extends React.Component {
   }
 
   isTokenSentToServer = () => {
-    return window.localStorage.getItem('sentToServer') === 1 && window.localStorage.getItem('pushToken')
+    return parseInt(window.localStorage.getItem('sentToServer')) === 1 && window.localStorage.getItem('pushToken')
   }
 
   setTokenSentToServer = (currentToken) => {

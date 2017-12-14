@@ -246,7 +246,6 @@ export class UIStore {
   }
 
   @action toggleSplitView (isSelect) {
-    console.log('kerubah')
     this.isSplitView = isSelect
     if (!isSelect) {
       this.discoveryUrlId = -1
