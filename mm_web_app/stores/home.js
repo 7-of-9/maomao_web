@@ -122,7 +122,7 @@ export class HomeStore extends CoreStore {
         this.isLogin = true
         this.userId = data.id
         this.userHash = userHash
-        this.user = Object.assign({}, data, {name: `${data.firstname} ${data.lastname}`, picture: 'http://www.maomao.rocks/static/images/no-avatar.png'})
+        this.user = Object.assign({}, data, {name: `${data.firstname} ${data.lastname}`, picture: 'https://www.maomao.rocks/static/images/no-avatar.png'})
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: data.id }))
@@ -130,7 +130,7 @@ export class HomeStore extends CoreStore {
             info: {
               ...data,
               name: `${data.firstname} ${data.lastname}`,
-              picture: 'http://www.maomao.rocks/static/images/no-avatar.png'
+              picture: 'https://www.maomao.rocks/static/images/no-avatar.png'
             }
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))

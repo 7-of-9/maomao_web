@@ -17,7 +17,7 @@ messaging.setBackgroundMessageHandler(function(payload, test) {
     image: notificationData.image || '',
     renotify: notificationData.renotify || false,
     data: {
-      url: notificationData.url || 'http://www.maomao.rocks/',
+      url: notificationData.url || 'https://www.maomao.rocks/',
     }
   }
   if (notificationData.tag === 'notification') {
@@ -42,7 +42,7 @@ messaging.setBackgroundMessageHandler(function(payload, test) {
           icon: 'static/images/icons/android-icon-48x48.png',
           tag: 'notification',
           data: {
-            url: 'http://www.maomao.rocks/',
+            url: 'https://www.maomao.rocks/',
           }
         })
       }
