@@ -185,6 +185,9 @@ class DiscoveryRoot extends Component {
         return i % chunkSize ? [] : <div style={{ width }} key={`mine-${i}`}> {[itemsMine.slice(i, i + chunkSize)]} </div>
       })
     )
+    if (this.props.term.hasLoadMore || this.props.term.isProcessingRootDiscover) {
+      itemDiscoveriesChunk.push(<div style={{ width }} key={'load-skel'}><DiscoveryListLoading number={chunkSize} /></div>)    
+    }
     if (chunkSize === 0) {
       return <DiscoveryListLoading number={12} />
     }

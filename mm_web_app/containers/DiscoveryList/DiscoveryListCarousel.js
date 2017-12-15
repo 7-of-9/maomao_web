@@ -45,7 +45,7 @@ class DiscoveryListCarousel extends Component {
   handlePage = (index) => {
     this.setState({ page: index })
     const { discoveries } = this.props.term
-    if (Math.floor(discoveries.length / this.props.chunkSize) - 1 <= index && this.props.disc) {
+    if (this.props.disc && Math.floor(discoveries.length / this.props.chunkSize) <= index) {
       this.loadMore()
     }
   }
@@ -71,7 +71,7 @@ class DiscoveryListCarousel extends Component {
       style={{ width: chunkSize * 250 / 2, padding: 0 }}
       afterChange={this.handlePage}
     >
-      {items.length ? items : <DiscoveryListLoading number={chunkSize} /> }
+      {items.length ? items : <div style={{ width: chunkSize * 250 / 2 }} key={'load-skel'}><DiscoveryListLoading number={chunkSize} /></div> }
     </Carousel>
   }
 }

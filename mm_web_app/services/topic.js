@@ -28,7 +28,7 @@ export function followedTopics (user_id, hash) {
 
 /* eslint-disable camelcase */
 export function rootDiscover (user_id, hash, page_num = 1) {
-  const apiUrl = `${MAOMAO_API_URL}disc/root?${queryString.stringify({user_id, hash, page_num})}`
+  const apiUrl = `${MAOMAO_API_URL}home/discover?${queryString.stringify({user_id, hash, page_num})}`
   return fromPromise(axios.get(apiUrl))
 }
 
