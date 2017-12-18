@@ -6,8 +6,8 @@ firebase.initializeApp({
 });
 const messaging = firebase.messaging();
 
-messaging.setBackgroundMessageHandler(function(payload, test) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload, test)
+messaging.setBackgroundMessageHandler(function(payload) {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload)
   const notificationData = JSON.parse(payload.data.notification) || {}
   const notificationTitle = notificationData.title || 'Welcome to Maomao';
   const notificationOptions = {
@@ -17,7 +17,7 @@ messaging.setBackgroundMessageHandler(function(payload, test) {
     image: notificationData.image || '',
     renotify: notificationData.renotify || false,
     data: {
-      url: notificationData.url || 'https://www.maomao.rocks/',
+      url: notificationData.url || 'https://www.maomao.rocks',
     }
   }
   if (notificationData.tag === 'notification') {
@@ -42,7 +42,7 @@ messaging.setBackgroundMessageHandler(function(payload, test) {
           icon: 'static/images/icons/android-icon-48x48.png',
           tag: 'notification',
           data: {
-            url: 'https://www.maomao.rocks/',
+            url: 'https://www.maomao.rocks',
           }
         })
       }
@@ -57,7 +57,9 @@ self.addEventListener('notificationclick', function(event) {
   event.waitUntil(clients.matchAll({includeUncontrolled: true, type: 'window'}).then(function(clientList) {
     for (var i = 0; i < clientList.length; i++) {
       var client = clientList[i]
-      if (client.url == event.notification.data.url && 'focus' in client)
+      console.log(client.url)
+      console.log(event.notification.data.url)
+      if (client.url === event.notification.data.url && 'focus' in client)
         return client.focus()
     }
     if (clients.openWindow)
