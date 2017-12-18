@@ -226,7 +226,7 @@ class DiscoveryRoot extends Component {
           hasMore={hasLoadMore}
           type='disc'
         />}
-        {((itemDiscoveriesChunk.length === 1 && isProcessingRootDiscover) || (!!itemDiscoveriesChunk.length && !isProcessingRootDiscover)) ||
+        {((itemDiscoveriesChunk.length > 1 && isProcessingRootDiscover) || (!!itemDiscoveriesChunk.length && !isProcessingRootDiscover)) ||
         <Link
           as={`/topics`}
           prefetch
@@ -246,7 +246,7 @@ class DiscoveryRoot extends Component {
           hasMore={friendsHasMore}
           type='friend'
         />}
-        {((itemsFriendsChunk.length === 1 && isProcessingFriendsStream) || (!!itemsFriendsChunk.length && !isProcessingFriendsStream)) || <p style={{ margin: '16px 0 64px 0' }}>Ask yoour friend to share</p>}
+        {((itemsFriendsChunk.length > 1 && isProcessingFriendsStream) || (!!itemsFriendsChunk.length && !isProcessingFriendsStream)) || <p style={{ margin: '16px 0 64px 0' }}>Ask yoour friend to share</p>}
       </div>
       <H3>My Stream</H3>
       <div style={{ display: 'inline-block', width: '100%' }}>
@@ -257,7 +257,7 @@ class DiscoveryRoot extends Component {
           hasMore={ownHasMore}
           type='own'
         />}
-        {((itemsOwnChunk.length === 1 && isProcessingOwnStream) || (!!itemsOwnChunk.length && !isProcessingOwnStream)) || <p style={{ margin: '16px 0 64px 0' }}>You dont have history yet, go install maomao chrome extension</p> }
+        {((itemsOwnChunk.length > 1 && isProcessingOwnStream) || (!!itemsOwnChunk.length && !isProcessingOwnStream)) || <p style={{ margin: '16px 0 64px 0' }}>You dont have history yet, go install maomao chrome extension</p> }
       </div>
     </div>
   }

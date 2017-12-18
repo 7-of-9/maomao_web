@@ -106,7 +106,9 @@ export default class IndexPage extends React.Component {
     if (this.props.userShareId > 0) {
       this.store.getUserFriends(0, this.props.userShareId)
     } else {
-      this.store.getUserFriends(0)
+      if (this.store.friendsPage === 0) {
+        this.store.getUserFriends(0)
+      }
     }
   }
 
@@ -142,7 +144,9 @@ export default class IndexPage extends React.Component {
     if (userShareId > 0) {
       this.store.getUserFriends(0, userShareId)
     } else {
-      this.store.getUserFriends(0)
+      if (this.store.friendsPage === 0) {
+        this.store.getUserFriends(0)
+      }
     }
   }
 
@@ -216,7 +220,9 @@ export default class IndexPage extends React.Component {
     if (userShareId > 0 && userShareId !== this.state.userShareId) {
       this.store.getUserFriends(0, userShareId)
     } else {
-      this.store.getUserFriends(0)
+      if (this.store.friendsPage === 0) {
+        this.store.getUserFriends(0)
+      }
     }
   }
 
