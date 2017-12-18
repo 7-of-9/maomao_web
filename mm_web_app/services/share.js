@@ -1,5 +1,6 @@
 import { fromPromise } from 'mobx-utils'
 import axios from 'axios'
+import queryString from 'query-string'
 import { MAOMAO_API_URL } from '../containers/App/constants'
 
 export function getShareInfo (code) {
@@ -21,6 +22,7 @@ export function pauseShare (id, hash, code, targetUserId) {
   return fromPromise(axios.get(apiUrl))
 }
 
-export function getShareUrl (id, hash, code) {
-  return fromPromise(axios.get(`${MAOMAO_API_URL}share/url?user_id=${id}&hash=${hash}&share_code=${code}`))
+export function getShareUrl (user_id, hash, url_id, share_code) {
+  const apiUrl = `${MAOMAO_API_URL}share/url?${queryString.stringify({user_id, hash, share_code, url_id})}`
+  return fromPromise(axios.get(apiUrl))
 }

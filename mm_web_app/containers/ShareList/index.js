@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { inject, observer } from 'mobx-react'
+import { toJS } from 'mobx'
 import _ from 'lodash'
 import { tagColor } from '../../utils/helper'
 
@@ -17,8 +18,8 @@ const avatar = (user) => {
 }
 
 const shareStat = (friend, shareLists) => {
-  const isAll = _.filter(friend.shares, code => shareLists[code].type === 'all').length
-  const allTopics = _.filter(friend.shares, code => shareLists[code].type === 'topic').length
+  const isAll = _.filter(friend.shares_received, code => shareLists[code].type === 'all').length
+  const allTopics = _.filter(friend.shares_received, code => shareLists[code].type === 'topic').length
   if (isAll) {
     return 'All'
   }
@@ -26,8 +27,8 @@ const shareStat = (friend, shareLists) => {
 }
 
 const hasShareTopic = (friend, shareLists) => {
-  const isAll = _.filter(friend.shares, code => shareLists[code].type === 'all').length
-  const allTopics = _.filter(friend.shares, code => shareLists[code].type === 'topic').length
+  const isAll = _.filter(friend.shares_received, code => shareLists[code].type === 'all').length
+  const allTopics = _.filter(friend.shares_received, code => shareLists[code].type === 'topic').length
   return isAll || allTopics
 }
 
@@ -53,8 +54,10 @@ class ShareList extends React.Component {
   }
   render () {
     const { user, userId } = this.props.store
-    const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
+    const { result: { shares_issued } } = this.props.store.normalizeOwnShare
+    const { entities: { friendStreams, shareLists, urls } } = this.props.store.normalizeFriendsShare
     const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
+    console.log('sapi', toJS(this.props.store.normalizeFriendsShare), friends)
     return (
       <div>
         <div className='share-management bounceInRight animated'>
@@ -163,7 +166,7 @@ class ShareList extends React.Component {
                 </div>
                 <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
-                    {friend.shares && _.map(friend.shares, code => {
+                    {friend.shares_received && _.map(friend.shares_received, code => {
                       const item = shareLists[code]
                       return (
                             item.type !== 'url' &&

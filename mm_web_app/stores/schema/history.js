@@ -15,19 +15,29 @@ const sharedList = new schema.Entity('shareLists', {
 }, { idAttribute: 'share_code' })
 
 const friendStream = new schema.Entity('friendStreams', {
-  shares: [sharedList]
+  shares_received: [sharedList]
 }, { idAttribute: 'user_id' })
 
-// Define your article
-const history = new schema.Entity('histories', {
+const own = new schema.Entity('own', {
   mine: myStream,
-  received: [ friendStream ],
   topics: [topic]
 }, { idAttribute: 'mine' })
 
-export function normalizedHistoryData (data) {
+const friend = new schema.Entity('friend', {
+  received: [ friendStream ],
+  topics: [topic]
+}, { idAttribute: 'received' })
+
+export function normalizedOwnData (data) {
   if (data) {
-    return normalize(data, history)
+    return normalize(data, own)
+  }
+  return { entities: {}, result: {} }
+}
+
+export function normalizedFriends (data) {
+  if (data) {
+    return normalize(data, friend)
   }
   return { entities: {}, result: {} }
 }

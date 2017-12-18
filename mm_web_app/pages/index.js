@@ -45,10 +45,10 @@ export default class IndexPage extends React.Component {
     let urlId = query && query.urlId ? Number(query.urlId) : -1
     let shareUrlId = query && query.shareUrlId ? Number(query.shareUrlId) : -1
     let userShareId = query && query.userShareId ? Number(query.userShareId) : -1
-    let topicShareName = query && query.topicShareName ? query.topicShareName : ''
-    store.getUserHistory()
+    store.getUserOwn(0)
+    store.getUserFriends(0)
     const term = initTermStore(isServer, findTerms, termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, ...notificationStore, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId, userShareId, topicShareName }
+    return { isServer, ...store, ...uiStore, ...term, ...notificationStore, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId, userShareId }
   }
 
   constructor (props) {
@@ -98,12 +98,16 @@ export default class IndexPage extends React.Component {
     this.setState({
       urlId: this.props.urlId,
       shareUrlId: this.props.shareUrlId,
-      userShareId: this.props.userShareId,
-      topicShareName: this.props.topicShareName
+      userShareId: this.props.userShareId
     })
     this.term.getTopicTree()
     this.term.getFollowedTopics()
-    this.store.getUserHistory()
+    this.store.getUserOwn(0)
+    if (this.props.userShareId > 0) {
+      this.store.getUserFriends(0, this.props.userShareId)
+    } else {
+      this.store.getUserFriends(0)
+    }
   }
 
   componentDidMount () {
@@ -120,6 +124,7 @@ export default class IndexPage extends React.Component {
     }
     if (Number(this.state.urlId) > 0 || Number(this.state.shareUrlId) > 0) {
       const { urlId, shareUrlId } = this.state
+      console.log('test share url', shareUrlId)
       this.uiStore.toggleSplitView(true)
       if (urlId > 0) {
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {
@@ -133,23 +138,11 @@ export default class IndexPage extends React.Component {
     } else {
       this.uiStore.toggleSplitView(false)
     }
-    const { userShareId, topicShareName } = this.state
-    if (userShareId || topicShareName) {
-      this.store.getUserHistoryCallback((userHistoryResult) => {
-        _.forEach(userHistoryResult.received, (receivedIten, index) => {
-          if (receivedIten.user_id === userShareId) {
-            this.term.setCurrentUserData(receivedIten)
-            _.forEach(receivedIten.shares, (shareItem, index) => {
-              if (shareItem.type === 'topic' && shareItem.topic_name === topicShareName) {
-                this.term.setCurrentShareTerm(shareItem)
-              }
-            })
-          }
-        })
-      })
+    const { userShareId } = this.state
+    if (userShareId > 0) {
+      this.store.getUserFriends(0, userShareId)
     } else {
-      this.term.setCurrentUserData({})
-      this.term.setCurrentShareTerm({})
+      this.store.getUserFriends(0)
     }
   }
 
@@ -220,22 +213,10 @@ export default class IndexPage extends React.Component {
     } else if (!shareUrlId) {
       this.setState({ shareUrlId: -1 })
     }
-    if (userShareId || topicShareName) {
-      this.store.getUserHistoryCallback((userHistoryResult) => {
-        _.forEach(userHistoryResult.received, (receivedIten, index) => {
-          if (receivedIten.user_id === userShareId) {
-            this.term.setCurrentUserData(receivedIten)
-            _.forEach(receivedIten.shares, (shareItem, index) => {
-              if (shareItem.type === 'topic' && shareItem.topic_name === topicShareName) {
-                this.term.setCurrentShareTerm(shareItem)
-              }
-            })
-          }
-        })
-      })
+    if (userShareId > 0 && userShareId !== this.state.userShareId) {
+      this.store.getUserFriends(0, userShareId)
     } else {
-      this.term.setCurrentUserData({})
-      this.term.setCurrentShareTerm({})
+      this.store.getUserFriends(0)
     }
   }
 

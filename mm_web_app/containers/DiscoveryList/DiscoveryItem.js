@@ -9,6 +9,7 @@ import { observer, inject } from 'mobx-react'
 import VisibilitySensor from 'react-visibility-sensor'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import Router from 'next/router'
 import ReactPlayer from 'react-player'
 import DiscoveryTerm from './DiscoveryTerm'
 import { isVideo } from '../../utils/helper'
@@ -38,9 +39,7 @@ export default class DiscoveryItem extends Component {
     ingoreTerms: PropTypes.array.isRequired,
     onSelect: PropTypes.func.isRequired,
     onSelectTerm: PropTypes.func,
-    userData: PropTypes.object,
-    shareTerm: PropTypes.object,
-    onSelectShareTerm: PropTypes.func,
+    fromUser: PropTypes.object,
     onSelectUser: PropTypes.func,
     selected: PropTypes.bool
   }
@@ -82,24 +81,21 @@ export default class DiscoveryItem extends Component {
 
   selectMainTerm = (evt) => {
     evt.preventDefault()
-    const { main_term_id, main_term_img, main_term_name, main_term: mainTerm, userData } = this.props
+    const { main_term_id, main_term_img, main_term_name } = this.props
     this.clickOnTerm = true
-    if (mainTerm) {
-      this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
-    } else if (userData) {
-      this.props.onSelectUser(userData)
-    }
+    this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
   }
 
   selectSubTerm = (evt) => {
     evt.preventDefault()
-    const { sub_term_id, sub_term_img, sub_term_name, main_term: mainTerm, userData, shareTerm } = this.props
+    const { sub_term_id, sub_term_img, sub_term_name } = this.props
     this.clickOnTerm = true
-    if (mainTerm) {
-      this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
-    } else if (userData) {
-      this.props.onSelectShareTerm(userData, shareTerm)
-    }
+    this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
+  }
+
+  selectUserStream = (evt) => {
+    evt.preventDefault()
+    this.props.onSelectUser(this.props.fromUser)
   }
 
   renderTerms = () => {
@@ -108,17 +104,19 @@ export default class DiscoveryItem extends Component {
     let customStyle = { height: '52px', right: '20px', top: '0', position: 'relative' }
     return (
       <div className='mix-tag' style={customStyle}>
-        <DiscoveryTerm
-          onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
-            this.selectMainTerm(evt)
-          } : _.noop}
-          termObj={main_term}
-          termName={main_term_name}
-          ingoreTerms={ingoreTerms}
-          termImg={main_term_img}
-          termId={main_term_id}
-          termClass='mix-tag-topic'
-        />
+        {
+          main_term_name && <DiscoveryTerm
+            onClick={_.indexOf(ingoreTerms, main_term_id) === -1 ? (evt) => {
+              this.selectMainTerm(evt)
+            } : _.noop}
+            termObj={main_term}
+            termName={main_term_name}
+            ingoreTerms={ingoreTerms}
+            termImg={main_term_img}
+            termId={main_term_id}
+            termClass='mix-tag-topic'
+          />
+        }
         {
           sub_term_name && sub_term_name !== main_term_name &&
           <DiscoveryTerm
@@ -134,6 +132,7 @@ export default class DiscoveryItem extends Component {
           />
         }
       </div>
+      
     )
   }
 
@@ -227,7 +226,7 @@ export default class DiscoveryItem extends Component {
 
   render () {
     /* eslint-disable camelcase */
-    const { disc_url_id, site_tld, site_img, title, desc, img, selected, url } = this.props
+    const { disc_url_id, site_tld, site_img, title, desc, img, selected, url, fromUser } = this.props
     const images = [{ name: site_tld, img: site_img }]
     const isVideoPlayer = isVideo(url)
     return (
@@ -238,6 +237,15 @@ export default class DiscoveryItem extends Component {
             className={`grid-item shuffle-item ${selected ? 'grid-item-selected' : ''}`}
             onMouseEnter={this.preloadUrl}
           >
+            {fromUser && <div
+              className='thumbnail-from-user'
+              style={{
+                backgroundImage: `url(${fromUser.avatar || '/static/images/no-image.png'})`,
+              }} 
+              onClick={this.selectUserStream}
+            >
+              <span className='from-user-name'>{fromUser.fullname}</span>
+            </div>}
             <div className='thumbnail-box' onClick={this.handleClick}>
               <div
                 className='thumbnail'

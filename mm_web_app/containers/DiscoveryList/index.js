@@ -47,8 +47,9 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
+    console.log(item)
     this.props.ui.toggleSplitView(true)
-    if (item.main_term) {
+    if (item.main_term && item.disc_url_id) {
       const { findTerms } = toJS(this.props.term)
       const href = `/${findTerms.join('/')}?urlId=${item.disc_url_id}`
       Router.push(
@@ -59,14 +60,13 @@ class DiscoveryList extends Component {
         href,
         { shallow: true }
       )
-    } else if (item.userData) {
-      const { userData, shareTerm } = toJS(this.props.term)
-      console.log(item)
-      const href = `/${userData.fullname ? `user-stream/${userData.fullname}-${userData.user_id}` : ''}${shareTerm.type === 'topic' ? `/${shareTerm.fullname}` : ''}?shareUrlId=${item.url_id}`
+    } else if (item.url_id) {
+      const { userShare } = this.props.store
+      const href = userShare.user_id ? `/user-stream/${userShare.fullname}-${userShare.user_id}/?shareUrlId=${item.url_id}` : `/?shareUrlId=${item.url_id}`
       Router.push(
         {
           pathname: '/',
-          query: { userShareId: userData.user_id, shareTerm: shareTerm.fullname, shareUrlId: item.url_id }
+          query: { shareUrlId: item.url_id, userShareId: userShare.user_id }
         },
         href,
         { shallow: true }
@@ -115,38 +115,21 @@ class DiscoveryList extends Component {
     )
   }
 
-  onSelectShareTerm = (userData, shareTerm) => {
-    this.props.term.setCurrentUserData(userData)
-    this.props.term.setCurrentShareTerm(shareTerm)
-    const href = this.props.shareUrlId > 0 ? `/user-stream/${userData.fullname}-${userData.user_id}/${shareTerm.topic_name}?shareUrlId=${this.props.shareUrlId}` : `/user-stream/${userData.fullname}-${userData.user_id}/${shareTerm.topic_name}`
-    Router.push(
-      {
-        pathname: '/',
-        query: {
-          userShareId: userData.user_id,
-          topicShareName: shareTerm.topic_name,
-          shareUrlId: this.props.shareUrlId
-        }
-      },
-      href,
-      { shallow: true }
-    )
-  }
-
-  onSelectUser = (userData) => {
-    this.props.term.setCurrentUserData(userData)
-    const href = this.props.shareUrlId > 0 ? `/user-stream/${userData.fullname}-${userData.user_id}?shareUrlId=${this.props.shareUrlId}` : `/user-stream/${userData.fullname}-${userData.user_id}`
-    Router.push(
-      {
-        pathname: '/',
-        query: {
-          userShareId: userData.user_id,
-          shareUrlId: this.props.shareUrlId
-        }
-      },
-      href,
-      { shallow: true }
-    )
+  onSelectUser = (fromUser) => {
+    if (fromUser) {
+      const { shareUrlId, urlId } = this.props
+      const href = urlId > 0 ? `/user-stream/${fromUser.fullname}-${fromUser.user_id}/?urlId=${urlId}`
+                  : shareUrlId > 0 ? `/user-stream/${fromUser.fullname}-${fromUser.user_id}/?shareUrlId=${shareUrlId}`
+                  : `/user-stream/${fromUser.fullname}-${fromUser.user_id}`
+      Router.push(
+        {
+          pathname: '/',
+          query: urlId > 0 ? { userShareId: fromUser.user_id, urlId } : { userShareId: fromUser.user_id, shareUrlId }
+        },
+        href,
+        { shallow: true }
+      ).then(() => window.scrollTo(0, 0))
+    }
   }
 
   onBack = (term) => {
@@ -255,7 +238,7 @@ class DiscoveryList extends Component {
     if (this.props.term.termsCache[termId]) {
       return toJS(this.props.term.termsCache[termId])
     } else {
-      return { term_id: termId, term_name: '...', img: '/static/images/no-image.png', child_suggestions: [], child_topics: [] }
+      return false
     }
   }
 
@@ -304,6 +287,7 @@ class DiscoveryList extends Component {
       innerWidth: window.innerWidth
     })
     const { findTerms } = toJS(this.props.term)
+    const { userShare } = this.props.store
     if (findTerms.length) {
       const href = `/${findTerms.join('/')}`
       Router.push(
@@ -314,10 +298,19 @@ class DiscoveryList extends Component {
         href,
         { shallow: true }
       )
+    } else if (userShare.user_id) {
+      const href = `/user-stream/${userShare.fullname}-${userShare.user_id}/`
+      Router.push(
+        {
+          pathname: '/',
+          query: { shareUrlId: item.url_id, userShareId: userShare.user_id }
+        },
+        href,
+        { shallow: true }
+      )
     } else if (this.props.store.userId > 0) {
       const { user } = this.props.store
       if (user) {
-        this.props.term.restoreLastPagination()
         Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
       } else {
         Router.push('/')
@@ -332,140 +325,83 @@ class DiscoveryList extends Component {
       return <div className='grid-auto'><DiscoveryListLoading number={20} /></div>
     }
     let items = []
-    const { discoveries, findTerms, userData, shareTerm } = toJS(this.props.term)
-    const { mine, received } = toJS(this.props.store.userHistory)
-    if (userData.user_id) {
-      items = []
-      if (shareTerm.topic_name) {
-        _.forEach(received, (receivedIten, index) => {
-          if (receivedIten.user_id === userData.user_id) {
-            _.forEach(receivedIten.shares, (shareItem, index) => {
-              if (!shareItem.target_user_deactivated && !shareItem.source_user_deactivated) {
-                if (shareItem.topic_name === shareTerm.topic_name && shareItem.type === 'topic') {
-                  _.forEach(shareItem.urls, (item, index) => {
-                    items.push(
-                      <DiscoveryItem
-                        key={`${item.url_id}-${item.href}-${index}`}
-                        main_term_img={receivedIten.avatar}
-                        main_term_name={receivedIten.fullname}
-                        sub_term_img={'/static/images/no-image.png'}
-                        sub_term_name={shareItem.topic_name}
-                        userData={receivedIten}
-                        shareTerm={shareItem}
-                        onSelectShareTerm={this.onSelectShareTerm}
-                        onSelectUser={this.onSelectUser}
-                        onSelect={this.onSelect}
-                        url={item.href}
-                        desc={item.href}
-                        selected={shareUrlId === item.url_id}
-                        {...item}
-                      />
-                    )
-                  })
-                }
-              }
-            })
+    const { discoveries, findTerms } = toJS(this.props.term)
+    const { userShare, friendsStream, ownStream, friendsTopics, ownTopics, user } = this.props.store
+    if (userShare.user_id) {
+      if (userShare.user_id === user.id) {
+        _.forEach(ownStream, (item, index) => {
+          const currentTopics = _.filter(ownTopics, topic => topic.urlIds && _.indexOf(topic.urlIds, item.url_id) !== -1)
+          const maxLevel = _.maxBy(currentTopics, 'level')
+          const topic = _.filter(currentTopics, item => item.level === maxLevel.level)[0]
+          if (topic) {
+            const term = this.getCurrentTerm(topic.id) || { term_name: topic.name, term_id: topic.id }
+            items.push(
+              <DiscoveryItem
+                key={`${item.url_id}-${item.href}-${index}`}
+                main_term_name={term.term_name}
+                main_term_img={term.img}
+                main_term_id={term.term_id}
+                main_term={term}
+                onSelect={this.onSelect}
+                onSelectTerm={this.onSelectChildTerm}
+                onSelectUser={this.onSelectUser}
+                selected={shareUrlId === item.url_id}
+                url={item.href} 
+                desc={item.href} 
+                {...item}
+            />)
+          } else {
+            items.push(
+              <DiscoveryItem
+                key={`${item.url_id}-${item.href}-${index}`}
+                onSelect={this.onSelect}
+                onSelectUser={this.onSelectUser}
+                selected={shareUrlId === item.url_id}
+                url={item.href} 
+                desc={item.href} 
+                {...item}
+            />)
           }
         })
         return <div className='grid-auto'>{items}</div>
       }
-      if (mine.user_id === userData.user_id) {
-        _.forEach(mine.urls, (item, index) => {
+      _.forEach(friendsStream, (item, index) => {
+        const currentTopics = _.filter(friendsTopics, topic => topic.urlIds && _.indexOf(topic.urlIds, item.url_id) !== -1)
+        const maxLevel = _.maxBy(currentTopics, 'level')
+        const topic = _.filter(currentTopics, item => item.level === maxLevel.level)[0]
+        if (topic) {
+          const term = this.getCurrentTerm(topic.id) || { term_name: topic.name, term_id: topic.id }
           items.push(
             <DiscoveryItem
               key={`${item.url_id}-${item.href}-${index}`}
-              main_term_img={mine.avatar}
-              main_term_name={mine.fullname}
-              userData={mine}
-              onSelectUser={this.onSelectUser}
-              url={item.href}
-              desc={item.href}
+              main_term_name={term.term_name}
+              main_term_img={term.img}
+              main_term_id={term.term_id}
+              main_term={term}
               onSelect={this.onSelect}
+              onSelectUser={this.onSelectUser}
+              onSelectTerm={this.onSelectChildTerm}
               selected={shareUrlId === item.url_id}
+              url={item.href} 
+              desc={item.href}
               {...item}
-            />
-            )
-        })
-      } else {
-        _.forEach(received, (receivedIten, index) => {
-          if (receivedIten.user_id === userData.user_id) {
-            _.forEach(receivedIten.shares, (shareItem, index) => {
-              if (!shareItem.target_user_deactivated && !shareItem.source_user_deactivated) {
-                _.forEach(shareItem.urls, (item, index) => {
-                  if (shareItem.type === 'topic') {
-                    items.push(
-                      <DiscoveryItem
-                        key={`${item.url_id}-${item.href}-${index}`}
-                        main_term_img={receivedIten.avatar}
-                        main_term_name={receivedIten.fullname}
-                        sub_term_img={'/static/images/no-image.png'}
-                        sub_term_name={shareItem.topic_name}
-                        userData={receivedIten}
-                        shareTerm={shareItem}
-                        onSelectShareTerm={this.onSelectShareTerm}
-                        onSelectUser={this.onSelectUser}
-                        onSelect={this.onSelect}
-                        url={item.href}
-                        desc={item.href}
-                        selected={shareUrlId === item.url_id}
-                        {...item}
-                      />
-                    )
-                  } else {
-                    items.push(
-                      <DiscoveryItem
-                        key={`${item.url_id}-${item.href}-${index}`}
-                        main_term_img={receivedIten.avatar}
-                        main_term_name={receivedIten.fullname}
-                        userData={receivedIten}
-                        onSelectUser={this.onSelectUser}
-                        onSelect={this.onSelect}
-                        url={item.href}
-                        desc={item.href}
-                        selected={shareUrlId === item.url_id}
-                        {...item}
-                      />
-                    )
-                  }
-                })
-              }
-            })
-          }
-        })
-      }
+          />)
+        } else {
+          items.push(
+            <DiscoveryItem
+              key={`${item.url_id}-${item.href}-${index}`}
+              onSelect={this.props.onSelect}
+              onSelectUser={this.onSelectUser}
+              selected={shareUrlId === item.url_id}
+              url={item.href} 
+              desc={item.href} 
+              {...item}
+          />)
+        }
+      })
       return <div className='grid-auto'>{items}</div>
     }
     if (findTerms.length) {
-      _.forEach(received, (receivedIten, index) => {
-        _.forEach(receivedIten.shares, (shareItem, index) => {
-          if (!shareItem.target_user_deactivated && !shareItem.source_user_deactivated) {
-            _.forEach(shareItem.urls, (item, index) => {
-              if (shareItem.type === 'topic') {
-                if (findTerms.indexOf(shareItem.topic_name) > 0) {
-                  items.push(
-                    <DiscoveryItem
-                      key={`${item.url_id}-${item.href}-${index}`}
-                      main_term_img={receivedIten.avatar}
-                      main_term_name={receivedIten.fullname}
-                      sub_term_img={'/static/images/no-image.png'}
-                      sub_term_name={shareItem.topic_name}
-                      userData={receivedIten}
-                      shareTerm={shareItem}
-                      onSelectShareTerm={this.onSelectShareTerm}
-                      onSelectUser={this.onSelectUser}
-                      onSelect={this.onSelect}
-                      url={item.href}
-                      desc={item.href}
-                      selected={shareUrlId === item.url_id}
-                      {...item}
-                    />
-                  )
-                }
-              }
-            })
-          }
-        })
-      })
       const topics = _.find(terms, item => item.termId === discoveryTermId)
       if (topics && topics.discoveries && topics.discoveries.length) {
         _.forEach(topics.discoveries, (item) => {
@@ -495,67 +431,6 @@ class DiscoveryList extends Component {
         })
         return <div className='grid-auto'>{items}</div>
       }
-    }
-    if (!findTerms.length) {
-      _.forEach(received, (receivedIten, index) => {
-        _.forEach(receivedIten.shares, (shareItem, index) => {
-          if (!shareItem.target_user_deactivated && !shareItem.source_user_deactivated) {
-            _.forEach(shareItem.urls, (item, index) => {
-              if (shareItem.type === 'topic') {
-                items.push(
-                  <DiscoveryItem
-                    key={`${item.url_id}-${item.href}-${index}`}
-                    main_term_img={receivedIten.avatar}
-                    main_term_name={receivedIten.fullname}
-                    sub_term_img={'/static/images/no-image.png'}
-                    sub_term_name={shareItem.topic_name}
-                    userData={receivedIten}
-                    shareTerm={shareItem}
-                    onSelectShareTerm={this.onSelectShareTerm}
-                    onSelectUser={this.onSelectUser}
-                    onSelect={this.onSelect}
-                    url={item.href}
-                    desc={item.href}
-                    selected={shareUrlId === item.url_id}
-                    {...item}
-                  />
-                )
-              } else {
-                items.push(
-                  <DiscoveryItem
-                    key={`${item.url_id}-${item.href}-${index}`}
-                    main_term_img={receivedIten.avatar}
-                    main_term_name={receivedIten.fullname}
-                    userData={receivedIten}
-                    onSelectUser={this.onSelectUser}
-                    onSelect={this.onSelect}
-                    url={item.href}
-                    desc={item.href}
-                    selected={shareUrlId === item.url_id}
-                    {...item}
-                  />
-                )
-              }
-            })
-          }
-        })
-      })
-      _.forEach(mine.urls, (item, index) => {
-        items.push(
-          <DiscoveryItem
-            key={`${item.url_id}-${item.href}-${index}`}
-            main_term_img={mine.avatar}
-            main_term_name={mine.fullname}
-            userData={mine}
-            onSelectUser={this.onSelectUser}
-            url={item.href}
-            desc={item.href}
-            onSelect={this.onSelect}
-            selected={shareUrlId === item.url_id}
-            {...item}
-          />
-        )
-      })
     }
     _.forEach(discoveries, (item, index) => {
       /* eslint-disable camelcase */
@@ -588,8 +463,9 @@ class DiscoveryList extends Component {
   }
 
   renderDetail = () => {
-    const { isSplitView, spliterWidth, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url_id: shareUrlId, url, title, utc, hit_utc, userData, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
-    const { terms, findTerms, termsInfo, userData: shareUserData } = toJS(this.props.term)
+    const { isSplitView, spliterWidth, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url_id: shareUrlId, url, title, utc, hit_utc, fromUser: userData, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const { terms, findTerms, termsInfo } = toJS(this.props.term)
+    const { userShare } = this.props.store
     const ingoreTerms = []
     _.forEach(findTerms, item => {
       const term = _.find(termsInfo.terms, term => isSameStringOnUrl(term.term_name, item))
@@ -646,8 +522,8 @@ class DiscoveryList extends Component {
                 onSelectChildTerm={this.onSelectChildTerm}
               />
               <div className='split-view' style={{ width: rightWidth }}>
-                { (discoveryTermId > 0 || shareUserData.user_id) && this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)}
-                { (discoveryTermId > 0 || shareUserData.user_id) || this.renderRootList(urlId, shareUrlId, window.innerWidth - spliterWidth)}
+                { (discoveryTermId > 0 || userShare.user_id) && this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)}
+                { (discoveryTermId > 0 || userShare.user_id) || this.renderRootList(urlId, shareUrlId, window.innerWidth - spliterWidth)}
               </div>
             </div>
           </SplitPane>
@@ -655,7 +531,7 @@ class DiscoveryList extends Component {
         </div>
       )
     }
-    if (discoveryTermId > 0 || shareUserData.user_id) {
+    if (discoveryTermId > 0 || userShare.user_id) {
       return this.renderTermList(ingoreTerms, discoveryTermId, terms, urlId, shareUrlId)
     }
     return (
@@ -738,11 +614,11 @@ class DiscoveryList extends Component {
 
   render () {
     const { isSplitView } = toJS(this.props.ui)
-    const { userData } = toJS(this.props.term)
+    const { userShare } = toJS(this.props.store)
     return (
       <div className='topic-tree'>
         {
-          (!(this.props.ui.isRootView || isSplitView) || (userData.user_id && !isSplitView)) &&
+          (!(this.props.ui.isRootView || isSplitView) || (userShare.user_id && !isSplitView)) &&
           <DiscoveryPath
             onBack={this.onBack}
             onSelectChildTerm={this.onSelectChildTerm}
@@ -752,7 +628,7 @@ class DiscoveryList extends Component {
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={this.props.ui.animateClassName}>
-              { (!this.props.ui.isRootView || userData.user_id)
+              { (!this.props.ui.isRootView || userShare.user_id)
                 ? this.renderDetail()
                 : <div className='grid-auto'>
                   {this.renderRootList()}

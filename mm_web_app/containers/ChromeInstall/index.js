@@ -10,11 +10,13 @@ import _ from 'lodash'
 import logger from '../../utils/logger'
 
 const replaceMMIcon = (desc) => {
-  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
+  return desc.replace('maomao', "<img className='logo-image' src='/static/images/logo-blue-27.png' alt='maomao' />")
 }
 
 @inject('store')
 @inject('ui')
+@inject('inviteStore')
+@inject('notificationStore')
 @observer
 class ChromeInstall extends React.PureComponent {
   showSignIn = (evt) => {
@@ -33,6 +35,11 @@ class ChromeInstall extends React.PureComponent {
     this.props.ui.toggleSignIn(true, 'Sign Up')
   }
 
+  acceptInvite = () => {
+    this.props.inviteStore.acceptInviteCode()
+    this.props.notificationStore.execRedirectObject()
+  }
+
   render () {
     const { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } = this.props.store
     const { selectedTopics } = this.props.ui
@@ -49,7 +56,7 @@ class ChromeInstall extends React.PureComponent {
       }
     }
     logger.info('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
-    let joinMsg = shareInfo ? `JOIN NOW TO VIEW ${shareInfo.fullname}'s STREAM` : 'JOIN NOW'
+    let joinMsg = shareInfo ? `Accept share now to view ${shareInfo.fullname}'s stream` : 'Accept share'
 
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
@@ -57,17 +64,14 @@ class ChromeInstall extends React.PureComponent {
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
-            >
-          {
-            !isMobile &&
-            <h1 className='animated fadeInUp'>
-                Install &nbsp;
-              <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension!
-            </h1>
-          }
+        >
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
+            <div className='block-button'>
+              <button className='btn btn-login' onClick={this.acceptInvite}>
+                <i className='fa fa-sign-in' aria-hidden='true' /> {joinMsg}
+              </button>
+            </div>
           </div>
         </div>
           }
@@ -77,16 +81,6 @@ class ChromeInstall extends React.PureComponent {
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
             >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
-          <div className='hero-caption animated fadeInUp'>
-            {
-              (isMobile || !isChrome || (isChrome && isInstall)) &&
-              <div className='block-button'>
-                <button className='btn btn-login' onClick={this.showSignIn}>
-                  <i className='fa fa-sign-in' aria-hidden='true' /> {joinMsg}
-                </button>
-              </div>
-            }
-          </div>
           <p style={{ marginTop: 16 }}>To sign up choose your topics to follow</p>
           {
             !isLogin && selectedItems.length > 0 &&

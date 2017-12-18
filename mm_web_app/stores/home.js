@@ -1,23 +1,17 @@
 import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
-import { normalizedHistoryData } from './schema/history'
-import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
+import { normalizedOwnData, normalizedFriends } from './schema/history'
+import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserOwnCall, getUserFriendsCall } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
 import { addBulkTopics } from '../services/topic'
+import { getShareUrl } from '../services/share'
 import { acceptInvite, unfollow, pauseShare } from '../services/share'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
 
 let store = null
-
-const calcRate = (score, timeOnTab) => {
-  const scoreUnit = parseInt(score / 30)
-  const timeUnit = parseInt(timeOnTab / (30 * 1000)) // 30 seconds
-  const rate = Math.ceil(((scoreUnit > 5 ? 5 : scoreUnit) + (timeUnit > 5 ? 5 : timeUnit)) / 2)
-  return rate < 1 ? 1 : rate
-}
 
 function flattenTopics (topics, counter = 0) {
   const result = []
@@ -32,7 +26,6 @@ function flattenTopics (topics, counter = 0) {
 
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
-  @observable isProcessingHistory = false
   @observable pendings = []
   @observable codes = {
     all: null,
@@ -42,17 +35,28 @@ export class HomeStore extends CoreStore {
   }
   @observable shareInfo = false
   @observable shareCode = false
-  @observable userHistory = { mine: {}, received: [], topics: [] }
-  @observable normalizedData = { entities: {}, result: {} }
   user = {}
-  users = []
-  topics = []
-  firstLevelTopics = []
-  urls = []
-  owners = []
   googleUser = {}
   facebookUser = {}
   isHome = false
+
+  @observable friendsPage = 0
+  @observable ownPage = 0
+  @observable.shallow friendsStream = []
+  @observable.shallow ownStream = []
+  @observable friendsShare = { received: [], topics: [] }
+  @observable userShare = {}
+  @observable topicShare = {}
+  @observable ownShare = { mine: {}, topics: [] }
+  @observable normalizeFriendsShare = { entities: {}, result: {} }
+  @observable normalizeOwnShare = { entities: {}, result: {} }
+  @observable isProcessingFriendsStream = false
+  @observable isProcessingOwnStream = false
+  @observable friendsTopics = []
+  @observable ownTopics = []
+  friendsHasMore = false
+  ownHasMore = false
+
   constructor (isServer, userAgent, user, isHome = true) {
     super(isServer, userAgent, user)
     this.user = user
@@ -60,9 +64,37 @@ export class HomeStore extends CoreStore {
     reaction(() => this.userHash.length,
       (userHash) => {
         if (userHash > 0 && isHome) {
-          this.getUserHistory()
+          this.getUserOwn(0)
+          this.getUserFriends(0)
         }
-      })
+      }
+    )
+    reaction(
+      () => this.ownPage,
+      () => {
+        if (this.userId >= 0) {
+          logger.warn('get own stream for page', this.ownPage, this.ownStream)
+          if (this.ownPage < 0) {
+            this.ownShare = []
+          } else {
+            this.getUserOwn(this.ownPage)
+          }
+        }
+      }
+    )
+    reaction(
+      () => this.friendsPage,
+      () => {
+        if (this.userId >= 0) {
+          logger.warn('get own stream for page', this.friendsPage, this.friendsShare)
+          if (this.friendsPage < 0) {
+            this.friendsShare = []
+          } else {
+            this.getUserFriends(this.friendsPage)
+          }
+        }
+      }
+    )
   }
 
   @computed get isLoading () {
@@ -71,29 +103,6 @@ export class HomeStore extends CoreStore {
 
   @computed get isProcessing () {
     return this.isProcessingRegister || this.isProcessingHistory
-  }
-
-  @computed get myStream () {
-    if (this.userHistory) {
-      const { mine: me } = this.userHistory
-      return me
-    }
-    return {}
-  }
-
-  @computed get friendsStream () {
-    const { received: sharesReveived } = this.userHistory
-    // listen new data and reload all
-    const friends = toJS(sharesReveived)
-    if (friends.length > 0) {
-      _.forEach(friends, friend => {
-        // TODO: Check new data is belong to sharing topics or share all
-        this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'process-url', (data) => {
-          this.getUserHistory()
-        })
-      })
-    }
-    return sharesReveived
   }
 
   @action saveTopics (ids) {
@@ -246,124 +255,120 @@ export class HomeStore extends CoreStore {
 
   @action getSelectSharedItem (shareUrlId, callback) {
     logger.info('getSelectSharedItem')
-    const sharedItem = getUserHistory(this.userId, this.userHash)
+    const sharedItem = getShareUrl(this.userId, this.userHash, shareUrlId)
     when(
       () => sharedItem.state !== 'pending',
       () => {
-        let dataReturn
-        const { mine, received } = toJS(sharedItem.value.data)
-        _.forEach(received, (receivedIten, index) => {
-          _.forEach(receivedIten.shares, (shareItem, index) => {
-            _.forEach(shareItem.urls, (item, index) => {
-              if (item.url_id === shareUrlId) {
-                dataReturn = { userData: receivedIten, url: item.href, ...item }
-              }
-            })
-          })
-        })
-        _.forEach(mine.urls, (item, index) => {
-          if (item.url_id === shareUrlId) {
-            dataReturn = { userData: mine, url: item.href, ...item }
-          }
-        })
+        let dataReturn = toJS(sharedItem.value.data)
         if (callback) {
           callback(dataReturn)
         }
       })
   }
 
-  @action getUserHistoryCallback (callback) {
-    const userHistoryResult = getUserHistory(this.userId, this.userHash)
-    when(
-      () => userHistoryResult.state !== 'pending',
-      () => {
-        if (callback) {
-          callback(toJS(userHistoryResult.value.data))
-        }
-      })
-  }
-
-  @action getUserHistory () {
-    logger.info('getUserHistory')
-    if (!this.isProcessingHistory) {
-      this.isProcessingHistory = true
-      const userHistoryResult = getUserHistory(this.userId, this.userHash)
+  @action getUserOwn (page, topicId) {
+    logger.info('getUserOwn')
+    if (!this.isProcessingOwnStream) {
+      this.isProcessingOwnStream = true
+      const userOwnResult = getUserOwnCall(this.userId, this.userHash, page, topicId)
       when(
-        () => userHistoryResult.state !== 'pending',
+        () => userOwnResult.state !== 'pending',
         () => {
-          if (userHistoryResult.state === 'fulfilled') {
-            this.userHistory = userHistoryResult.value.data
-            const normalizedData = normalizedHistoryData(toJS(this.userHistory))
-            logger.info('normalizedData', normalizedData)
-            this.normalizedData = normalizedData
-            const { received, mine, topics } = this.userHistory
-            const friends = toJS(received)
-            const { urls: myUrls, user_id, fullname, avatar } = toJS(mine)
-            let urls = []
-            let users = []
-            let owners = []
-            if (myUrls && myUrls.length) {
-              urls.push(..._.map(myUrls, item => ({
-                url_id: item.url_id,
-                title: item.title,
-                href: item.href,
-                img: item.img
+          if (userOwnResult.state === 'fulfilled') {
+            const { mine, urls_mine, topics, has_more} = toJS(userOwnResult.value.data)
+            this.ownHasMore = has_more
+            this.ownShare = { mine, topics}
+            const normalizeOwnShare = normalizedOwnData(toJS(this.ownShare))
+            this.normalizeOwnShare = normalizeOwnShare
+            const safeUrls = this.checkSafeUrls(_.uniqBy(urls_mine.map((item) => {
+              item.fromUser = {
+                email: mine.email,
+                user_id: mine.user_id,
+                avatar: mine.avatar,
+                fullname: mine.fullname
               }
-              )))
-              _.forEach(myUrls, item => {
-                owners.push({
-                  owner: user_id,
-                  url_id: item.url_id,
-                  hit_utc: item.hit_utc,
-                  im_score: item.im_score,
-                  time_on_tab: item.time_on_tab,
-                  rate: calcRate(item.im_score, item.time_on_tab)
-                })
-              })
-              users.push({ user_id, fullname, avatar, urlIds: _.map(myUrls, item => item.url_id) })
-            }
-
-            _.forEach(friends, friend => {
-              const { user_id, fullname, avatar, shares: list } = friend
-              const urlIds = []
-              _.forEach(list, item => {
-                urls.push(..._.map(item.urls, item => ({
-                  url_id: item.url_id,
-                  title: item.title,
-                  href: item.href,
-                  img: item.img
-                }
-              )))
-                _.forEach(item.urls, item => {
-                  owners.push({
-                    owner: user_id,
-                    url_id: item.url_id,
-                    hit_utc: item.hit_utc,
-                    im_score: item.im_score,
-                    time_on_tab: item.time_on_tab,
-                    rate: calcRate(item.im_score, item.time_on_tab)
-                  })
-                })
-                urlIds.push(..._.map(item.urls, item => item.url_id))
-              })
-              users.push({ user_id, fullname, avatar, urlIds })
+              return item
+            }), 'url_id'), (safeUrls) => {
+              this.ownStream.push(...safeUrls)
+              this.ownTopics.push(...flattenTopics(topics))
+              logger.info('getUserOwn ownStream, normalizeOwnShare, ownShare, ownTopics', this.friendsStream, this.normalizeFriendsShare, this.friendsShare, this.friendsTopics)
             })
-            this.urls = _.uniqBy(urls, 'url_id')
-            this.topics = flattenTopics(topics)
-            this.firstLevelTopics = _.map(topics, item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
-            this.users = users
-            this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
-            logger.info('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
           }
-          this.checkSafeUrls()
+          this.isProcessingOwnStream = false
         }
       )
     }
   }
 
-  @action checkSafeUrls () {
-    logger.info('safeBrowsingLoockup', this.urls)
-    const urls = toJS(this.urls)
+  @action getUserFriends (page, friendId, topicId) {
+    let isOwn = false
+    if (parseInt(friendId) === this.userId) {
+      friendId = undefined
+      isOwn = true
+    }
+    logger.info('getUserFriends')
+    if (!this.isProcessingFriendsStream) {
+      this.isProcessingFriendsStream = true
+      const userFriendResult = getUserFriendsCall(this.userId, this.userHash, page, friendId, topicId)
+      when(
+        () => userFriendResult.state !== 'pending',
+        () => {
+          if (userFriendResult.state === 'fulfilled') {
+            const { received, urls_received, topics, has_more} = toJS(userFriendResult.value.data)
+            this.friendsHasMore = has_more
+            this.friendsShare = { received, topics}
+            if (friendId > 0 && received[0]) {
+              this.userShare = received[0]
+            } else if (isOwn) {
+              console.log('kam, ',this.user)
+              this.userShare = {
+                email: this.user.email,
+                user_id: this.user.id,
+                avatar: this.user.picture,
+                fullname: this.user.name
+              }
+            } else {
+              this.userShare = false
+            }
+            const normalizeFriendsShare = normalizedFriends(toJS(this.friendsShare))
+            this.normalizeFriendsShare = normalizeFriendsShare
+            this.checkSafeUrls(_.uniqBy(urls_received.map((item) => {
+              const sharedUser = _.filter(received, (user) => _.filter(user.shares_received, (share) => share.share_id === item.from_share_id).length > 0)[0]
+              item.fromUser = {
+                email: sharedUser.email,
+                user_id: sharedUser.user_id,
+                avatar: sharedUser.avatar,
+                fullname: sharedUser.fullname
+              }
+              return item
+            }), 'url_id'), (safeUrls) => {
+              if (page > 0) {
+                this.friendsStream.push(...safeUrls)
+                this.friendsTopics.push(...flattenTopics(topics))
+              } else {
+                this.friendsStream = safeUrls
+                this.friendsTopics = flattenTopics(topics)
+              }
+              logger.info('getUserFriends ownStream, normalizeOwnShare, ownShare, ownTopics', this.friendsStream, this.normalizeFriendsShare, this.friendsShare, this.friendsTopics)
+            })
+          }
+          this.isProcessingFriendsStream = false
+        }
+      )
+    }
+  }
+  
+  @action loadMoreOwn () {
+    this.ownPage += 1
+  }
+  
+  @action loadMoreFriends () {
+    this.friendsPage += 1
+  }
+
+  @action checkSafeUrls (urls, callback) {
+    logger.info('safeBrowsingLoockup', urls)
+    urls = toJS(urls)
     const MAX_ITEM = 500
     const totalPage = urls.length / MAX_ITEM
     if (urls.length === 0) {
@@ -379,10 +384,10 @@ export class HomeStore extends CoreStore {
               if (matches) {
                 const ingoreUrls = _.map(matches, item => item && item.threat && item.threat.url)
                 logger.info('safeBrowsingLoockup ingoreUrls', ingoreUrls)
-                this.urls = _.filter(urls, item => _.indexOf(ingoreUrls, item.href) === -1)
+                urls = _.filter(urls, item => _.indexOf(ingoreUrls, item.href) === -1)
               }
             }
-            this.isProcessingHistory = false
+            callback(urls)
           }
       )
     }
@@ -470,7 +475,8 @@ export class HomeStore extends CoreStore {
         this.shareCode = false
         this.shareInfo = false
         if (this.isHome) {
-          this.getUserHistory()
+          this.getUserOwn(0)
+          this.getUserFriends(0)
         }
       }
     )
@@ -482,7 +488,8 @@ export class HomeStore extends CoreStore {
       () => this.unfollowUserShareResult.state !== 'pending',
       () => {
         this.unfollowUserShareResult = this.unfollowUserShareResult.value
-        this.getUserHistory()
+        this.getUserOwn(0)
+        this.getUserFriends(0)
         callback && callback()
       }
     )
@@ -494,7 +501,8 @@ export class HomeStore extends CoreStore {
       () => this.pauseUserShareResult.state !== 'pending',
       () => {
         this.pauseUserShareResult = this.pauseUserShareResult.value
-        this.getUserHistory()
+        this.getUserOwn(0)
+        this.getUserFriends(0)
         callback && callback()
       }
     )

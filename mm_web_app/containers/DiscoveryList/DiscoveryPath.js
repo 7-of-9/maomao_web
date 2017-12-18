@@ -51,7 +51,8 @@ class DiscoveryPath extends Component {
   renderDiscoveryPath = () => {
     const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
-    const { findTerms, termsInfo: { terms }, userData, shareTerm, followedTopics } = toJS(this.props.term)
+    const { findTerms, termsInfo: { terms }, followedTopics } = toJS(this.props.term)
+    const { userShare } = toJS(this.props.store)
     const items = []
     const topics = []
     const carouselItems = []
@@ -100,15 +101,15 @@ class DiscoveryPath extends Component {
         )
       }
     })
-    if (userData.user_id) {
-      const { fullname, user_id: userId, avatar } = userData
+    if (userShare.user_id) {
+      const { fullname, user_id: userId, avatar } = userShare
       items.push(
         <div
           className='topic'
           key={`back-to-${fullname}-${userId}`}
         >
           <span
-            onClick={() => this.props.onBack({userData})}
+            onClick={() => this.props.onBack({userShare})}
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${avatar || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
@@ -120,27 +121,6 @@ class DiscoveryPath extends Component {
           </span>
         </div>
       )
-      if (shareTerm.topic_name) {
-        const { topic_name: topicName } = shareTerm
-        items.push(
-          <div
-            className='topic'
-            key={`back-to-${fullname}-${userId}-${topicName}`}
-          >
-            <span
-              onClick={() => this.props.onBack({userData, shareTerm})}
-              style={{
-                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(/static/images/no-image.png)`,
-                backgroundSize: 'cover',
-                cursor: 'pointer'
-              }}
-              className='current-topic-name tags' rel='tag'>
-              <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-              {topicName}
-            </span>
-          </div>
-        )
-      }
       return (
         <div className={'navigation-pane bounceInLeft animated'} style={{ width: isSplitView ? `calc(100vw - ${spliterWidth + 15}px)` : '100%' }}>
           <div className='breadcrum'>

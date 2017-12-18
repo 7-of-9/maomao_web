@@ -793,6 +793,35 @@ the home page
             }
           }
         }
+        .thumbnail-from-user {
+          height: 40px;
+          width: 40px;
+          background: #aaa;
+          background-position: center;
+          background-size: cover;
+          border-radius: 50%;
+          position: absolute;
+          top: 15px;
+          opacity: 0.8;
+          z-index: 1000;
+          &:hover {
+            opacity: 1;
+            .from-user-name {
+              display: inline-block;
+              animation: fadeInDown 0.2s ease-out
+            }
+          }
+          .from-user-name {
+            display: none;
+            position: absolute;
+            width: max-content;
+            top: 45px;
+            padding: 4px;
+            background: #eee;
+            border-radius: 4px;
+            left: 4px;
+          }
+        }
         .thumbnail-box {
           .thumbnail-image {
             @include border-radius(8px);

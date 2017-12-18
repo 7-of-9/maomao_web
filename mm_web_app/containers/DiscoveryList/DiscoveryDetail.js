@@ -239,7 +239,7 @@ class DiscoveryDetail extends Component {
         }
         <InlinePreview
           width={width}
-          height={fullscreen ? 'calc(100vh - 107px)' : 'calc(100vh - 180px)'}
+          height={fullscreen ? 'calc(100vh - 107px)' : 'calc(100vh - 150px)'}
           url={url}
           allowScript
         />

@@ -4,7 +4,7 @@ import SkelText from './SkelText'
 
 export default class SkelDiscoveryItem extends Component {
   static propTypes = {
-    id: PropTypes.number.isRequired
+    id: PropTypes.number
   }
   render () {
     return <div

@@ -22,7 +22,8 @@ export default class Share extends React.Component {
     const notificationStore = initNotificationStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])
     const term = initTermStore(isServer, [], { terms: [] })
-    store.getUserHistory()
+    store.getUserOwn(0)
+    store.getUserFriends(0)
     return { isServer, ...store, ...uiStore, ...discovery, ...term, ...notificationStore }
   }
 
@@ -40,7 +41,8 @@ export default class Share extends React.Component {
   componentWillMount () {
     const { userId, userHash } = this.store
     this.term.setApiToken(userId, userHash)
-    this.store.getUserHistory()
+    this.store.getUserOwn(0)
+    this.store.getUserFriends(0)
     this.term.getTopicTree()
     this.term.getFollowedTopics()
   }

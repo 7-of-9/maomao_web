@@ -55,6 +55,10 @@ export default class Invite extends React.Component {
     this.store.checkEnvironment()
     this.store.shareInfo = this.inviteStore.shareInfo
     this.store.shareCode = this.inviteStore.shareCode
+    this.inviteStore.getShareInfo()
+    if (this.store.isLogin) {
+      this.inviteStore.getShareUrl()
+    }
   }
 
   componentWillMount () {
@@ -62,7 +66,7 @@ export default class Invite extends React.Component {
   }
 
   componentDidMount () {
-    logger.info('Invite componentDidMount', this)
+    logger.info('Invite componentDidMount', this.inviteStore)
 
     const { url_id: shareUrlId, fullname, topic_title: topicTitle, source_user_id: userId } = this.inviteStore.shareInfo
     if (shareUrlId) {
@@ -73,11 +77,6 @@ export default class Invite extends React.Component {
       } else {
         this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId } }, `/user-stream/${fullname}-${userId}`, { shallow: true })
       }
-    }
-
-    if (this.store.isLogin) {
-      this.inviteStore.acceptInviteCode()
-      this.notificationStore.execRedirectObject()
     }
   }
 

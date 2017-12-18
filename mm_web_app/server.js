@@ -119,8 +119,7 @@ app.prepare().then(() => {
         if (findTerms[0] === 'user-stream') {
           const userData = findTerms[1].split('-')
           return app.render(req, res, '/', Object.assign(query, {
-            userShareId: userData[1],
-            topicShareName: findTerms[2]
+            userShareId: userData[1]
           }))
         } else {
           return app.render(req, res, '/', Object.assign(query, { findTerms }))

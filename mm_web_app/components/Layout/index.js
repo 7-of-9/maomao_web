@@ -74,9 +74,7 @@ function Layout ({ children, title = 'homepage', description = 'discover & share
         <meta name='msapplication-TileImage' content='/static/images/icons/ms-icon-144x144.png' />
         <meta name='theme-color' content='#0868ac' />
         <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
-        <link rel='stylesheet' href='/static/vendors/font-awesome/css/font-awesome.min.css' />
-        <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
-        <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
+        <link rel='stylesheet' href='/static/vendors/purecss/combined.min.pure.css' />
       </Head>
       <AppHeader hidden={isSplitView} />
       {children}

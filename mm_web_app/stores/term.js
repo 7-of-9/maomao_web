@@ -168,6 +168,19 @@ class TermStore {
       }
     }
   }
+  
+  @action lookupTerm (termId, callback) {
+    if (termId && this.preloadPendings.indexOf(termId) === -1) {
+      this.preloadPendings.push(termId)
+      preLoadTerm(termId).then(response => {
+        const { term } = response.data
+        this.termsCache[term.term_id] = term
+        callback(term)
+      }).catch(error => {
+        logger.warn('error on preloadTerm', error)
+      })
+    }
+  }
 
   @action getRootDiscover (page) {
     logger.info('getRootDiscover', page)

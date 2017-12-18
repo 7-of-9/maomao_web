@@ -43,7 +43,8 @@ class InviteStore extends HomeStore {
       () => {
         this.inviteResult = this.acceptInviteResult.value
         if (this.isHome) {
-          this.getUserHistory()
+          this.getUserOwn(0)
+          this.getUserFriends(0)
         }
       }
     )

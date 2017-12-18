@@ -47,6 +47,7 @@
     "nprogress": "^0.2.0",
     "path-match": "^1.2.4",
     "prop-types": "^15.6.0",
+    "purify-css": "^1.2.5",
     "pusher-js": "^4.2.1",
     "query-string": "5.0.1",
     "raven": "2.3.0",
@@ -99,13 +100,13 @@
   "scripts": {
     "test": "jest",
     "dev": "npm run lint && node server.js",
-    "build": "next build",
+    "build": "node purify && next build",
     "start": "node server.js",
     "start:prod": "NODE_ENV=production next",
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "deploy:prod": "npm run build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master",
-    "deploy:dev": "npm run build && git add --all && git commit --no-verify -m 'update azure dev site' && git push -f azure-dev master",
+    "deploy:prod": "node purify && npm run build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master",
+    "deploy:dev": "node purify && npm run build && git add --all && git commit --no-verify -m 'update azure dev site' && git push -f azure-dev master",
     "storybook": "start-storybook -s . -p 6006",
     "build-storybook": "build-storybook",
     "docker": "npm run docker:build && npm run docker:clean && npm run docker:run",
@@ -115,7 +116,8 @@
     "docker:stop": "docker stop maomao-web",
     "docker:start": "docker start maomao-web && npm run docker:logs",
     "docker:logs": "docker logs -f maomao-web",
-    "analyze": "ANALYZE=1 next build"
+    "analyze": "ANALYZE=1 next build",
+    "purify": "node purify"
   },
   "devDependencies": {
     "@storybook/react": "^3.2.12",

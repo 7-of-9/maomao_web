@@ -6,11 +6,13 @@ import logger from '../../utils/logger'
 import DiscoveryListLoading from '../../components/Loading/DiscoveryListLoading'
 
 @inject('term')
+@inject('store')
 class DiscoveryListCarousel extends Component {
   static propTypes = {
     items: PropTypes.array,
-    disc: PropTypes.bool,
-    chunkSize: PropTypes.number
+    hasMore: PropTypes.bool,
+    chunkSize: PropTypes.number,
+    type: PropTypes.string
   }
 
   static defaultProps = {
@@ -30,7 +32,7 @@ class DiscoveryListCarousel extends Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    logger.info('DiscoveryListCarousel shouldComponentUpdate', nextProps.chunkSize, nextProps.items, this.props.items)
+    logger.info('DiscoveryListCarousel shouldComponentUpdate')
     if (this.state.page !== nextState.page && this.props.items === nextProps.items) {
       return false
     }
@@ -39,20 +41,25 @@ class DiscoveryListCarousel extends Component {
   }
 
   componentDidMount () {
-    logger.info('DiscoveryListCarousel componentDidMount', this.props.chunkSize)
+    logger.info('DiscoveryListCarousel componentDidMount')
   }
 
   handlePage = (index) => {
     this.setState({ page: index })
-    const { discoveries } = this.props.term
-    if (this.props.disc && Math.floor(discoveries.length / this.props.chunkSize) <= index) {
+    if (this.props.items.length - 1 <= index) {
       this.loadMore()
     }
   }
 
   loadMore = () => {
-    if (this.props.term.hasLoadMore) {
-      this.props.term.loadMore()
+    if (this.props.hasMore) {
+      if (this.props.type === 'disc') {
+        this.props.term.loadMore()
+      } else if (this.props.type === 'own') {
+        this.props.store.loadMoreOwn()
+      } else if (this.props.type === 'friend') {
+        this.props.store.loadMoreFriends()
+      }
     }
   }
 
@@ -71,7 +78,9 @@ class DiscoveryListCarousel extends Component {
       style={{ width: chunkSize * 250 / 2, padding: 0 }}
       afterChange={this.handlePage}
     >
-      {items.length ? items : <div style={{ width: chunkSize * 250 / 2 }} key={'load-skel'}><DiscoveryListLoading number={chunkSize} /></div> }
+      {items.length ? items.map((elem, index) => 
+          <div style={{ width: chunkSize * 250 / 2 }} key={`data-${index}`}>{elem}</div>)
+        : <div style={{ width: chunkSize * 250 / 2 }} key={'load-skel'}><DiscoveryListLoading number={chunkSize} /></div> }
     </Carousel>
   }
 }
