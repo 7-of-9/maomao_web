@@ -9,7 +9,6 @@ import { observer, inject } from 'mobx-react'
 import VisibilitySensor from 'react-visibility-sensor'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Router from 'next/router'
 import ReactPlayer from 'react-player'
 import DiscoveryTerm from './DiscoveryTerm'
 import { isVideo } from '../../utils/helper'
@@ -132,7 +131,7 @@ export default class DiscoveryItem extends Component {
           />
         }
       </div>
-      
+
     )
   }
 
@@ -240,8 +239,8 @@ export default class DiscoveryItem extends Component {
             {fromUser && <div
               className='thumbnail-from-user'
               style={{
-                backgroundImage: `url(${fromUser.avatar || '/static/images/no-image.png'})`,
-              }} 
+                backgroundImage: `url(${fromUser.avatar || '/static/images/no-image.png'})`
+              }}
               onClick={this.selectUserStream}
             >
               <span className='from-user-name'>{fromUser.fullname}</span>

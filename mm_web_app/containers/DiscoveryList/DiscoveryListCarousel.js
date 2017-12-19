@@ -78,8 +78,8 @@ class DiscoveryListCarousel extends Component {
       style={{ width: chunkSize * 250 / 2, padding: 0 }}
       afterChange={this.handlePage}
     >
-      {items.length ? items.map((elem, index) => 
-          <div style={{ width: chunkSize * 250 / 2 }} key={`data-${index}`}>{elem}</div>)
+      {items.length ? items.map((elem, index) =>
+        <div style={{ width: chunkSize * 250 / 2 }} key={`data-${index}`}>{elem}</div>)
         : <div style={{ width: chunkSize * 250 / 2 }} key={'load-skel'}><DiscoveryListLoading number={chunkSize} /></div> }
     </Carousel>
   }

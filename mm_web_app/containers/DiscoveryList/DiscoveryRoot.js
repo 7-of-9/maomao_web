@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
-import { toJS } from 'mobx'
 import _ from 'lodash'
 import styled from 'styled-components'
 import Link from 'next/link'
@@ -16,7 +15,7 @@ const H3 = styled.h3`
   padding-bottom: 8px;
 `
 
-function generateChunk(items, chunkSize, hasMore, isLoading) {
+function generateChunk (items, chunkSize, hasMore, isLoading) {
   const chunks = [].concat.apply([],
     items.map(function (elem, i) {
       return i % chunkSize ? [] : [items.slice(i, i + chunkSize)]
@@ -34,7 +33,7 @@ function generateChunk(items, chunkSize, hasMore, isLoading) {
       }
     } else {
       chunks.push(<DiscoveryListLoading number={chunkSize} />)
-    }  
+    }
   }
   return chunks
 }
@@ -100,7 +99,7 @@ class DiscoveryRoot extends Component {
     const itemDiscoveries = []
     const itemsOwn = []
     const itemsFriends = []
-    const { discoveries, hasLoadMore, isProcessingRootDiscover, loadMore } = this.props.term
+    const { discoveries, hasLoadMore, isProcessingRootDiscover } = this.props.term
     const { urlId, shareUrlId } = this.props
     const {
       ownStream,
@@ -129,8 +128,8 @@ class DiscoveryRoot extends Component {
             onSelectTerm={this.props.onSelectChildTerm}
             onSelectUser={this.props.onSelectUser}
             selected={shareUrlId === item.url_id}
-            url={item.href} 
-            desc={item.href} 
+            url={item.href}
+            desc={item.href}
             {...item}
         />)
       } else {
@@ -140,8 +139,8 @@ class DiscoveryRoot extends Component {
             onSelect={this.props.onSelect}
             onSelectUser={this.props.onSelectUser}
             selected={shareUrlId === item.url_id}
-            url={item.href} 
-            desc={item.href} 
+            url={item.href}
+            desc={item.href}
             {...item}
         />)
       }
@@ -163,7 +162,7 @@ class DiscoveryRoot extends Component {
             onSelectTerm={this.props.onSelectChildTerm}
             onSelectUser={this.props.onSelectUser}
             selected={shareUrlId === item.url_id}
-            url={item.href} 
+            url={item.href}
             desc={item.href}
             {...item}
         />)
@@ -174,7 +173,7 @@ class DiscoveryRoot extends Component {
             onSelect={this.props.onSelect}
             onSelectUser={this.props.onSelectUser}
             selected={shareUrlId === item.url_id}
-            url={item.href} 
+            url={item.href}
             desc={item.href}
             {...item}
         />)
@@ -183,8 +182,8 @@ class DiscoveryRoot extends Component {
     _.forEach(discoveries, (item, index) => {
       /* eslint-disable camelcase */
       if (item.main_term_id) {
-        let term = this.props.getCurrentTerm(item.main_term_id) || { term_name: '...'}
-        let subTerm = this.props.getCurrentTerm(item.sub_term_id) || { term_name: '...'}
+        let term = this.props.getCurrentTerm(item.main_term_id) || { term_name: '...' }
+        let subTerm = this.props.getCurrentTerm(item.sub_term_id) || { term_name: '...' }
         if (term && subTerm) {
           const { img: main_term_img, term_name: main_term_name } = term
           const { img: sub_term_img, term_name: sub_term_name } = subTerm
@@ -234,7 +233,7 @@ class DiscoveryRoot extends Component {
             pathname: '/topics'
           }}
         >
-          <button className="btn" style={{ margin: '16px 0 64px 0' }}>Follow some topics now</button>
+          <button className='btn' style={{ margin: '16px 0 64px 0' }}>Follow some topics now</button>
         </Link>}
       </div>
       <H3>Friend Stream</H3>

@@ -17,6 +17,7 @@ import dynamic from 'next/dynamic'
 import DiscoveryPath from './DiscoveryPath'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
+import InfiniteScroll from 'react-infinite-scroller'
 import { isSameStringOnUrl } from '../../utils/helper'
 import DiscoveryListLoading from '../../components/Loading/DiscoveryListLoading'
 import logger from '../../utils/logger'
@@ -303,7 +304,7 @@ class DiscoveryList extends Component {
       Router.push(
         {
           pathname: '/',
-          query: { shareUrlId: item.url_id, userShareId: userShare.user_id }
+          query: { userShareId: userShare.user_id }
         },
         href,
         { shallow: true }
@@ -320,13 +321,30 @@ class DiscoveryList extends Component {
     }
   }
 
+  loadMoreOwn = () => {
+    this.props.store.loadMoreOwn()
+  }
+
+  loadMoreFriends = () => {
+    this.props.store.loadMoreFriends()
+  }
+
   renderTermList = (ingoreTerms, discoveryTermId, terms, urlId, shareUrlId) => {
     if (this.props.term.isProcessingDiscoverTerm) {
       return <div className='grid-auto'><DiscoveryListLoading number={20} /></div>
     }
     let items = []
     const { discoveries, findTerms } = toJS(this.props.term)
-    const { userShare, friendsStream, ownStream, friendsTopics, ownTopics, user } = this.props.store
+    const {
+      userShare,
+      friendsStream,
+      ownStream,
+      friendsTopics,
+      ownTopics,
+      user,
+      friendsHasMore,
+      ownHasMore
+    } = this.props.store
     if (userShare.user_id) {
       if (userShare.user_id === user.id) {
         _.forEach(ownStream, (item, index) => {
@@ -346,8 +364,8 @@ class DiscoveryList extends Component {
                 onSelectTerm={this.onSelectChildTerm}
                 onSelectUser={this.onSelectUser}
                 selected={shareUrlId === item.url_id}
-                url={item.href} 
-                desc={item.href} 
+                url={item.href}
+                desc={item.href}
                 {...item}
             />)
           } else {
@@ -357,13 +375,23 @@ class DiscoveryList extends Component {
                 onSelect={this.onSelect}
                 onSelectUser={this.onSelectUser}
                 selected={shareUrlId === item.url_id}
-                url={item.href} 
-                desc={item.href} 
+                url={item.href}
+                desc={item.href}
                 {...item}
             />)
           }
         })
-        return <div className='grid-auto'>{items}</div>
+        return <div className='grid-auto'>
+          <InfiniteScroll
+            key='infinite-scroll-container'
+            pageStart={0}
+            loadMore={this.loadMoreOwn}
+            hasMore={ownHasMore}
+            loader={<DiscoveryListLoading number={12} />}
+          >
+            {items}
+          </InfiniteScroll>
+        </div>
       }
       _.forEach(friendsStream, (item, index) => {
         const currentTopics = _.filter(friendsTopics, topic => topic.urlIds && _.indexOf(topic.urlIds, item.url_id) !== -1)
@@ -382,7 +410,7 @@ class DiscoveryList extends Component {
               onSelectUser={this.onSelectUser}
               onSelectTerm={this.onSelectChildTerm}
               selected={shareUrlId === item.url_id}
-              url={item.href} 
+              url={item.href}
               desc={item.href}
               {...item}
           />)
@@ -393,13 +421,23 @@ class DiscoveryList extends Component {
               onSelect={this.props.onSelect}
               onSelectUser={this.onSelectUser}
               selected={shareUrlId === item.url_id}
-              url={item.href} 
-              desc={item.href} 
+              url={item.href}
+              desc={item.href}
               {...item}
           />)
         }
       })
-      return <div className='grid-auto'>{items}</div>
+      return <div className='grid-auto'>
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={this.loadMoreFriends}
+          hasMore={friendsHasMore}
+          loader={<DiscoveryListLoading number={12} />}
+          initialLoad={false}
+        >
+          {items}
+        </InfiniteScroll>
+      </div>
     }
     if (findTerms.length) {
       const topics = _.find(terms, item => item.termId === discoveryTermId)

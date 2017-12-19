@@ -60,12 +60,12 @@ export function loginWithFacebook (info) {
   }))
 }
 
-export function getUserOwnCall (user_id, hash, page_num, filter_topic_id, per_page = 20) {
+export function getUserOwnCall (user_id, hash, page_num, filter_topic_id, per_page = 40) {
   const apiUrl = `${MAOMAO_API_URL}home/own?${queryString.stringify({user_id, hash, page_num, filter_topic_id, per_page})}`
   return fromPromise(axios.get(apiUrl))
 }
 
-export function getUserFriendsCall (user_id, hash, page_num, filter_friend_id, filter_topic_id, per_page = 20) {
+export function getUserFriendsCall (user_id, hash, page_num, filter_friend_id, filter_topic_id, per_page = 40) {
   const apiUrl = `${MAOMAO_API_URL}home/friends?${queryString.stringify({user_id, hash, page_num, filter_topic_id, per_page, filter_friend_id})}`
   return fromPromise(axios.get(apiUrl))
 }

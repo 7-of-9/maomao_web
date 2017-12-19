@@ -5,8 +5,7 @@ import { normalizedOwnData, normalizedFriends } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserOwnCall, getUserFriendsCall } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
 import { addBulkTopics } from '../services/topic'
-import { getShareUrl } from '../services/share'
-import { acceptInvite, unfollow, pauseShare } from '../services/share'
+import { getShareUrl, acceptInvite, unfollow, pauseShare } from '../services/share'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -90,7 +89,11 @@ export class HomeStore extends CoreStore {
           if (this.friendsPage < 0) {
             this.friendsShare = []
           } else {
-            this.getUserFriends(this.friendsPage)
+            if (this.userShare.user_id) {
+              this.getUserFriends(this.friendsPage, this.userShare.user_id)
+            } else {
+              this.getUserFriends(this.friendsPage)
+            }
           }
         }
       }
@@ -275,9 +278,9 @@ export class HomeStore extends CoreStore {
         () => userOwnResult.state !== 'pending',
         () => {
           if (userOwnResult.state === 'fulfilled') {
-            const { mine, urls_mine, topics, has_more} = toJS(userOwnResult.value.data)
+            const { mine, urls_mine, topics, has_more } = toJS(userOwnResult.value.data)
             this.ownHasMore = has_more
-            this.ownShare = { mine, topics}
+            this.ownShare = { mine, topics }
             const normalizeOwnShare = normalizedOwnData(toJS(this.ownShare))
             this.normalizeOwnShare = normalizeOwnShare
             const safeUrls = this.checkSafeUrls(_.uniqBy(urls_mine.map((item) => {
@@ -314,13 +317,13 @@ export class HomeStore extends CoreStore {
         () => userFriendResult.state !== 'pending',
         () => {
           if (userFriendResult.state === 'fulfilled') {
-            const { received, urls_received, topics, has_more} = toJS(userFriendResult.value.data)
+            const { received, urls_received, topics, has_more } = toJS(userFriendResult.value.data)
             this.friendsHasMore = has_more
-            this.friendsShare = { received, topics}
+            this.friendsShare = { received, topics }
             if (friendId > 0 && received[0]) {
               this.userShare = received[0]
             } else if (isOwn) {
-              console.log('kam, ',this.user)
+              console.log('kam, ', this.user)
               this.userShare = {
                 email: this.user.email,
                 user_id: this.user.id,
@@ -357,11 +360,11 @@ export class HomeStore extends CoreStore {
       )
     }
   }
-  
+
   @action loadMoreOwn () {
     this.ownPage += 1
   }
-  
+
   @action loadMoreFriends () {
     this.friendsPage += 1
   }

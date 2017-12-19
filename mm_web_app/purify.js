@@ -1,16 +1,16 @@
-const purify = require("purify-css");
+const purify = require('purify-css')
 const content = [
-  "./pages/*/*.js",
-  "./components/*/*.js", 
-  "./containers/*/*.js"
-];
-const css = ["./static/vendors/css/*.css"];
+  './pages/*/*.js',
+  './components/*/*.js',
+  './containers/*/*.js'
+]
+const css = ['./static/vendors/css/*.css']
 
 const options = {
-  output: "./static/vendors/purecss/combined.min.pure.css",
+  output: './static/vendors/purecss/combined.min.pure.css',
   minify: true,
   info: true,
-  whitelist: ["*nprogress*"]
-};
+  whitelist: ['*nprogress*']
+}
 
-purify(content, css, options);
+purify(content, css, options)

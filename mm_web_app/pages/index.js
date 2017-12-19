@@ -154,7 +154,7 @@ export default class IndexPage extends React.Component {
     // back button on browser logic
     const { query } = nextProps.url
     // fetch data based on the new query
-    const { findTerms, profileUrl, urlId, shareUrlId, userShareId, topicShareName } = query
+    const { findTerms, profileUrl, urlId, shareUrlId, userShareId } = query
     if (profileUrl) {
       if (profileUrl !== this.state.profileUrl) {
         this.setState({ profileUrl })

@@ -168,7 +168,7 @@ class TermStore {
       }
     }
   }
-  
+
   @action lookupTerm (termId, callback) {
     if (termId && this.preloadPendings.indexOf(termId) === -1) {
       this.preloadPendings.push(termId)

@@ -35,7 +35,7 @@ class InviteStore extends HomeStore {
     }
     return Promise.resolve(`${MAOMAO_SITE_URL}static/images/logo.png`)
   }
-  
+
   @action acceptInviteCode () {
     this.acceptInviteResult = acceptInvite(this.userId, this.userHash, this.shareCode)
     when(
@@ -49,7 +49,7 @@ class InviteStore extends HomeStore {
       }
     )
   }
-  
+
   @action getShareInfo () {
     this.serverShareInfoResult = getShareInfo(this.shareCode)
     when(
@@ -59,7 +59,7 @@ class InviteStore extends HomeStore {
       }
     )
   }
-  
+
   @action getShareUrl () {
     this.serverShareUrlResult = getShareUrl(this.userId, this.userHash, this.shareCode)
     when(
