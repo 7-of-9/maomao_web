@@ -36,23 +36,28 @@ class DiscoveryPath extends Component {
     onSelectChildTerm: () => {}
   }
 
-  changeFollow = (termId, followed, title) => {
-    if (followed) {
-      this.props.term.unfollowTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} unfollowed`, 'Topics')
-      })
+  changeFollow = (termId, followed, title, img) => {
+    const { isLogin } = this.props.store
+    if (isLogin) {
+      if (followed) {
+        this.props.term.unfollowTopicUser(termId, () => {
+          this.props.notificationStore.addNotification(`${title} unfollowed`, 'Topics')
+        })
+      } else {
+        this.props.term.followTopicUser(termId, () => {
+          this.props.notificationStore.addNotification(`${title} followed`, 'Topics')
+        })
+      }
     } else {
-      this.props.term.followTopicUser(termId, () => {
-        this.props.notificationStore.addNotification(`${title} followed`, 'Topics')
-      })
+      this.props.ui.toggleSelectTopic(!followed, termId, title, img)
     }
   }
 
   renderDiscoveryPath = () => {
-    const { discoveryTermId, isSplitView, spliterWidth } = toJS(this.props.ui)
+    const { discoveryTermId, isSplitView, spliterWidth, selectedTopics } = toJS(this.props.ui)
     const currentTerm = this.props.term.termsCache[discoveryTermId]
     const { findTerms, termsInfo: { terms }, followedTopics } = toJS(this.props.term)
-    const { userShare } = toJS(this.props.store)
+    const { userShare, isLogin } = toJS(this.props.store)
     const items = []
     const topics = []
     const carouselItems = []
@@ -63,6 +68,8 @@ class DiscoveryPath extends Component {
         let followed = false
         if (followedTopics && followedTopics.topics) {
           followed = !!followedTopics.topics.find(x => x.term_id === termId)
+        } else if (!isLogin) {
+          followed = selectedTopics.length > 0 && _.find(selectedTopics, item => item.termId === termId)
         }
         items.push(
           <div
@@ -89,7 +96,7 @@ class DiscoveryPath extends Component {
               bottom: 0
             }}>
               <label className='label'>
-                <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name)} />
+                <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name, img)} />
                 <span className='label__text'>
                   <span className='label__check'>
                     <i className='fa fa-check icon' />
@@ -167,6 +174,8 @@ class DiscoveryPath extends Component {
         let followed = false
         if (followedTopics && followedTopics.topics) {
           followed = !!followedTopics.topics.find(x => x.term_id === termId)
+        } else if (!isLogin) {
+          followed = selectedTopics.length > 0 && _.find(selectedTopics, item => item.termId === termId)
         }
         if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
           carouselItems.push(
@@ -194,7 +203,7 @@ class DiscoveryPath extends Component {
                 bottom: -4
               }}>
                 <label className='label'>
-                  <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name)} />
+                  <input className='label__checkbox' type='checkbox' checked={followed} onChange={() => this.changeFollow(term.term_id, followed, term.term_name, img)} />
                   <span className='label__text'>
                     <span className='label__check'>
                       <i className='fa fa-check icon' />
