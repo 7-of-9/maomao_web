@@ -84,10 +84,6 @@ module.exports = {
             {
               handler: 'networkFirst',
               urlPattern: /^https?.*/
-            },
-            {
-              handler: 'networkFirst',
-              urlPattern: /^http?.*/
             }
           ],
           mergeStaticsConfig: true,

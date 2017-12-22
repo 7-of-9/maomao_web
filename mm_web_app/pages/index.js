@@ -126,7 +126,6 @@ export default class IndexPage extends React.Component {
     }
     if (Number(this.state.urlId) > 0 || Number(this.state.shareUrlId) > 0) {
       const { urlId, shareUrlId } = this.state
-      console.log('test share url', shareUrlId)
       this.uiStore.toggleSplitView(true)
       if (urlId > 0) {
         this.term.getSelectDiscoverItem(urlId, discoveryItem => {

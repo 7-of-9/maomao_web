@@ -4,17 +4,16 @@ import logger from '../../utils/logger'
 function withSW (BaseComponent) {
   class WithSW extends Component {
     componentDidMount () {
+      /* eslint-disable no-console */
       if ('serviceWorker' in navigator) {
-        if (process.env.NODE_ENV === 'production') {
-          navigator.serviceWorker
-            .register('/service-worker.js')
-            .then(registration => {
-              logger.log('service worker registration successful')
-            })
-            .catch(err => {
-              logger.info('service worker registration failed', err.message)
-            })
-        }
+        navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(() => {
+          console.log('service worker registration successful');
+        })
+        .catch((err) => {
+          console.warn('service worker registration failed', err.message);
+        });
       }
     }
 

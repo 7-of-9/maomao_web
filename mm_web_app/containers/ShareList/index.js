@@ -57,7 +57,6 @@ class ShareList extends React.Component {
     const { result: { shares_issued } } = this.props.store.normalizeOwnShare
     const { entities: { friendStreams, shareLists, urls } } = this.props.store.normalizeFriendsShare
     const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
-    console.log('sapi', toJS(this.props.store.normalizeFriendsShare), friends)
     return (
       <div>
         <div className='share-management bounceInRight animated'>

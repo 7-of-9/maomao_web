@@ -48,7 +48,6 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
-    console.log(item)
     this.props.ui.toggleSplitView(true)
     if (item.main_term && item.disc_url_id) {
       const { findTerms } = toJS(this.props.term)

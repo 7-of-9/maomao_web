@@ -323,7 +323,6 @@ export class HomeStore extends CoreStore {
             if (friendId > 0 && received[0]) {
               this.userShare = received[0]
             } else if (isOwn) {
-              console.log('kam, ', this.user)
               this.userShare = {
                 email: this.user.email,
                 user_id: this.user.id,

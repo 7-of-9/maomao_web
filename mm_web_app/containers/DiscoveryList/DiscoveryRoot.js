@@ -207,14 +207,12 @@ class DiscoveryRoot extends Component {
     })
     const { chunkSize } = this.state
     const width = chunkSize * 250 / 2
-    console.log('wlwlwl', itemsFriends)
     const itemDiscoveriesChunk = generateChunk(itemDiscoveries, chunkSize, hasLoadMore, isProcessingRootDiscover)
     const itemsFriendsChunk = generateChunk(itemsFriends, chunkSize, friendsHasMore, isProcessingFriendsStream)
     const itemsOwnChunk = generateChunk(itemsOwn, chunkSize, ownHasMore, isProcessingOwnStream)
     if (chunkSize === 0) {
       return <DiscoveryListLoading number={12} />
     }
-    console.log(itemDiscoveriesChunk, itemDiscoveries, discoveries)
     return <div>
       <H3>Discoveries</H3>
       <div style={{ display: 'inline-block', width: '100%' }}>
