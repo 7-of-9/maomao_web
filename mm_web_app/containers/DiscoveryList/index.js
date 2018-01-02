@@ -62,7 +62,10 @@ class DiscoveryList extends Component {
       )
     } else if (item.url_id) {
       const { userShare } = this.props.store
-      const href = userShare.user_id ? `/user-stream/${userShare.fullname}-${userShare.user_id}/?shareUrlId=${item.url_id}` : `/?shareUrlId=${item.url_id}`
+      let href = userShare.user_id ? `/user-stream/${userShare.fullname}-${userShare.user_id}/?shareUrlId=${item.url_id}` : `/?shareUrlId=${item.url_id}`
+      if (item.fromUser.shareCode) {
+        href += `&shareCode=${item.fromUser.shareCode}`
+      }
       Router.push(
         {
           pathname: '/',

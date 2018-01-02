@@ -309,7 +309,7 @@ export class HomeStore extends CoreStore {
       friendId = undefined
       isOwn = true
     }
-    logger.info('getUserFriends')
+    logger.info('getUserFriends', page, friendId, topicId)
     if (!this.isProcessingFriendsStream) {
       this.isProcessingFriendsStream = true
       const userFriendResult = getUserFriendsCall(this.userId, this.userHash, page, friendId, topicId)
@@ -340,7 +340,8 @@ export class HomeStore extends CoreStore {
                 email: sharedUser.email,
                 user_id: sharedUser.user_id,
                 avatar: sharedUser.avatar,
-                fullname: sharedUser.fullname
+                fullname: sharedUser.fullname,
+                shareCode: _.filter(sharedUser.shares_received, (share) => share.share_id === item.from_share_id)[0].share_code
               }
               return item
             }), 'url_id'), (safeUrls) => {
