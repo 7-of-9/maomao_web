@@ -70,12 +70,12 @@ export default class Invite extends React.Component {
 
     const { url_id: shareUrlId, fullname, topic_title: topicTitle, source_user_id: userId } = this.inviteStore.shareInfo
     if (shareUrlId) {
-      this.notificationStore.setRedirectObject({ pathname: '/', query: { shareUrlId, shareCode: this.inviteStore.shareCode } }, `/?shareUrlId=${shareUrlId}&shareCode=${this.inviteStore.shareCode}`, { shallow: true })
+      this.notificationStore.setRedirectObject({ pathname: '/', query: { shareUrlId, shareCode: this.inviteStore.shareCode } }, `/?shareUrlId=${shareUrlId}&shareCode=${this.inviteStore.shareCode}`)
     } else if (fullname) {
       if (topicTitle) {
-        this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId, topicShareName: topicTitle } }, `/user-stream/${fullname}-${userId}/${topicTitle}`, { shallow: true })
+        this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId, topicShareName: topicTitle } }, `/user-stream/${fullname}-${userId}/${topicTitle}`)
       } else {
-        this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId } }, `/user-stream/${fullname}-${userId}`, { shallow: true })
+        this.notificationStore.setRedirectObject({ pathname: '/', query: { fullname, userShareId: userId } }, `/user-stream/${fullname}-${userId}`)
       }
     }
   }

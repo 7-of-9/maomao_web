@@ -46,7 +46,13 @@ export default class IndexPage extends React.Component {
     let shareUrlId = query && query.shareUrlId ? Number(query.shareUrlId) : -1
     let userShareId = query && query.userShareId ? Number(query.userShareId) : -1
     store.getUserOwn(0)
-    store.getUserFriends(0)
+    if (userShareId > 0) {
+      store.getUserFriends(0, userShareId)
+    } else {
+      if (store.friendsPage === 0) {
+        store.getUserFriends(0)
+      }
+    }
     const term = initTermStore(isServer, findTerms, termsInfo)
     return { isServer, ...store, ...uiStore, ...term, ...notificationStore, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId, shareUrlId, userShareId }
   }
