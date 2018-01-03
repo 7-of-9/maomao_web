@@ -8,10 +8,8 @@ export function getWelcome (token) {
 }
 
 export function addUserToken (user_id, hash, token) {
-  const apiUrl = `${MAOMAO_API_URL}user/fcm`
+  const apiUrl = `${MAOMAO_API_URL}user/fcm?${queryString.stringify({ user_id, hash })}`
   return fromPromise(axios.post(apiUrl, {
-    user_id,
-    hash,
     token
   }))
 }
