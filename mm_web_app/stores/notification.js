@@ -1,7 +1,7 @@
 import { observable, action } from 'mobx'
 import _ from 'lodash'
 import Router from 'next/router'
-import { getWelcome } from '../services/notification'
+import { getWelcome, addUserToken } from '../services/notification'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
 
@@ -68,20 +68,26 @@ export class NotificationStore {
     }
   }
 
-  @action updateUIForPushEnabled (token) {
-    this.notificationEnable = true
-    this.notificationToken = token
-    getWelcome(token)
-  }
-
-  @action updateUIForToken (token) {
-    this.notificationEnable = true
-    this.notificationToken = token
+  @action updateUIForPushEnabled (userId, userHash, token) {
+    const addUserTokenRequest = addUserToken(userId, userHash, token)
+    when(
+        () => addUserTokenRequest.state !== 'pending',
+        () => {
+          logger.info('addUserToken result', addUserTokenRequest.data)
+          window.localStorage.setItem('sentToServer', 1)
+          window.localStorage.setItem('pushToken', currentToken)
+          this.notificationEnable = true
+          this.notificationToken = token
+          getWelcome(token)
+        }
+      )
   }
 
   @action updateUIForPushPermissionRequired () {
     this.notificationEnable = false
     this.notificationToken = ''
+    window.localStorage.setItem('sentToServer', 0)
+    window.localStorage.setItem('pushToken', '')
   }
 }
 

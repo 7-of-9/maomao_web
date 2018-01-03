@@ -205,44 +205,31 @@ class AppHeader extends React.Component {
         firebase.messaging().getToken()
         .then((currentToken) => {
           if (currentToken) {
-            this.sendTokenToServer(currentToken)
-            this.props.notificationStore.updateUIForPushEnabled(currentToken)
+            this.props.notificationStore.updateUIForPushEnabled(this.props.store.userId, this.props.store.userHash, currentToken)
           } else {
-            this.setTokenSentToServer(false)
+            this.props.notificationStore.updateUIForPushPermissionRequired()
           }
         })
         .catch((err) => {
           logger.warn('An error occurred while retrieving token.', err)
           this.props.notificationStore.updateUIForPushPermissionRequired()
-          this.setTokenSentToServer(false)
         })
       })
       .catch((err) => {
         logger.warn('Unable to get permission to notify.', err)
+        this.props.notificationStore.updateUIForPushPermissionRequired()
       })
   }
 
-  sendTokenToServer = (currentToken) => {
-    if (!this.isTokenSentToServer()) {
-      this.setTokenSentToServer(currentToken)
-    }
+  isTokenSentToServer = () => { 
+    return parseInt(window.localStorage.getItem('sentToServer')) === 1 && window.localStorage.getItem('pushToken') 
   }
-
-  isTokenSentToServer = () => {
-    return parseInt(window.localStorage.getItem('sentToServer')) === 1 && window.localStorage.getItem('pushToken')
-  }
-
-  setTokenSentToServer = (currentToken) => {
-    window.localStorage.setItem('sentToServer', currentToken ? 1 : 0)
-    window.localStorage.setItem('pushToken', currentToken)
-  }
-
+  
   deleteToken = (callback) => {
     firebase.messaging().getToken()
       .then((currentToken) => {
         firebase.messaging().deleteToken(currentToken)
         .then(() => {
-          this.setTokenSentToServer(false)
           this.props.notificationStore.updateUIForPushPermissionRequired()
           this.addNotification('You wont get notified with new discoveries again', 'Notification unsubscribed')
           if (callback) {
@@ -389,7 +376,7 @@ class AppHeader extends React.Component {
       }
     })
     if ((typeof (window) !== 'undefined') && this.isTokenSentToServer() && !this.props.notificationStore.notificationEnable) {
-      this.props.notificationStore.updateUIForToken(window.localStorage.getItem('pushToken'))
+      this.props.notificationStore.updateUIForPushEnabled(this.props.store.userId, this.props.store.userHash, window.localStorage.getItem('pushToken'))
     }
   }
 
