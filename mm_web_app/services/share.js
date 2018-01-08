@@ -23,6 +23,7 @@ export function pauseShare (id, hash, code, targetUserId) {
 }
 
 export function getShareUrl (user_id, hash, url_id, share_code) {
+  //TODO: adjust with dom API regarding this endpoint
   const apiUrl = `${MAOMAO_API_URL}share/url?${queryString.stringify({user_id, hash, share_code, url_id})}`
   return fromPromise(axios.get(apiUrl))
 }
